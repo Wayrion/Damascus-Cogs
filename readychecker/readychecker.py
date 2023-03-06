@@ -34,6 +34,7 @@ class ReadyChecker(commands.Cog):
     async def readycheck(self, ctx: commands.Context):
         """Check if your homies are ready"""
         readyhomies = []
+        await ctx.send("Checking if homies are ready")
         for mem in ctx.guild.members():
             try:
                 view = Confirm()
