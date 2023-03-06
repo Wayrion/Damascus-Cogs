@@ -46,7 +46,7 @@ class ReadyChecker(commands.Cog):
                     pass
                 await asyncio.sleep(2)
             except:
-                pass
+                await ctx.send(f"Couldn't send message to {mem.name}")
 
         await ctx.send(f"Ready homies: {readyhomies}")
 
