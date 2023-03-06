@@ -35,7 +35,7 @@ class ReadyChecker(commands.Cog):
         """Check if your homies are ready"""
         readyhomies = []
         await ctx.send("Checking if homies are ready")
-        for mem in ctx.guild.members():
+        for mem in ctx.guild.members:
             try:
                 await ctx.send(f"sending message to  {mem.name}")
                 view = Confirm()
