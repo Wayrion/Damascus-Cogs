@@ -1,7 +1,5 @@
 import discord
-from discord import Interaction, app_commands
 from redbot.core import commands
-from redbot.core import Config
 import asyncio
 
 class Confirm(discord.ui.View):
