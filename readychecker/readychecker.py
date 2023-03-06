@@ -34,22 +34,20 @@ class ReadyChecker(commands.Cog):
     async def readycheck(self, ctx: commands.Context):
         """Check if your homies are ready"""
         readyhomies = []
-        await ctx.send("Checking if homies are ready")
+        message = await ctx.send("Checking if homies are ready")
         for mem in ctx.guild.members:
             try:
-                await ctx.send(f"sending message to  {mem.name}")
                 view = Confirm()
-                await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
+                readymsg = await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
                 await view.wait()
                 if view.value:
                     readyhomies.append(mem.name)
                 else:
-                    pass
-                await asyncio.sleep(2)
+                    await readymsg.edit("You did not respond withing the given timeframe")
             except:
-                await ctx.send(f"Couldn't send message to {mem.name}")
+                pass
 
-        await ctx.send(f"Ready homies: {readyhomies}")
+        await message.edit(f"Ready homies: {readyhomies}")
 
 
             
