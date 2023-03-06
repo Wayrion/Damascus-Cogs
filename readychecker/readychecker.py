@@ -44,12 +44,15 @@ class ReadyChecker(commands.Cog):
                     readyhomies.append(mem.name)
                 else:
                     await view.stop()
-                    await readymsg.edit("You did not respond withing the given timeframe")
+                    await readymsg.edit("You did not respond withing the given timeframe", view=None)
 
             except:
                 pass
 
-        await message.edit(content=f"Ready homies: {readyhomies}")
+        if readyhomies is None:
+            await message.edit(content=f"No homies are ready :(")
+        else:
+            await message.edit(content=f"Ready homies: {readyhomies}")
 
 
             
