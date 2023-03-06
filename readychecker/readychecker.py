@@ -9,17 +9,13 @@ class Confirm(discord.ui.View):
         super().__init__()
         self.value = None
 
-    # When the confirm button is pressed, set the inner value to `True` and
-    # stop the View from listening to more input.
-    # We also send the user an ephemeral message that we're confirming their choice.
     @discord.ui.button(label='Ready', style=discord.ButtonStyle.green)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message('Adding you to the ready list', ephemeral=True)
         self.value = True
         self.stop()
 
-    # This one is similar to the confirmation button except sets the inner value to `False`
-    @discord.ui.button(label='Ignore', style=discord.ButtonStyle.grey)
+    @discord.ui.button(label='Ignore', style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message('Ignoring readycheck', ephemeral=True)
         self.value = False
@@ -46,7 +42,7 @@ class ReadyChecker(commands.Cog):
                     await view.stop()
                     await readymsg.edit("You did not respond withing the given timeframe", view=None)
 
-            except:
+            except discord.errors.Forbidden:
                 pass
 
         if readyhomies is None:
