@@ -35,14 +35,17 @@ class ReadyChecker(commands.Cog):
         """Check if your homies are ready"""
         readyhomies = []
         for mem in ctx.guild.members():
-            view = Confirm()
-            await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
-            await view.wait()
-            if view.value:
-                readyhomies.append(mem.name)
-            else:
+            try:
+                view = Confirm()
+                await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
+                await view.wait()
+                if view.value:
+                    readyhomies.append(mem.name)
+                else:
+                    pass
+                await asyncio.sleep(2)
+            except:
                 pass
-            await asyncio.sleep(2)
 
         await ctx.send(f"Ready homies: {readyhomies}")
 
