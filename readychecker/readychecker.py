@@ -30,7 +30,7 @@ class ReadyChecker(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
             
-    @app_commands.command(description="Check if your homies are ready")
+    @commands.command(description="Check if your homies are ready")
     async def readycheck(self, ctx: commands.Context):
         """Check if your homies are ready"""
         #for mem in ctx.guild.members():
