@@ -37,6 +37,7 @@ class ReadyChecker(commands.Cog):
         await ctx.send("Checking if homies are ready")
         for mem in ctx.guild.members():
             try:
+                await ctx.send(f"sending message to  {mem.name}")
                 view = Confirm()
                 await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
                 await view.wait()
