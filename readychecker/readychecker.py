@@ -49,7 +49,7 @@ class ReadyChecker(commands.Cog):
             except:
                 pass
 
-        await message.edit(f"Ready homies: {readyhomies}")
+        await message.edit(content=f"Ready homies: {readyhomies}")
 
 
             
