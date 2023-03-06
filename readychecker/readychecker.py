@@ -39,11 +39,13 @@ class ReadyChecker(commands.Cog):
             try:
                 view = Confirm()
                 readymsg = await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
-                await view.wait()
+                await asyncio.sleep(30)
                 if view.value:
                     readyhomies.append(mem.name)
                 else:
+                    await view.stop()
                     await readymsg.edit("You did not respond withing the given timeframe")
+
             except:
                 pass
 
