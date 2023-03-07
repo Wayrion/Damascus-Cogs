@@ -75,7 +75,7 @@ class Redditparser(commands.Cog):
         else: 
             return redditlinks
 
-    async def get_image(self, ctx, json_data, post_id):   
+    async def get_image(self, ctx: commands.Context, json_data, post_id):   
 
         image = json_data['posts']['models'][post_id]['media']['content']
         title = json_data['posts']['models'][post_id]['title']
@@ -89,7 +89,7 @@ class Redditparser(commands.Cog):
         embed.add_field(name=f"Author:", value=f"u/{author}", inline=True)
         embed.add_field(name=f"Subreddit:", value=f"r/{subbreddit}", inline=True)
         embed.set_image(url=image)
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url)
 
         if spoiler == True:
             content = f"|| <{image}> ||"
@@ -98,7 +98,7 @@ class Redditparser(commands.Cog):
 
         await ctx.send(content=content, embed=embed)
 
-    async def get_text(self, ctx, json_data, post_id):
+    async def get_text(self, ctx: commands.Context, json_data, post_id):
         document = json_data['posts']['models'][post_id]['media']['richtextContent']['document'][0]
 
         title = json_data['posts']['models'][post_id]['title']
@@ -110,11 +110,11 @@ class Redditparser(commands.Cog):
         embed=discord.Embed(description=f"**[{title}]({permalink})**\n{text[0:4000] }",color=discord.Color.random())        
         embed.add_field(name=f"Author:", value=f"u/{author}", inline=True)
         embed.add_field(name=f"Subreddit:", value=f"r/{subbreddit}", inline=True)
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url)
 
         await ctx.send(embed=embed)
 
-    async def get_video(self, ctx, json_data, post_id):
+    async def get_video(self, ctx: commands.Context, json_data, post_id):
         global path
         path = f"C:\\Users\\{os.getlogin()}\\Downloads\\"
         headers = {'User-Agent':'Mozilla/5.0'}
@@ -130,7 +130,7 @@ class Redditparser(commands.Cog):
         embed=discord.Embed(description=f"**[{title}]({permalink})**",color=discord.Color.random())        
         embed.add_field(name=f"Author:", value=f"u/{author}", inline=True)
         embed.add_field(name=f"Subreddit:", value=f"r/{subbreddit}", inline=True)
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url)
     
         
         if type == "video":
@@ -200,7 +200,7 @@ class Redditparser(commands.Cog):
                 code = "Streamable could not process this video"
                 await ctx.send(content=code,embed=embed)
 
-    async def get_url(self, ctx, json_data, post_id):
+    async def get_url(self, ctx: commands.Context, json_data, post_id):
         
         source = json_data['posts']['models'][post_id]['source']['url']
 
@@ -213,7 +213,7 @@ class Redditparser(commands.Cog):
         embed=discord.Embed(description=f"**[{title}]({permalink})**",color=discord.Color.random())        
         embed.add_field(name=f"Author:", value=f"u/{author}", inline=True)
         embed.add_field(name=f"Subreddit:", value=f"r/{subbreddit}", inline=True)
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url)
 
         if source != None:
             content=source
@@ -224,7 +224,7 @@ class Redditparser(commands.Cog):
         await ctx.send(content=content)
         await ctx.send(embed=embed)
 
-    async def get_post(self, ctx, url):
+    async def get_post(self, ctx: commands.Context, url):
         headers = {'User-Agent':'Mozilla/5.0'}
 
         async with aiohttp.ClientSession() as session:
@@ -363,7 +363,7 @@ class Redditparser(commands.Cog):
     @rpsettings.command()
     async def mail(self, ctx, *, ID:str):
         """
-        This command is to add glyfcat id
+        Add your streamable mail
         """
         await self.config.mail.set(ID)
         await ctx.send("Streamable Mail set")
@@ -373,7 +373,7 @@ class Redditparser(commands.Cog):
     @rpsettings.command()
     async def password(self, ctx, *, secret:str):
         """
-        This command is to add glyfcat secret
+        Add your streamable password
         """
         await self.config.password.set(secret)
         await ctx.send("Streamable Password set")
