@@ -1,0 +1,7 @@
+{
+    "author": ["HellFire#7769 (718395193090375700)"],
+    "short": "The Cocktail cog",
+    "description": "A cog that returns cocktail details from an API",
+    "name": "cocktail",
+    "install_msg": "Thank you for instaling the Cocktail cog!. If you need support feel free to reach out to me in the #support (<#992344272529535087>) of this server.\nhttps://discord.gg/aYd3ZPr4Dn"
+}
