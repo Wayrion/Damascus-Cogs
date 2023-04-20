@@ -1,0 +1,7 @@
+{
+    "author": ["HellFire#7769 (718395193090375700)"],
+    "short": "The VCLogger cog",
+    "description": "A cog that logs vc joins and leaves",
+    "name": "VCLogger",
+    "install_msg": "Thank you for instaling the VCLogger cog!. If you need support feel free to reach out to me in the #support (<#992344272529535087>) of this server.\nhttps://discord.gg/aYd3ZPr4Dn"
+}
