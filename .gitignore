@@ -130,3 +130,5 @@ dmypy.json
 
 #Ignore the venv
 hell/
+
+/.vscode
