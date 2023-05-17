@@ -30,17 +30,22 @@ class ReadyChecker(commands.Cog):
         readyhomies = []
         message = await ctx.send("Checking if homies are ready")
         for mem in ctx.guild.members:
-            try:
-                view = Confirm()
-                readymsg = await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
-                await asyncio.sleep(30)
-                if view.value:
-                    readyhomies.append(mem.name)
-                else:
-                    await readymsg.edit("You did not respond withing the given timeframe", view=None)
-
-            except discord.errors.Forbidden:
+            if mem.bot:
                 pass
+            if mem.id == ctx.author.id:
+                pass
+            else:
+                try:
+                    view = Confirm()
+                    readymsg = await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
+                    await asyncio.sleep(30)
+                    if view.value:
+                        readyhomies.append(mem.name)
+                    else:
+                        await readymsg.edit("You did not respond withing the given timeframe", view=None)
+    
+                except discord.errors.Forbidden:
+                    pass
 
         if readyhomies is None:
             await message.edit(content=f"No homies are ready :(")
