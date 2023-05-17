@@ -32,7 +32,7 @@ class ReadyChecker(commands.Cog):
         for mem in ctx.guild.members:
             if mem.bot:
                 pass
-            if mem.id == ctx.author.id:
+            elif mem.id == ctx.author.id:
                 pass
             else:
                 try:
