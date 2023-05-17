@@ -42,7 +42,7 @@ class ReadyChecker(commands.Cog):
                     if view.value:
                         readyhomies.append(mem.name)
                     else:
-                        await readymsg.edit("You did not respond withing the given timeframe", view=None)
+                        await readymsg.edit(content="You did not respond withing the given timeframe", view=None)
     
                 except discord.errors.Forbidden:
                     pass
