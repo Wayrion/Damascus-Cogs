@@ -32,8 +32,8 @@ class ReadyChecker(commands.Cog):
         for mem in ctx.guild.members:
             if mem.bot:
                 pass
-            elif mem.id == ctx.author.id:
-                pass
+            #elif mem.id == ctx.author.id:
+                #pass
             else:
                 try:
                     view = Confirm()
@@ -41,6 +41,7 @@ class ReadyChecker(commands.Cog):
                     await asyncio.sleep(30)
                     if view.value:
                         readyhomies.append(mem.name)
+                        await readymsg.edit(content=f"Thank you for responding, I have informed {ctx.message.author.name}", view=None)
                     else:
                         await readymsg.edit(content="You did not respond withing the given timeframe", view=None)
     
