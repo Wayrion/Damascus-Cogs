@@ -40,7 +40,7 @@ class ReadyChecker(commands.Cog):
                 try:
                     view = Confirm()
                     readymsg = await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
-                    await asyncio.sleep(15)
+                    await asyncio.sleep(30)
                     if view.value:
                         readyhomies.append(mem.name)
                         await readymsg.edit(content=f"Thank you for responding, I have informed {ctx.message.author.name}", view=None)
