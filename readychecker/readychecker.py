@@ -28,8 +28,10 @@ class ReadyChecker(commands.Cog):
     async def readycheck(self, ctx: commands.Context):
         """Check if your homies are ready"""
         readyhomies = []
+        passes = 0
         message = await ctx.send("Checking if homies are ready")
         for mem in ctx.guild.members:
+            passes += 1
             if mem.bot:
                 pass
             #elif mem.id == ctx.author.id:
@@ -38,7 +40,7 @@ class ReadyChecker(commands.Cog):
                 try:
                     view = Confirm()
                     readymsg = await mem.send("Will you be ready tonight?, You have 30s to reply", view=view)
-                    await asyncio.sleep(30)
+                    await asyncio.sleep(15)
                     if view.value:
                         readyhomies.append(mem.name)
                         await readymsg.edit(content=f"Thank you for responding, I have informed {ctx.message.author.name}", view=None)
@@ -47,6 +49,8 @@ class ReadyChecker(commands.Cog):
     
                 except discord.errors.Forbidden:
                     pass
+
+                await message.edit(content=f"Checking if homies are ready: {passes}/{len(ctx.guild.members)}")
 
         if readyhomies is None:
             await message.edit(content=f"No homies are ready :(")
