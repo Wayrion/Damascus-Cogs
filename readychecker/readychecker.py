@@ -56,8 +56,3 @@ class ReadyChecker(commands.Cog):
             await message.edit(content=f"No homies are ready :(")
         else:
             await message.edit(content=f"Ready homies: {readyhomies}")
-
-
-            
-            
-   
