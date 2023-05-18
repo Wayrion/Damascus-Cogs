@@ -50,7 +50,7 @@ class ReadyChecker(commands.Cog):
                 except discord.errors.Forbidden:
                     pass
 
-                await message.edit(content=f"Checking if homies are ready: {passes}/{len(ctx.guild.members)}")
+            await message.edit(content=f"Checking if homies are ready: {passes}/{len(ctx.guild.members)}")
 
         if readyhomies is None:
             await message.edit(content=f"No homies are ready :(")
