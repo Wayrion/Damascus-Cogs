@@ -99,9 +99,7 @@ class Welcome(commands.Cog):
                             await member.add_roles(member.guild.get_role(role))
 
                 except asyncio.TimeoutError:
-                    async with self.config.guild(member.guild).member_join_roles() as roles:
-                        for role in roles:
-                            await member.add_roles(member.guild.get_role(role))
+                    pass
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
