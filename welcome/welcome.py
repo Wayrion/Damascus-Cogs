@@ -43,12 +43,15 @@ class Welcome(commands.Cog):
     async def on_member_join(self, member: discord.Member):
         """Welcomes a user to the server with an image."""
 
-        #if member.bot:
-            #return
+        if member.bot:
+            return
 
         async with self.config.guild(member.guild).all() as settings:
-            path = bundled_data_path(self) / "background.jpg"
+            path = bundled_data_path(self) / "background.png"
             # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
+            file = open(bundled_data_path(self) / "arial.ttf", "rb")
+            bytes_font = BytesIO(file.read())
+            font=ImageFont.truetype(bytes_font, 35)
             background = Image.open(path)
             profile = Image.open(BytesIO(await member.avatar.read()))
             profile = profile.resize((300, 300))
@@ -70,12 +73,10 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                font = ImageFont.truetype("arial.ttf", 35)
                 draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} joined the server!", (0, 0, 0), font=font, anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                font = ImageFont.truetype("arial.ttf", 35)
                 draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", (0, 0, 0), font=font, anchor="mm")
 
             background.save(bundled_data_path(self) / f"welcome{member.id}.png")
@@ -105,12 +106,15 @@ class Welcome(commands.Cog):
     async def on_member_remove(self, member: discord.Member):
         """Sends a goodbye message with an image when a user leaves the server."""
 
-        #if member.bot:
-            #return
+        if member.bot:
+            return
 
         async with self.config.guild(member.guild).all() as settings:
-            path = bundled_data_path(self) / "background.jpg"
+            path = bundled_data_path(self) / "background.png"
             # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
+            file = open(bundled_data_path(self) / "arial.ttf", "rb")
+            bytes_font = BytesIO(file.read())
+            font=ImageFont.truetype(bytes_font, 35)
             background = Image.open(path)
             profile = Image.open(BytesIO(await member.avatar.read()))
             profile = profile.resize((300, 300))
@@ -132,12 +136,10 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                font = ImageFont.truetype("arial.ttf", 35)
                 draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} left the server.", (0, 0, 0), font=font, anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                font = ImageFont.truetype("arial.ttf", 35)
                 draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", (0, 0, 0), font=font, anchor="mm")
 
             background.save(bundled_data_path(self) / f"goodbye{member.id}.png")
@@ -174,7 +176,7 @@ class Welcome(commands.Cog):
             return
 
         # Save the file to the data folder
-        path = bundled_data_path(self) / "background.jpg"
+        path = bundled_data_path(self) / "background.png"
         await file.save(path)
 
         # Set the background to True
@@ -258,7 +260,7 @@ class Welcome(commands.Cog):
         member=ctx.author
         """Tests the welcome message."""
         async with self.config.guild(member.guild).all() as settings:
-            path = bundled_data_path(self) / "background.jpg"
+            path = bundled_data_path(self) / "background.png"
             # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
             background = Image.open(path)
             profile = Image.open(BytesIO(await member.avatar.read()))
