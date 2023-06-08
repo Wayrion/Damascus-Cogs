@@ -1,0 +1,23 @@
+{
+	"author": [
+		"NerdieTony",
+		"Malarne (Malarne#1418)",
+		"HellFire#7769 (718395193090375700)"
+	],
+	"contributor": [
+		"Luis Gomes",
+		"Discord: Huruk#3168 (155363631498919936)"
+	],
+	"min_bot_version": "3.5.0",
+	"short": "Spellbook Cog",
+	"description": "A D&D 5e Cog for Wizards to manage their spellbooks.",
+	"name": "Spellbook",
+	"requirements": [
+		"tabulate"
+	],
+	"tags": [
+		"Spellbook",
+		"Profile"
+	],
+	"install_msg": "You just installed **Spellbook**! \nA D&D 5e Cog for Wizards to manage their spellbooks.\n\n**Official Cog Support Server:** discord.gg/aYd3ZPr4Dn\nNote this is an edited version of the cog.\nFor support contact HellFire#7769 (718395193090375700) or \nHuruk#3168 (155363631498919936)"
+}

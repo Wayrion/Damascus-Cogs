@@ -1,14 +1,29 @@
+import string
+
+# List of Spell https://pastebin.com/YS7NmYqh
+complete_spell_list = ["Abi-Dalzim's Horrid Wilting", "Absorb Elements", "Aganazzar's Scorcher", "Alarm", "Alter Self", "Animate Dead", "Animate Objects", "Antimagic Field", "Antipathy/Sympathy", "Arcane Eye", "Arcane Gate", "Arcane Lock", "Ashardalon's Stride", "Astral Projection", "Augury", "Banishment", "Bestow Curse", "Bigby's Hand", "Blade of Disaster", "Blight", "Blindness/Deafness", "Blink", "Blur", "Borrowed Knowledge", "Burning Hands", "Catapult", "Catnap", "Cause Fear", "Chain Lightning", "Charm Monster", "Charm Person", "Chromatic Orb", "Circle of Death", "Clairvoyance", "Clone", "Cloud of Daggers", "Cloudkill", "Color Spray", "Comprehend Languages", "Cone of Cold", "Confusion", "Conjure Elemental", "Conjure Minor Elementals", "Contact Other Plane", "Contingency", "Continual Flame", "Control Water", "Control Weather", "Control Winds", "Counterspell", "Create Homunculus", "Create Magen", "Create Undead", "Creation", "Crown of Madness", "Crown of Stars", "Danse Macabre", "Darkness", "Darkvision", "Dawn", "Delayed Blast Fireball", "Demiplane", "Detect Magic", "Detect Thoughts", "Dimension Door", "Disguise Self", "Disintegrate", "Dispel Magic", "Distort Value", "Divination", "Dominate Monster", "Dominate Person", "Draconic Transformation", "Dragon's Breath", "Drawmij's Instant Summons", "Dream", "Dream of the Blue Veil", "Dust Devil", "Earth Tremor", "Earthbind", "Elemental Bane", "Enemies Abound", "Enervation", "Enhance Ability", "Enlarge/Reduce", "Erupting Earth", "Etherealness", "Evard's Black Tentacles", "Expeditious Retreat", "Eyebite", "Fabricate", "False Life", "Far Step", "Fast Friends", "Fear", "Feather Fall", "Feeblemind", "Feign Death", "Find Familiar", "Finger of Death", "Fire Shield", "Fireball", "Fizban's Platinum Shield", "Flame Arrows", "Flaming Sphere", "Flesh to Stone", "Fly", "Fog Cloud", "Forcecage", "Foresight", "Frost Fingers", "Gaseous Form", "Gate", "Geas", "Gentle Repose", "Gift of Gab", "Globe of Invulnerability", "Glyph of Warding", "Grease", "Greater Invisibility", "Guards and Wards", "Gust of Wind", "Hallucinatory Terrain", "Haste", "Hold Monster", "Hold Person", "Hypnotic Pattern", "Ice Knife", "Ice Storm", "Identify", "Illusory Dragon", "Illusory Script", "Immolation", "Imprisonment", "Incendiary Cloud", "Incite Greed", "Infernal Calling", "Intellect Fortress", "Investiture of Flame", "Investiture of Ice", "Investiture of Stone", "Investiture of Wind", "Invisibility", "Invulnerability", "Jim's Glowing Coin", "Jim's Magic Missile", "Jump", "Kinetic Jaunt", "Knock", "Legend Lore", "Leomund's Secret Chest", "Leomund's Tiny Hut", "Levitate", "Life Transference", "Lightning Bolt", "Locate Creature",
+                       "Locate Object", "Longstrider", "Maddening Darkness", "Mage Armor", "Magic Circle", "Magic Jar", "Magic Missile", "Magic Mouth", "Magic Weapon", "Major Image", "Mass Polymorph", "Mass Suggestion", "Maximilian's Earthen Grasp", "Maze", "Melf's Acid Arrow", "Melf's Minute Meteors", "Mental Prison", "Meteor Swarm", "Mighty Fortress", "Mind Blank", "Mind Spike", "Mirage Arcane", "Mirror Image", "Mislead", "Misty Step", "Modify Memory", "Mordenkainen's Faithful Hound", "Mordenkainen's Magnificent Mansion", "Mordenkainen's Private Sanctum", "Mordenkainen's Sword", "Move Earth", "Nathair's Mischief", "Negative Energy Flood", "Nondetection", "Nystul's Magic Aura", "Otiluke's Freezing Sphere", "Otiluke's Resilient Sphere", "Otto's Irresistible Dance", "Passwall", "Phantasmal Force", "Phantasmal Killer", "Phantom Steed", "Planar Binding", "Plane Shift", "Polymorph", "Power Word Kill", "Power Word Pain", "Power Word Stun", "Prismatic Spray", "Prismatic Wall", "Programmed Illusion", "Project Image", "Protection from Energy", "Protection from Evil and Good", "Psychic Scream", "Pyrotechnics", "Rary's Telepathic Bond", "Raulothim's Psychic Lance", "Ray of Enfeeblement", "Ray of Sickness", "Remove Curse", "Reverse Gravity", "Rime's Binding Ice", "Rope Trick", "Scatter", "Scorching Ray", "Scrying", "See Invisibility", "Seeming", "Sending", "Sequester", "Shadow Blade", "Shapechange", "Shatter", "Shield", "Sickening Radiance", "Silent Image", "Silvery Barbs", "Simulacrum", "Skill Empowerment", "Skywrite", "Sleep", "Sleet Storm", "Slow", "Snare", "Snilloc's Snowball Swarm", "Soul Cage", "Speak with Dead", "Spider Climb", "Spirit Shroud", "Steel Wind Strike", "Stinking Cloud", "Stone Shape", "Stoneskin", "Storm Sphere", "Suggestion", "Summon Aberration", "Summon Construct", "Summon Draconic Spirit", "Summon Elemental", "Summon Fey", "Summon Fiend", "Summon Greater Demon", "Summon Lesser Demons", "Summon Shadowspawn", "Summon Undead", "Sunbeam", "Sunburst", "Symbol", "Synaptic Static", "Tasha's Caustic Brew", "Tasha's Hideous Laughter", "Tasha's Mind Whip", "Tasha's Otherworldly Guise", "Telekinesis", "Telepathy", "Teleport", "Teleportation Circle", "Tenser's Floating Disk", "Tenser's Transformation", "Thunder Step", "Thunderwave", "Tidal Wave", "Time Stop", "Tiny Servant", "Tongues", "Transmute Rock", "True Polymorph", "True Seeing", "Unseen Servant", "Vampiric Touch", "Vitriolic Sphere", "Vortex Warp", "Wall of Fire", "Wall of Force", "Wall of Ice", "Wall of Light", "Wall of Sand", "Wall of Stone", "Wall of Water", "Warding Wind", "Water Breathing", "Watery Sphere", "Web", "Weird", "Whirlwind", "Wish", "Witch Bolt", "Wither and Bloom"]
+
+
+def isSpellValid(spell):
+    return spell in complete_spell_list
+
 
 def listformatter(listtoformat):
-    
-    FilterCharacters=["[", "]"]
+
+    FilterCharacters = ["[", "]"]
     for i in FilterCharacters:
         listtoformat = str(listtoformat).replace(i, "")
 
     if listtoformat.startswith(", "):
         listtoformat = listtoformat[2:]
-    
+
     if listtoformat.endswith(", "):
         listtoformat = listtoformat[:-2]
-    
+
     return listtoformat
+
+
+def processStringToList(spellList):
+    return sorted(set(string.capwords(str.lower(x.strip())).replace("Of", "of").replace("And", "and").replace("From", "from").replace("The", "the").replace("To", "to").replace("With", "with").replace("wither", "Wither").replace("deafness", "Deafness").replace("touch", "Touch").replace("reduce", "Reduce").replace("sympathy", "Sympathy").replace("tongues", "Tongues")
+                      for x in spellList.split(",")))
