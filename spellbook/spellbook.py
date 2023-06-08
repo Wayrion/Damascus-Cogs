@@ -8,6 +8,12 @@ from redbot.core.utils.chat_formatting import pagify
 
 from .utils import *
 
+import discord
+from PIL import Image, ImageDraw, ImageFont
+from redbot.core import Config, commands
+import json
+import os
+
 
 class Spellbook(commands.Cog):
     """A D&D 5e Cog for Wizards to manage their spellbooks"""
