@@ -977,7 +977,7 @@ class RoleManagement(
         """
         Lists the selfroles and any associated costs.
         """
-
+    
         MYPY = False
         if MYPY:
             # remove this when mypy supports type narrowing from :=
@@ -994,7 +994,7 @@ class RoleManagement(
                 for role_id, vals in (await self.config.all_roles()).items()
                 if (role := ctx.guild.get_role(role_id)) and vals["self_role"]
             }
-
+    
         if not data:
             return await ctx.send("There aren't any self roles here.")
 
@@ -1012,7 +1012,8 @@ class RoleManagement(
             for page in page_gen:
                 await ctx.send(box(page))
         finally:
-            page_gen.close()
+            if hasattr(page_gen, "close"):
+                page_gen.close()
 
     @srole.command(name="buy")
     async def srole_buy(self, ctx: commands.GuildContext, *, role: discord.Role):
