@@ -16,8 +16,13 @@ class Bible(commands.Cog):
         }
         self.config.register_global(**default_global)
 
-    @commands.command()
-    async def bible(self, ctx: commands.Context, book: str, arg: str):
+    @commands.group()
+    async def bible(self, ctx: commands.Context):
+        """Searches for a verse or chapter in the bible"""
+        pass
+
+    @bible.command()
+    async def lookup(self, ctx: commands.Context, book: str, arg: str):
         """Searches for a verse or chapter in the bible"""
         try:
             book = book.strip()
@@ -77,11 +82,11 @@ class Bible(commands.Cog):
             await ctx.send("Book not found")
 
     @commands.group()
-    async def notes(self, ctx: commands.Context):
+    async def memory(self, ctx: commands.Context):
         """Manage for each verse or chapter of the bible"""
         pass
 
-    @notes.command()
+    @memory.command()
     @commands.cooldown(1, 1, commands.BucketType.guild)
     async def add(self, ctx: commands.Context, book: str, arg: str , *, note: str):
         """Adds a note to a verse or chapter"""
@@ -105,7 +110,7 @@ class Bible(commands.Cog):
             notes.append({"number": len(notes)+1, "book": book, "chapter": chapter, "verse": verse, "note": note})
         await ctx.send("Note added")
 
-    @notes.command()
+    @memory.command()
     @commands.cooldown(1, 1, commands.BucketType.guild)
     async def remove(self, ctx: commands.Context, number: int):
         """Removes a note to a verse or chapter"""
@@ -127,7 +132,7 @@ class Bible(commands.Cog):
             for i, note_data in enumerate(notes_copy, start=1):
                 note_data["number"] = i
 
-    @notes.command()
+    @memory.command()
     async def list(self, ctx: commands.Context, book: Union[str, None] = None, arg: Union[str, None] = None):
         """Lists all notes or notes for a verse or chapter"""
 
@@ -181,7 +186,7 @@ class Bible(commands.Cog):
 
             await menu(ctx, embeds, controls=DEFAULT_CONTROLS, timeout=30)
 
-    @commands.command()
+    @bible.command()
     async def search(self, ctx: commands.Context, *, arg: str):
         """Searches for a verse or chapter"""
 
@@ -221,3 +226,14 @@ class Bible(commands.Cog):
         """Clears all notes"""
         await self.config.clear_all()
         await ctx.send("All Notes removed")
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, commands.CommandNotFound):
+            return  # Ignore CommandNotFound errors
+
+        if isinstance(error, (AttributeError, ValueError)):
+            await ctx.send("Incorrect parameters, please try again. Use `{}help` for more information.".format(ctx.prefix))
+        else:
+            # Re-raise the error if it's not an AttributeError or ValueError
+            raise error
