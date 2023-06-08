@@ -49,9 +49,12 @@ class Welcome(commands.Cog):
         async with self.config.guild(member.guild).all() as settings:
             path = bundled_data_path(self) / "background.png"
             # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
-            file = open(bundled_data_path(self) / "arial.ttf", "rb")
-            bytes_font = BytesIO(file.read())
-            font=ImageFont.truetype(bytes_font, 35)
+            try:
+                with open(bundled_data_path(self) / "arial.ttf", "rb") as f:
+                    font_bytes = BytesIO(f.read())
+                    font = ImageFont.truetype(font_bytes, 35)
+            except OSError:
+                font = ImageFont.load_default()
             background = Image.open(path)
             profile = Image.open(BytesIO(await member.avatar.read()))
             profile = profile.resize((300, 300))
@@ -112,9 +115,14 @@ class Welcome(commands.Cog):
         async with self.config.guild(member.guild).all() as settings:
             path = bundled_data_path(self) / "background.png"
             # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
-            file = open(bundled_data_path(self) / "arial.ttf", "rb")
-            bytes_font = BytesIO(file.read())
-            font=ImageFont.truetype(bytes_font, 35)
+
+            try:
+                with open(bundled_data_path(self) / "arial.ttf", "rb") as f:
+                    font_bytes = BytesIO(f.read())
+                    font = ImageFont.truetype(font_bytes, 35)
+            except OSError:
+                font = ImageFont.load_default()
+                
             background = Image.open(path)
             profile = Image.open(BytesIO(await member.avatar.read()))
             profile = profile.resize((300, 300))

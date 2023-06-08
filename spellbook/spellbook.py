@@ -4,6 +4,7 @@ from tabulate import tabulate
 from redbot.core import Config
 from redbot.core import commands
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core.data_manager import bundled_data_path
 from redbot.core.utils.chat_formatting import pagify
 
 from .utils import *
@@ -52,6 +53,116 @@ class Spellbook(commands.Cog):
                     user.mention
                 ),
             )
+
+    ########################################################
+
+    def load_spell_data(self):
+        with open(bundled_data_path(self) / "spells_wizards.json", "r", encoding="utf-8") as f:
+            spell_data = json.load(f)
+        return spell_data
+    
+    def create_spell_card(self, spell):
+        """Create a spell card image for the given spell data"""
+
+        # Load the spell card template image
+        with open(bundled_data_path(self) / "spell_card.png", "rb") as f:
+            template = Image.open(f)
+
+        # Load the spell icon image
+        icon_path = bundled_data_path(self) / f"{spell.get('icon', 'default')}.png"
+        icon = Image.open(icon_path)
+
+        # Resize the spell icon image and paste it onto the template image
+        icon = icon.resize((64, 64))
+        template.paste(icon, (16, 16), icon)
+
+        # Add the spell name and description to the template image
+        draw = ImageDraw.Draw(template)
+        name_font = ImageFont.truetype("Roboto-Regular.ttf", size=24)
+        desc_font = ImageFont.truetype("Roboto-Regular.ttf", size=16)
+        name_width, _ = draw.textsize(spell["name"], font=name_font)
+        draw.text((96, 16), spell["name"], font=name_font, fill=(255, 255, 255))
+        draw.text((96, 16 + name_width + 8), spell["description"], font=desc_font, fill=(255, 255, 255), align="left", spacing=4)
+
+        # Return the spell card image object
+        return template
+    
+
+    ########################################################
+
+    @commands.command(name="account")
+    async def _account(self, ctx:commands.Context, *spell_names: str):
+        """Create a spell card for each spell and attach them to the message"""
+
+        if not spell_names:
+            await ctx.send("Please provide at least one spell name.")
+            return
+
+        spell_data = self.load_spell_data()
+        spell_cards = ["Abi-Dalzim's Horrid Wilting"]
+
+        for name in spell_names:
+            spell = next((s for s in spell_data if s["name"].lower() == name.lower()), None)
+            if spell:
+                spell_card = self.create_spell_card(spell)
+                spell_cards.append(spell_card)
+
+        if not spell_cards:
+            await ctx.send("No valid spell names provided.")
+            return
+
+        for i, spell_card in enumerate(spell_cards):
+            filename = f"{i+1}.png"
+            spell_card.save(filename)
+            with open(filename, "rb") as f:
+                file = discord.File(f, filename=filename)
+                await ctx.send(file=file)
+
+        for filename in os.listdir():
+            if filename.endswith(".png"):
+                os.remove(filename)
+
+    @commands.command(name="listwizards")
+    @commands.guild_only()
+    async def _list_wizards(self, ctx, *, spell_name):
+        """List all the Wizards who know a particular spell"""
+
+        wizards = await self.config.all_members(ctx.guild)
+        filtered_wizards = [
+            {"id": member.id, "username": member.display_name, "user_id": member.id}
+            for member in wizards
+            if spell_name in member["Spell"]
+        ]
+        sorted_wizards = sorted(filtered_wizards, key=lambda w: w["username"])
+        pages = []
+
+        for i, wizard_chunk in enumerate(pagify(sorted_wizards, page_length=10), start=1):
+            table_data = []
+            for wizard in wizard_chunk:
+                table_data.append([wizard["id"], wizard["username"], wizard["user_id"]])
+
+            table = tabulate(
+                table_data,
+                headers=["#", "Username", "ID"],
+                tablefmt="fancy_grid",
+                showindex="always",
+                colalign=("center", "center", "center"),
+            )
+            embed = discord.Embed(colour=discord.Color.red())
+            embed.add_field(
+                name=f"Filter: {spell_name}",
+                value=f"Number of results: {len(filtered_wizards)}",
+                inline=False,
+            )
+            embed.add_field(
+                name="Here is a list of all the Wizards who know that spell",
+                value=f"```{table}```",
+                inline=False,
+            )
+            embed.set_footer(text=f"Page {i}/{len(sorted_wizards)}")
+            pages.append(embed)
+
+        await menu(ctx, pages, DEFAULT_CONTROLS)
 
     @commands.command(name="spellbook")
     @commands.guild_only()
