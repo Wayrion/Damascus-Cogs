@@ -20,6 +20,7 @@ class Welcome(commands.Cog):
             "member_profile_pos": (550, 170),
             "member_joined_overlay_pos": (550,345),
             "member_count_overlay_pos": (550, 413),
+            "text_color": (0, 0, 0),
             "member_leave_overlay": True,
             "member_join_message": "Welcome {member} to {guild}!",
             "member_leave_message": "Goodbye {member}!",
@@ -66,7 +67,7 @@ class Welcome(commands.Cog):
             # Draw a circle on the new image
             draw = ImageDraw.Draw(circle_image)
             draw.ellipse((0, 0, 300, 300), fill=(255, 255, 255, 255))
-
+            
             # Use the circle image as a mask for the profile image
             profile = Image.composite(profile, circle_image, circle_image)
 
@@ -76,11 +77,11 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} joined the server!", (0, 0, 0), font=font, anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} joined the server!", tuple(settings["text_color"]), font=font, anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", (0, 0, 0), font=font, anchor="mm")
+                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=font, anchor="mm")
 
             background.save(bundled_data_path(self) / f"welcome{member.id}.png")
         
@@ -144,11 +145,11 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} left the server.", (0, 0, 0), font=font, anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} left the server.", tuple(settings["text_color"]), font=font, anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", (0, 0, 0), font=font, anchor="mm")
+                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=font, anchor="mm")
 
             background.save(bundled_data_path(self) / f"goodbye{member.id}.png")
 
@@ -264,6 +265,15 @@ class Welcome(commands.Cog):
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
+    async def text_color(self, ctx: commands.Context, red: int, green: int, blue: int):
+        """Sets the color of the text using RGB values."""
+        color = (red, green, blue)
+        await self.config.guild(ctx.guild).text_color.set(color)
+        await ctx.send(f"Text color set to {color}.")
+
+
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def test(self, ctx: commands.Context):
         member=ctx.author
         """Tests the welcome message."""
@@ -298,18 +308,16 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} joined the server!", (0, 0, 0), font=font, anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} joined the server!", tuple(settings["text_color"]), font=font, anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", (0, 0, 0), font=font, anchor="mm")
+                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=font, anchor="mm")
 
             background.save(bundled_data_path(self) / f"welcome{member.id}.png")
-        
-
+    
             await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=discord.File(bundled_data_path(self) / f"welcome{member.id}.png"))
 
-           
             os.remove(bundled_data_path(self) / f"welcome{member.id}.png")
         
 
