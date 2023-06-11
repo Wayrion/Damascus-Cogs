@@ -275,6 +275,14 @@ class Welcome(commands.Cog):
             profile = profile.resize((300, 300))
             profile_size = profile.size
 
+            try:
+                with open(bundled_data_path(self) / "arial.ttf", "rb") as f:
+                    font_bytes = BytesIO(f.read())
+                    font = ImageFont.truetype(font_bytes, 35)
+            except OSError:
+                font = ImageFont.load_default()
+
+
             # Create a new image with a white background
             circle_image = Image.new("RGBA", (300, 300), (255, 255, 255, 0))
 
@@ -291,12 +299,10 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                font = ImageFont.truetype("arial.ttf", 35)
                 draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} joined the server!", (0, 0, 0), font=font, anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                font = ImageFont.truetype("arial.ttf", 35)
                 draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", (0, 0, 0), font=font, anchor="mm")
 
             background.save(bundled_data_path(self) / f"welcome{member.id}.png")
