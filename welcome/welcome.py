@@ -282,7 +282,6 @@ class Welcome(commands.Cog):
             except OSError:
                 font = ImageFont.load_default()
 
-
             # Create a new image with a white background
             circle_image = Image.new("RGBA", (300, 300), (255, 255, 255, 0))
 
