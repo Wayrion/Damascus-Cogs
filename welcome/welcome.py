@@ -1,7 +1,6 @@
 import discord
 import asyncio
 import time
-import os
 from redbot.core import Config, commands, checks
 from redbot.core.data_manager import bundled_data_path
 from io import BytesIO
@@ -83,19 +82,19 @@ class Welcome(commands.Cog):
                 draw = ImageDraw.Draw(background)
                 draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=font, anchor="mm")
 
-            background.save(bundled_data_path(self) / f"welcome{member.id}.png")
-        
+            with BytesIO() as image_binary:
+                background.save(image_binary, format="png")
+                image_binary.seek(0)
+                file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
 
             if settings["join_channel"]:
                 channel = member.guild.get_channel(settings["join_channel"])
-                await channel.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel), file=discord.File(bundled_data_path(self) / f"welcome{member.id}.png"))
+                await channel.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel), file=file)
 
             else:
-                await member.guild.system_channel.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name), file=discord.File(bundled_data_path(self) / f"welcome{member.id}.png"))
+                await member.guild.system_channel.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name), file=file)
     
             
-            os.remove(bundled_data_path(self) / f"welcome{member.id}.png")
-
             if settings["member_join_roles"]:
                 try:
                     await asyncio.wait_for(self.wait_for_onboarding(member), timeout=300)
@@ -151,16 +150,17 @@ class Welcome(commands.Cog):
                 draw = ImageDraw.Draw(background)
                 draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=font, anchor="mm")
 
-            background.save(bundled_data_path(self) / f"goodbye{member.id}.png")
+            with BytesIO() as image_binary:
+                background.save(image_binary, format="png")
+                image_binary.seek(0)
+                file = discord.File(fp=image_binary, filename=f"goodbye{member.id}.png")
 
             if settings["join_channel"]:
                 channel = member.guild.get_channel(settings["join_channel"])
-                await channel.send(settings["member_leave_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel), file=discord.File(bundled_data_path(self) / f"goodbye{member.id}.png"))
+                await channel.send(settings["member_leave_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel), file=file)
 
             else:
-                await member.guild.system_channel.send(settings["member_leave_message"].format(member=member.mention, guild=member.guild.name), file=discord.File(bundled_data_path(self) / f"goodbye{member.id}.png"))
-            
-            os.remove(bundled_data_path(self) / f"goodbye{member.id}.png")
+                await member.guild.system_channel.send(settings["member_leave_message"].format(member=member.mention, guild=member.guild.name), file=file)
     
     @commands.group()
     @checks.admin_or_permissions(manage_guild=True)
@@ -314,11 +314,13 @@ class Welcome(commands.Cog):
                 draw = ImageDraw.Draw(background)
                 draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=font, anchor="mm")
 
-            background.save(bundled_data_path(self) / f"welcome{member.id}.png")
-    
-            await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=discord.File(bundled_data_path(self) / f"welcome{member.id}.png"))
+            with BytesIO() as image_binary:
+                background.save(image_binary, format="png")
+                image_binary.seek(0)
+                file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
 
-            os.remove(bundled_data_path(self) / f"welcome{member.id}.png")
+    
+            await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=file)
         
 
     @welcomeset.command()
