@@ -22,6 +22,8 @@ class Welcome(commands.Cog):
             "member_profile_pos": (550, 189),
             "member_joined_overlay_pos": (550, 350),
             "member_count_overlay_pos": (550, 400),
+            "text_size": 40,
+            "count_size": 30,
             "text_color": (255, 255, 255),
             "count_color": (180, 180, 180),
             "member_leave_overlay": True,
@@ -53,11 +55,11 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(40), anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(30), anchor="mm")
+                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(settings["count_size"]), anchor="mm")
 
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
@@ -92,11 +94,11 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name} left the server.", tuple(settings["text_color"]), font=self.get_font(40), anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name} left the server.", tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=self.get_font(30), anchor="mm")
+                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=self.get_font(settings["count_size"]), anchor="mm")
 
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
@@ -213,6 +215,20 @@ class Welcome(commands.Cog):
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
+    async def text_size(self, ctx: commands.Context, size: int):
+        """Sets the size of the text."""
+        await self.config.guild(ctx.guild).text_size.set(size)
+        await ctx.send(f"Text size set to {size}.")
+
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def count_size(self, ctx: commands.Context, size: int):
+        """Sets the size of the count."""
+        await self.config.guild(ctx.guild).count_size.set(size)
+        await ctx.send(f"Count size set to {size}.")
+
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def text_color(self, ctx: commands.Context, red: int, green: int, blue: int):
         """Sets the color of the text using RGB values."""
         color = (red, green, blue)
@@ -240,11 +256,11 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(40), anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(30), anchor="mm")
+                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(settings["count_size"]), anchor="mm")
 
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
