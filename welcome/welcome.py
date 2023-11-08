@@ -277,11 +277,10 @@ class Welcome(commands.Cog):
 
     def get_font(self):
         try:
-            with open(bundled_data_path(self) / "arial.ttf", "rb") as f:
-                font_bytes = BytesIO(f.read())
-                font = ImageFont.truetype(font_bytes, 35)
+            font = ImageFont.truetype(f"{bundled_data_path(self)}/arial.ttf", 35)
         except OSError:
-            font = ImageFont.load_default()
+            font = ImageFont.load_default(size=35)
+        return font
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
