@@ -16,10 +16,12 @@ class Welcome(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, 718395193090375700, force_registration=True)
         default_guild  = {
-            "background": False,
+            "avatar_radius": 127,
+            "avatar_border": 6,
+            "avatar_border_color": (255, 255, 255),
+            "avatar_pos": (550, 189),
             "member_count_overlay": True,
             "member_joined_overlay": True,
-            "member_profile_pos": (550, 189),
             "member_joined_overlay_pos": (550, 350),
             "member_count_overlay_pos": (550, 400),
             "text_size": 40,
@@ -123,6 +125,10 @@ class Welcome(commands.Cog):
     async def background(self, ctx: commands.Context):
         """Sets the background image for the welcome message."""
         if not ctx.message.attachments:
+            if os.path.isfile(cog_data_path(self) / f"background-{ctx.guild.id}.png"):
+                os.remove(cog_data_path(self) / f"background-{ctx.guild.id}.png")
+                await ctx.send("Background image has been removed.")
+                return
             await ctx.send("Please attach an image file to set as the background.")
             return
 
@@ -138,11 +144,37 @@ class Welcome(commands.Cog):
         path = cog_data_path(self) / f"background-{ctx.guild.id}.png"
         await file.save(path)
 
-        # Set the background to True
-        await self.config.guild(ctx.guild).background.set(True)
-
         # Send a message saying that the background was set
         await ctx.send(f"Background set to {file.filename}.")
+
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def avatar_radius(self, ctx: commands.Context, r: int):
+        """Sets the radius of the profile picture."""
+        await self.config.guild(ctx.guild).avatar_radius.set((x, y))
+        await ctx.send(f"Avatar radius set to {r}.")
+
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def avatar_pos(self, ctx: commands.Context, x: int, y: int):
+        """Sets the position of the profile picture."""
+        await self.config.guild(ctx.guild).avatar_pos.set((x, y))
+        await ctx.send(f"Member profile position set to ({x}, {y}).")
+
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def avatar_border(self, ctx: commands.Context, b: int):
+        """Sets the profile picture border width."""
+        await self.config.guild(ctx.guild).avatar_border.set(b)
+        await ctx.send(f"Avatar border set to {b}.")
+
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def avatar_border_color(self, ctx: commands.Context, red: int, green: int, blue: int):
+        """Sets the profile picture border color using RGB values."""
+        color = (red, green, blue)
+        await self.config.guild(ctx.guild).avatar_border_color.set(color)
+        await ctx.send(f"Avatar border color set to {color}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -157,13 +189,6 @@ class Welcome(commands.Cog):
         """Sets the position of the member count overlay."""
         await self.config.guild(ctx.guild).member_count_overlay_pos.set((x, y))
         await ctx.send(f"Member count overlay position set to ({x}, {y}).")
-
-    @welcomeset.command()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def member_profile_pos(self, ctx: commands.Context, x: int, y: int):
-        """Sets the position of the member profile picture."""
-        await self.config.guild(ctx.guild).member_profile_pos.set((x, y))
-        await ctx.send(f"Member profile position set to ({x}, {y}).")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -272,10 +297,9 @@ class Welcome(commands.Cog):
 
     async def create_image(self, settings: dict, member: discord.Member) -> Image.Image:
         # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
-        if settings["background"] and os.path.isfile(cog_data_path(self) / f"background-{member.guild.id}.png"):
+        if os.path.isfile(cog_data_path(self) / f"background-{member.guild.id}.png"):
             path = cog_data_path(self) / f"background-{member.guild.id}.png"
             background = Image.open(path)
-            w, h = background.size
             img = ImageDraw.Draw(background)
         else:
             w, h = 1100, 500
@@ -283,11 +307,10 @@ class Welcome(commands.Cog):
             img = ImageDraw.Draw(background)
             img.rectangle([(75, 25), (w - 75, h - 25)], fill=(0, 0, 0))
 
-        r = 127
-        border = 6
-        img.ellipse(((w/2)-r, settings["member_profile_pos"][1]-r, (w/2)+r, settings["member_profile_pos"][1]+r), fill=(255, 255, 255))
+        r = settings["avatar_radius"] + settings["avatar_border"]
+        img.ellipse((settings["avatar_pos"][0]-r, settings["avatar_pos"][1]-r,settings["avatar_pos"][0]+r, settings["avatar_pos"][1]+r), fill=tuple(settings["avatar_border_color"]))
 
-        r -= border
+        r = settings["avatar_radius"]
         mask = Image.new("L", (r*2, r*2), 0)
         draw = ImageDraw.Draw(mask)
         draw.ellipse((0, 0, r*2, r*2), fill=255)
@@ -306,7 +329,7 @@ class Welcome(commands.Cog):
         profile = Image.composite(profile, circle_image, circle_image)
 
         # Paste the profile image onto the background at the specified position
-        val = (settings["member_profile_pos"][0] - r, settings["member_profile_pos"][1] - r)
+        val = (settings["avatar_pos"][0] - r, settings["avatar_pos"][1] - r)
         background.paste(profile, val, profile)
         return background
 
