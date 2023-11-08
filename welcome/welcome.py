@@ -52,7 +52,7 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} joined the server!", tuple(settings["text_color"]), font=font, anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=font, anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
@@ -92,7 +92,7 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} left the server.", tuple(settings["text_color"]), font=font, anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name} left the server.", tuple(settings["text_color"]), font=font, anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
@@ -231,7 +231,7 @@ class Welcome(commands.Cog):
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name}#{member.discriminator} joined the server!", tuple(settings["text_color"]), font=font, anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=font, anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
