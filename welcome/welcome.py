@@ -1,8 +1,9 @@
 import discord
 import asyncio
 import time
+import os
 from redbot.core import Config, commands, checks
-from redbot.core.data_manager import bundled_data_path
+from redbot.core.data_manager import bundled_data_path, cog_data_path
 from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw
 
@@ -19,7 +20,7 @@ class Welcome(commands.Cog):
             "member_profile_pos": (550, 170),
             "member_joined_overlay_pos": (550,345),
             "member_count_overlay_pos": (550, 413),
-            "text_color": (0, 0, 0),
+            "text_color": (255, 255, 255),
             "member_leave_overlay": True,
             "member_join_message": "Welcome {member} to {guild}!",
             "member_leave_message": "Goodbye {member}!",
@@ -42,37 +43,12 @@ class Welcome(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         """Welcomes a user to the server with an image."""
-
         if member.bot:
             return
 
         async with self.config.guild(member.guild).all() as settings:
-            path = bundled_data_path(self) / "background.png"
-            # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
-            try:
-                with open(bundled_data_path(self) / "arial.ttf", "rb") as f:
-                    font_bytes = BytesIO(f.read())
-                    font = ImageFont.truetype(font_bytes, 35)
-            except OSError:
-                font = ImageFont.load_default()
-            background = Image.open(path)
-            profile = Image.open(BytesIO(await member.avatar.read()))
-            profile = profile.resize((300, 300))
-            profile_size = profile.size
-
-            # Create a new image with a white background
-            circle_image = Image.new("RGBA", (300, 300), (255, 255, 255, 0))
-
-            # Draw a circle on the new image
-            draw = ImageDraw.Draw(circle_image)
-            draw.ellipse((0, 0, 300, 300), fill=(255, 255, 255, 255))
-            
-            # Use the circle image as a mask for the profile image
-            profile = Image.composite(profile, circle_image, circle_image)
-
-            # Paste the profile image onto the background at the specified position
-            val = (settings["member_profile_pos"][0] - profile_size[0] // 2, settings["member_profile_pos"][1] - profile_size[1] // 2)
-            background.paste(profile, val, profile)
+            background = await self.create_image(settings, member)
+            font = self.get_font()
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
@@ -93,8 +69,7 @@ class Welcome(commands.Cog):
 
             else:
                 await member.guild.system_channel.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name), file=file)
-    
-            
+
             if settings["member_join_roles"]:
                 try:
                     await asyncio.wait_for(self.wait_for_onboarding(member), timeout=300)
@@ -108,39 +83,12 @@ class Welcome(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         """Sends a goodbye message with an image when a user leaves the server."""
-
         if member.bot:
             return
 
         async with self.config.guild(member.guild).all() as settings:
-            path = bundled_data_path(self) / "background.png"
-            # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
-
-            try:
-                with open(bundled_data_path(self) / "arial.ttf", "rb") as f:
-                    font_bytes = BytesIO(f.read())
-                    font = ImageFont.truetype(font_bytes, 35)
-            except OSError:
-                font = ImageFont.load_default()
-                
-            background = Image.open(path)
-            profile = Image.open(BytesIO(await member.avatar.read()))
-            profile = profile.resize((300, 300))
-            profile_size = profile.size
-
-            # Create a new image with a white background
-            circle_image = Image.new("RGBA", (300, 300), (255, 255, 255, 0))
-
-            # Draw a circle on the new image
-            draw = ImageDraw.Draw(circle_image)
-            draw.ellipse((0, 0, 300, 300), fill=(255, 255, 255, 255))
-
-            # Use the circle image as a mask for the profile image
-            profile = Image.composite(profile, circle_image, circle_image)
-
-            # Paste the profile image onto the background at the specified position
-            val = (settings["member_profile_pos"][0] - profile_size[0] // 2, settings["member_profile_pos"][1] - profile_size[1] // 2)
-            background.paste(profile, val, profile)
+            background = await self.create_image(settings, member)
+            font = self.get_font()
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
@@ -185,7 +133,7 @@ class Welcome(commands.Cog):
             return
 
         # Save the file to the data folder
-        path = bundled_data_path(self) / "background.png"
+        path = cog_data_path(self) / f"background-{ctx.guild.id}.png"
         await file.save(path)
 
         # Set the background to True
@@ -278,33 +226,8 @@ class Welcome(commands.Cog):
         member=ctx.author
         """Tests the welcome message."""
         async with self.config.guild(member.guild).all() as settings:
-            path = bundled_data_path(self) / "background.png"
-            # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
-            background = Image.open(path)
-            profile = Image.open(BytesIO(await member.avatar.read()))
-            profile = profile.resize((300, 300))
-            profile_size = profile.size
-
-            try:
-                with open(bundled_data_path(self) / "arial.ttf", "rb") as f:
-                    font_bytes = BytesIO(f.read())
-                    font = ImageFont.truetype(font_bytes, 35)
-            except OSError:
-                font = ImageFont.load_default()
-
-            # Create a new image with a white background
-            circle_image = Image.new("RGBA", (300, 300), (255, 255, 255, 0))
-
-            # Draw a circle on the new image
-            draw = ImageDraw.Draw(circle_image)
-            draw.ellipse((0, 0, 300, 300), fill=(255, 255, 255, 255))
-
-            # Use the circle image as a mask for the profile image
-            profile = Image.composite(profile, circle_image, circle_image)
-
-            # Paste the profile image onto the background at the specified position
-            val = (settings["member_profile_pos"][0] - profile_size[0] // 2, settings["member_profile_pos"][1] - profile_size[1] // 2)
-            background.paste(profile, val, profile)
+            background = await self.create_image(settings, member)
+            font = self.get_font()
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
@@ -319,9 +242,46 @@ class Welcome(commands.Cog):
                 image_binary.seek(0)
                 file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
 
-    
             await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=file)
-        
+
+
+    async def create_image(self, settings, member):
+        # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
+        if settings["background"] and os.path.isfile(cog_data_path(self) / f"background-{members.guild.id}.png"):
+            path = cog_data_path(self) / f"background-{members.guild.id}.png"
+            background = Image.open(path)
+        else:
+            w, h = 1100, 500
+            background = Image.new(mode="RGBA", size=(w, h), color=(23, 24, 30))
+            img = ImageDraw.Draw(background)
+            img.rectangle([(75, 25), (w - 75, h - 25)], fill=(0, 0, 0))
+
+        profile = Image.open(BytesIO(await member.avatar.read()))
+        profile = profile.resize((300, 300))
+        profile_size = profile.size
+
+        # Create a new image with a white background
+        circle_image = Image.new("RGBA", (300, 300), (255, 255, 255, 0))
+
+        # Draw a circle on the new image
+        draw = ImageDraw.Draw(circle_image)
+        draw.ellipse((0, 0, 300, 300), fill=(255, 255, 255, 255))
+
+        # Use the circle image as a mask for the profile image
+        profile = Image.composite(profile, circle_image, circle_image)
+
+        # Paste the profile image onto the background at the specified position
+        val = (settings["member_profile_pos"][0] - profile_size[0] // 2, settings["member_profile_pos"][1] - profile_size[1] // 2)
+        background.paste(profile, val, profile)
+        return background
+
+    def get_font(self):
+        try:
+            with open(bundled_data_path(self) / "arial.ttf", "rb") as f:
+                font_bytes = BytesIO(f.read())
+                font = ImageFont.truetype(font_bytes, 35)
+        except OSError:
+            font = ImageFont.load_default()
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -329,4 +289,3 @@ class Welcome(commands.Cog):
         """Resets all settings to default."""
         await self.config.guild(ctx.guild).clear()
         await ctx.send("Settings reset.")
-
