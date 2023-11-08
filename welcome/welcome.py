@@ -19,10 +19,11 @@ class Welcome(commands.Cog):
             "background": False,
             "member_count_overlay": True,
             "member_joined_overlay": True,
-            "member_profile_pos": (550, 170),
-            "member_joined_overlay_pos": (550,345),
-            "member_count_overlay_pos": (550, 413),
+            "member_profile_pos": (550, 189),
+            "member_joined_overlay_pos": (550, 350),
+            "member_count_overlay_pos": (550, 400),
             "text_color": (255, 255, 255),
+            "count_color": (180, 180, 180),
             "member_leave_overlay": True,
             "member_join_message": "Welcome {member} to {guild}!",
             "member_leave_message": "Goodbye {member}!",
@@ -49,15 +50,14 @@ class Welcome(commands.Cog):
 
         async with self.config.guild(member.guild).all() as settings:
             background = await self.create_image(settings, member)
-            font = self.get_font()
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=font, anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(40), anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=font, anchor="mm")
+                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(30), anchor="mm")
 
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
@@ -89,15 +89,14 @@ class Welcome(commands.Cog):
 
         async with self.config.guild(member.guild).all() as settings:
             background = await self.create_image(settings, member)
-            font = self.get_font()
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name} left the server.", tuple(settings["text_color"]), font=font, anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name} left the server.", tuple(settings["text_color"]), font=self.get_font(40), anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=font, anchor="mm")
+                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=self.get_font(30), anchor="mm")
 
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
@@ -220,6 +219,14 @@ class Welcome(commands.Cog):
         await self.config.guild(ctx.guild).text_color.set(color)
         await ctx.send(f"Text color set to {color}.")
 
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def count_color(self, ctx: commands.Context, red: int, green: int, blue: int):
+        """Sets the color of the count using RGB values."""
+        color = (red, green, blue)
+        await self.config.guild(ctx.guild).count_color.set(color)
+        await ctx.send(f"Count color set to {color}.")
+
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -230,15 +237,14 @@ class Welcome(commands.Cog):
 
         async with self.config.guild(member.guild).all() as settings:
             background = await self.create_image(settings, member)
-            font = self.get_font()
 
             if settings["member_joined_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=font, anchor="mm")
+                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(40), anchor="mm")
 
             if settings["member_count_overlay"]:
                 draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=font, anchor="mm")
+                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(30), anchor="mm")
 
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
@@ -253,36 +259,46 @@ class Welcome(commands.Cog):
         if settings["background"] and os.path.isfile(cog_data_path(self) / f"background-{member.guild.id}.png"):
             path = cog_data_path(self) / f"background-{member.guild.id}.png"
             background = Image.open(path)
+            w, h = background.size
+            img = ImageDraw.Draw(background)
         else:
             w, h = 1100, 500
             background = Image.new(mode="RGBA", size=(w, h), color=(23, 24, 30))
             img = ImageDraw.Draw(background)
-            img.rectangle([(75, 15), (w - 75, h - 15)], fill=(0, 0, 0))
+            img.rectangle([(75, 25), (w - 75, h - 25)], fill=(0, 0, 0))
+
+        r = 127
+        img.ellipse(((w/2)-r, 62, (w/2)+r, 62+r*2), fill=(255, 255, 255))
+
+        border = 6
+        r -= border
+        mask = Image.new("L", (r*2, r*2), 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse((0, 0, r*2, r*2), fill=255)
 
         profile = Image.open(BytesIO(await member.avatar.read()))
-        profile = profile.resize((300, 300))
-        profile_size = profile.size
+        profile = profile.resize((r*2, r*2))
 
         # Create a new image with a white background
-        circle_image = Image.new("RGBA", (300, 300), (255, 255, 255, 0))
+        circle_image = Image.new("RGBA", (r*2, r*2), (255, 255, 255, 0))
 
         # Draw a circle on the new image
         draw = ImageDraw.Draw(circle_image)
-        draw.ellipse((0, 0, 300, 300), fill=(255, 255, 255, 255))
+        draw.ellipse((0, 0, r*2, r*2), fill=(255, 255, 255, 255))
 
         # Use the circle image as a mask for the profile image
         profile = Image.composite(profile, circle_image, circle_image)
 
         # Paste the profile image onto the background at the specified position
-        val = (settings["member_profile_pos"][0] - profile_size[0] // 2, settings["member_profile_pos"][1] - profile_size[1] // 2)
+        val = (settings["member_profile_pos"][0] - r, settings["member_profile_pos"][1] - r)
         background.paste(profile, val, profile)
         return background
 
-    def get_font(self):
+    def get_font(self, size: int):
         try:
-            return ImageFont.truetype(f"{bundled_data_path(self)}/arial.ttf", 35)
+            return ImageFont.truetype(f"{bundled_data_path(self)}/arial.ttf", size)
         except OSError:
-            return ImageFont.load_default(size=35)
+            return ImageFont.load_default(size=size)
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
