@@ -268,9 +268,9 @@ class Welcome(commands.Cog):
             img.rectangle([(75, 25), (w - 75, h - 25)], fill=(0, 0, 0))
 
         r = 127
-        img.ellipse(((w/2)-r, 62, (w/2)+r, 62+r*2), fill=(255, 255, 255))
-
         border = 6
+        img.ellipse(((w/2)-r, settings["member_profile_pos"][1]-r, (w/2)+r, settings["member_profile_pos"][1]+r), fill=(255, 255, 255))
+
         r -= border
         mask = Image.new("L", (r*2, r*2), 0)
         draw = ImageDraw.Draw(mask)
