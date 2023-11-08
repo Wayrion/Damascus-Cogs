@@ -2,10 +2,12 @@ import discord
 import asyncio
 import time
 import os
+from contextlib import suppress
 from redbot.core import Config, commands, checks
 from redbot.core.data_manager import bundled_data_path, cog_data_path
 from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw
+from typing import Optional
 
 class Welcome(commands.Cog):
     """Welcomes a user to the server with an image."""
@@ -26,7 +28,6 @@ class Welcome(commands.Cog):
             "member_leave_message": "Goodbye {member}!",
             "member_join_roles": [],
             "join_channel": None,
-
         }
         self.config.register_guild(**default_guild)
 
@@ -109,7 +110,7 @@ class Welcome(commands.Cog):
 
             else:
                 await member.guild.system_channel.send(settings["member_leave_message"].format(member=member.mention, guild=member.guild.name), file=file)
-    
+
     @commands.group()
     @checks.admin_or_permissions(manage_guild=True)
     async def welcomeset(self, ctx: commands.Context):
@@ -222,9 +223,11 @@ class Welcome(commands.Cog):
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def test(self, ctx: commands.Context):
-        member=ctx.author
+    async def test(self, ctx: commands.Context, member: Optional[discord.Member]):
         """Tests the welcome message."""
+        if not member:
+            member = ctx.author
+
         async with self.config.guild(member.guild).all() as settings:
             background = await self.create_image(settings, member)
             font = self.get_font()
@@ -245,7 +248,7 @@ class Welcome(commands.Cog):
             await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=file)
 
 
-    async def create_image(self, settings, member):
+    async def create_image(self, settings: dict, member: discord.Member) -> Image.Image:
         # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
         if settings["background"] and os.path.isfile(cog_data_path(self) / f"background-{member.guild.id}.png"):
             path = cog_data_path(self) / f"background-{member.guild.id}.png"
@@ -277,14 +280,15 @@ class Welcome(commands.Cog):
 
     def get_font(self):
         try:
-            font = ImageFont.truetype(f"{bundled_data_path(self)}/arial.ttf", 35)
+            return ImageFont.truetype(f"{bundled_data_path(self)}/arial.ttf", 35)
         except OSError:
-            font = ImageFont.load_default(size=35)
-        return font
+            return ImageFont.load_default(size=35)
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def reset(self, ctx: commands.Context):
         """Resets all settings to default."""
         await self.config.guild(ctx.guild).clear()
+        with suppress(FileNotFoundError):
+            os.remove(cog_data_path(self) / f"background-{ctx.guild.id}.png")
         await ctx.send("Settings reset.")
