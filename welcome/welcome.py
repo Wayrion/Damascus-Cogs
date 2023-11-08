@@ -257,7 +257,7 @@ class Welcome(commands.Cog):
             w, h = 1100, 500
             background = Image.new(mode="RGBA", size=(w, h), color=(23, 24, 30))
             img = ImageDraw.Draw(background)
-            img.rectangle([(75, 25), (w - 75, h - 25)], fill=(0, 0, 0))
+            img.rectangle([(75, 15), (w - 75, h - 15)], fill=(0, 0, 0))
 
         profile = Image.open(BytesIO(await member.avatar.read()))
         profile = profile.resize((300, 300))
