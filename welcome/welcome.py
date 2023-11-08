@@ -247,8 +247,8 @@ class Welcome(commands.Cog):
 
     async def create_image(self, settings, member):
         # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
-        if settings["background"] and os.path.isfile(cog_data_path(self) / f"background-{members.guild.id}.png"):
-            path = cog_data_path(self) / f"background-{members.guild.id}.png"
+        if settings["background"] and os.path.isfile(cog_data_path(self) / f"background-{member.guild.id}.png"):
+            path = cog_data_path(self) / f"background-{member.guild.id}.png"
             background = Image.open(path)
         else:
             w, h = 1100, 500
