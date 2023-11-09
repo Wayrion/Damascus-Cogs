@@ -6,7 +6,7 @@ from contextlib import suppress
 from redbot.core import Config, commands, checks
 from redbot.core.data_manager import bundled_data_path, cog_data_path
 from io import BytesIO
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw, UnidentifiedImageError
 from typing import Optional
 
 class Welcome(commands.Cog):
@@ -20,8 +20,6 @@ class Welcome(commands.Cog):
             "avatar_border": 6,
             "avatar_border_color": (255, 255, 255),
             "avatar_pos": (550, 189),
-            "member_count_overlay": True,
-            "member_overlay": True,
             "member_overlay_pos": (550, 350),
             "member_count_overlay_pos": (550, 400),
             "text_size": 40,
@@ -118,20 +116,19 @@ class Welcome(commands.Cog):
             await ctx.send("Please attach an image file to set as the background.")
             return
 
-        # Get the attached file
-        file = ctx.message.attachments[0]
-
-        # Check if the attached file is an image
-        if not file.filename.endswith((".png", ".jpg", ".jpeg")):
-            await ctx.send("Please attach a PNG or JPEG image file.")
+        # Get the attached file and check its validity
+        try:
+            image = Image.open(BytesIO(await ctx.message.attachments[0].read()))
+        except UnidentifiedImageError:
+            await ctx.send("Please attach a valid image file.")
             return
 
         # Save the file to the data folder
         path = cog_data_path(self) / f"background-{ctx.guild.id}.png"
-        await file.save(path)
+        image.save(path)
 
         # Send a message saying that the background was set
-        await ctx.send(f"Background set to {file.filename}.")
+        await ctx.send(f"Background set to uploaded file.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -281,43 +278,43 @@ class Welcome(commands.Cog):
             background = Image.open(path)
             img = ImageDraw.Draw(background)
         else:
-            w, h = 1100, 500
-            background = Image.new(mode="RGBA", size=(w, h), color=(23, 24, 30))
+            background = Image.new(mode="RGBA", size=(1100, 500), color=(23, 24, 30))
             img = ImageDraw.Draw(background)
-            img.rectangle([(75, 25), (w - 75, h - 25)], fill=(0, 0, 0))
+            img.rectangle([(75, 25), (1025, 475)], fill=(0, 0, 0))
 
-        r = settings["avatar_radius"] + settings["avatar_border"]
-        img.ellipse((settings["avatar_pos"][0]-r, settings["avatar_pos"][1]-r, settings["avatar_pos"][0]+r, settings["avatar_pos"][1]+r), fill=tuple(settings["avatar_border_color"]))
+        if settings["avatar_border"] > 0 and settings["avatar_radius"] > 0:
+            r = settings["avatar_radius"] + settings["avatar_border"]
+            img.ellipse((settings["avatar_pos"][0]-r, settings["avatar_pos"][1]-r, settings["avatar_pos"][0]+r, settings["avatar_pos"][1]+r), fill=tuple(settings["avatar_border_color"]))
 
-        r = settings["avatar_radius"]
-        mask = Image.new("L", (r*2, r*2), 0)
-        draw = ImageDraw.Draw(mask)
-        draw.ellipse((0, 0, r*2, r*2), fill=255)
+        if (r := settings["avatar_radius"]) > 0:
+            mask = Image.new("L", (r*2, r*2), 0)
+            draw = ImageDraw.Draw(mask)
+            draw.ellipse((0, 0, r*2, r*2), fill=255)
 
-        profile = Image.open(BytesIO(await member.avatar.read()))
-        profile = profile.resize((r*2, r*2))
+            profile = Image.open(BytesIO(await member.avatar.read()))
+            profile = profile.resize((r*2, r*2))
 
-        # Create a new image with a white background
-        circle_image = Image.new("RGBA", (r*2, r*2), (255, 255, 255, 0))
+            # Create a new image with a white background
+            circle_image = Image.new("RGBA", (r*2, r*2), (255, 255, 255, 0))
 
-        # Draw a circle on the new image
-        draw = ImageDraw.Draw(circle_image)
-        draw.ellipse((0, 0, r*2, r*2), fill=(255, 255, 255, 255))
+            # Draw a circle on the new image
+            draw = ImageDraw.Draw(circle_image)
+            draw.ellipse((0, 0, r*2, r*2), fill=(255, 255, 255, 255))
 
-        # Use the circle image as a mask for the profile image
-        profile = Image.composite(profile, circle_image, circle_image)
+            # Use the circle image as a mask for the profile image
+            profile = Image.composite(profile, circle_image, circle_image)
 
-        # Paste the profile image onto the background at the specified position
-        val = (settings["avatar_pos"][0] - r, settings["avatar_pos"][1] - r)
-        background.paste(profile, val, profile)
+            # Paste the profile image onto the background at the specified position
+            val = (settings["avatar_pos"][0] - r, settings["avatar_pos"][1] - r)
+            background.paste(profile, val, profile)
 
-        if settings["member_overlay"]:
+        if (size := settings["text_size"]) > 0:
             draw = ImageDraw.Draw(background)
-            draw.text(settings["member_overlay_pos"], msg, tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
+            draw.text(settings["member_overlay_pos"], msg, tuple(settings["text_color"]), font=self.get_font(size), anchor="mm")
 
-        if settings["member_count_overlay"]:
+        if (size := settings["count_size"]) > 0:
             draw = ImageDraw.Draw(background)
-            draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(settings["count_size"]), anchor="mm")
+            draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(size), anchor="mm")
         return background
 
     def get_font(self, size: int):
