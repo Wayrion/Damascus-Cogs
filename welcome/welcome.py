@@ -59,10 +59,6 @@ class Welcome(commands.Cog):
                 draw = ImageDraw.Draw(background)
                 draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
 
-            if settings["member_count_overlay"]:
-                draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(settings["count_size"]), anchor="mm")
-
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
                 image_binary.seek(0)
@@ -98,10 +94,6 @@ class Welcome(commands.Cog):
                 draw = ImageDraw.Draw(background)
                 draw.text(settings["member_joined_overlay_pos"], f"{member.name} left the server.", tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
 
-            if settings["member_count_overlay"]:
-                draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["text_color"]), font=self.get_font(settings["count_size"]), anchor="mm")
-
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
                 image_binary.seek(0)
@@ -123,9 +115,10 @@ class Welcome(commands.Cog):
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def background(self, ctx: commands.Context):
-        """Sets the background image for the welcome message."""
+        """Sets or removes the background image for the welcome message."""
         if not ctx.message.attachments:
             if os.path.isfile(cog_data_path(self) / f"background-{ctx.guild.id}.png"):
+                # Remove the file from the data folder
                 os.remove(cog_data_path(self) / f"background-{ctx.guild.id}.png")
                 await ctx.send("Background image has been removed.")
                 return
@@ -283,10 +276,6 @@ class Welcome(commands.Cog):
                 draw = ImageDraw.Draw(background)
                 draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
 
-            if settings["member_count_overlay"]:
-                draw = ImageDraw.Draw(background)
-                draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(settings["count_size"]), anchor="mm")
-
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
                 image_binary.seek(0)
@@ -296,7 +285,7 @@ class Welcome(commands.Cog):
 
 
     async def create_image(self, settings: dict, member: discord.Member) -> Image.Image:
-        # Use PIL and overlay the background on the profile picture of the user on coords (550, 170)
+        # Use PIL and overlay the background on the profile picture at the specified coordinates
         if os.path.isfile(cog_data_path(self) / f"background-{member.guild.id}.png"):
             path = cog_data_path(self) / f"background-{member.guild.id}.png"
             background = Image.open(path)
@@ -308,7 +297,7 @@ class Welcome(commands.Cog):
             img.rectangle([(75, 25), (w - 75, h - 25)], fill=(0, 0, 0))
 
         r = settings["avatar_radius"] + settings["avatar_border"]
-        img.ellipse((settings["avatar_pos"][0]-r, settings["avatar_pos"][1]-r,settings["avatar_pos"][0]+r, settings["avatar_pos"][1]+r), fill=tuple(settings["avatar_border_color"]))
+        img.ellipse((settings["avatar_pos"][0]-r, settings["avatar_pos"][1]-r, settings["avatar_pos"][0]+r, settings["avatar_pos"][1]+r), fill=tuple(settings["avatar_border_color"]))
 
         r = settings["avatar_radius"]
         mask = Image.new("L", (r*2, r*2), 0)
@@ -331,6 +320,10 @@ class Welcome(commands.Cog):
         # Paste the profile image onto the background at the specified position
         val = (settings["avatar_pos"][0] - r, settings["avatar_pos"][1] - r)
         background.paste(profile, val, profile)
+
+        if settings["member_count_overlay"]:
+            draw = ImageDraw.Draw(background)
+            draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(settings["count_size"]), anchor="mm")
         return background
 
     def get_font(self, size: int):
