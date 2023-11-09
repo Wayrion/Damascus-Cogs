@@ -53,11 +53,8 @@ class Welcome(commands.Cog):
             return
 
         async with self.config.guild(member.guild).all() as settings:
-            background = await self.create_image(settings, member)
-
-            if settings["member_joined_overlay"]:
-                draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
+            msg = f"{member.name} joined the server!"
+            background = await self.create_image(settings, member, msg)
 
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
@@ -88,11 +85,8 @@ class Welcome(commands.Cog):
             return
 
         async with self.config.guild(member.guild).all() as settings:
-            background = await self.create_image(settings, member)
-
-            if settings["member_joined_overlay"]:
-                draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name} left the server.", tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
+            msg = f"{member.name} left the server."
+            background = await self.create_image(settings, member, msg)
 
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
@@ -270,11 +264,8 @@ class Welcome(commands.Cog):
             member = ctx.author
 
         async with self.config.guild(member.guild).all() as settings:
-            background = await self.create_image(settings, member)
-
-            if settings["member_joined_overlay"]:
-                draw = ImageDraw.Draw(background)
-                draw.text(settings["member_joined_overlay_pos"], f"{member.name} joined the server!", tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
+            msg = f"{member.name} joined the server!"
+            background = await self.create_image(settings, member, msg)
 
             with BytesIO() as image_binary:
                 background.save(image_binary, format="png")
@@ -284,7 +275,7 @@ class Welcome(commands.Cog):
             await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=file)
 
 
-    async def create_image(self, settings: dict, member: discord.Member) -> Image.Image:
+    async def create_image(self, settings: dict, member: discord.Member, msg: str) -> Image.Image:
         # Use PIL and overlay the background on the profile picture at the specified coordinates
         if os.path.isfile(cog_data_path(self) / f"background-{member.guild.id}.png"):
             path = cog_data_path(self) / f"background-{member.guild.id}.png"
@@ -320,6 +311,10 @@ class Welcome(commands.Cog):
         # Paste the profile image onto the background at the specified position
         val = (settings["avatar_pos"][0] - r, settings["avatar_pos"][1] - r)
         background.paste(profile, val, profile)
+
+        if settings["member_joined_overlay"]:
+            draw = ImageDraw.Draw(background)
+            draw.text(settings["member_joined_overlay_pos"], msg, tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
 
         if settings["member_count_overlay"]:
             draw = ImageDraw.Draw(background)
