@@ -21,14 +21,13 @@ class Welcome(commands.Cog):
             "avatar_border_color": (255, 255, 255),
             "avatar_pos": (550, 189),
             "member_count_overlay": True,
-            "member_joined_overlay": True,
-            "member_joined_overlay_pos": (550, 350),
+            "member_overlay": True,
+            "member_overlay_pos": (550, 350),
             "member_count_overlay_pos": (550, 400),
             "text_size": 40,
             "count_size": 30,
             "text_color": (255, 255, 255),
             "count_color": (180, 180, 180),
-            "member_leave_overlay": True,
             "member_join_message": "Welcome {member} to {guild}!",
             "member_leave_message": "Goodbye {member}!",
             "member_join_roles": [],
@@ -179,17 +178,17 @@ class Welcome(commands.Cog):
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def member_joined_overlay(self, ctx: commands.Context, overlay: bool):
+    async def member_overlay(self, ctx: commands.Context, overlay: bool):
         """Sets whether or not to overlay the member joined message on the background."""
-        await self.config.guild(ctx.guild).member_joined_overlay.set(overlay)
-        await ctx.send(f"Member joined overlay set to {overlay}.")
+        await self.config.guild(ctx.guild).member_overlay.set(overlay)
+        await ctx.send(f"Member overlay set to {overlay}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def member_joined_overlay_pos(self, ctx: commands.Context, x: int, y: int):
+    async def member_overlay_pos(self, ctx: commands.Context, x: int, y: int):
         """Sets the position of the member joined overlay."""
-        await self.config.guild(ctx.guild).member_joined_overlay_pos.set((x, y))
-        await ctx.send(f"Member joined overlay position set to ({x}, {y}).")
+        await self.config.guild(ctx.guild).member_overlay_pos.set((x, y))
+        await ctx.send(f"Member overlay position set to ({x}, {y}).")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -312,9 +311,9 @@ class Welcome(commands.Cog):
         val = (settings["avatar_pos"][0] - r, settings["avatar_pos"][1] - r)
         background.paste(profile, val, profile)
 
-        if settings["member_joined_overlay"]:
+        if settings["member_overlay"]:
             draw = ImageDraw.Draw(background)
-            draw.text(settings["member_joined_overlay_pos"], msg, tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
+            draw.text(settings["member_overlay_pos"], msg, tuple(settings["text_color"]), font=self.get_font(settings["text_size"]), anchor="mm")
 
         if settings["member_count_overlay"]:
             draw = ImageDraw.Draw(background)
