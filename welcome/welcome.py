@@ -132,9 +132,10 @@ class Welcome(commands.Cog):
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def avatar_radius(self, ctx: commands.Context, r: int):
+    async def avatar_radius(self, ctx: commands.Context, radius: int):
         """Sets the radius of the profile picture.
         Set to 0 to disable."""
+        r = abs(radius)
         await self.config.guild(ctx.guild).avatar_radius.set(r)
         await ctx.send(f"Avatar radius set to {r}.")
 
@@ -147,9 +148,10 @@ class Welcome(commands.Cog):
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def avatar_border(self, ctx: commands.Context, b: int):
+    async def avatar_border(self, ctx: commands.Context, border: int):
         """Sets the profile picture border width.
         Set to 0 to disable."""
+        b = abs(border)
         await self.config.guild(ctx.guild).avatar_border.set(b)
         await ctx.send(f"Avatar border set to {b}.")
 
@@ -163,13 +165,6 @@ class Welcome(commands.Cog):
             await ctx.send(f"Avatar border color set to {color}.")
         except ValueError:
             await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
-
-    @welcomeset.command()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def member_count_overlay(self, ctx: commands.Context, overlay: bool):
-        """Sets whether or not to overlay the member count on the background."""
-        await self.config.guild(ctx.guild).member_count_overlay.set(overlay)
-        await ctx.send(f"Member count overlay set to {overlay}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -224,16 +219,18 @@ class Welcome(commands.Cog):
     async def text_size(self, ctx: commands.Context, size: int):
         """Sets the size of the text.
         Set to 0 to disable."""
-        await self.config.guild(ctx.guild).text_size.set(size)
-        await ctx.send(f"Text size set to {size}.")
+        s = abs(size)
+        await self.config.guild(ctx.guild).text_size.set(s)
+        await ctx.send(f"Text size set to {s}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def count_size(self, ctx: commands.Context, size: int):
         """Sets the size of the count.
         Set to 0 to disable."""
-        await self.config.guild(ctx.guild).count_size.set(size)
-        await ctx.send(f"Count size set to {size}.")
+        s = abs(size)
+        await self.config.guild(ctx.guild).count_size.set(s)
+        await ctx.send(f"Count size set to {s}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
