@@ -164,7 +164,7 @@ class Welcome(commands.Cog):
             await self.config.guild(ctx.guild).avatar_border_color.set(color)
             await ctx.send(f"Avatar border color set to {color}.")
         except ValueError:
-            await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
+            await ctx.send(f"Error setting avatar border color to {red}, {green}, {blue}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -252,7 +252,7 @@ class Welcome(commands.Cog):
             await self.config.guild(ctx.guild).count_color.set(color)
             await ctx.send(f"Count color set to {color}.")
         except ValueError:
-            await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
+            await ctx.send(f"Error setting count color to {red}, {green}, {blue}.")
 
 
     @welcomeset.command()
