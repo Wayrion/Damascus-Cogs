@@ -135,7 +135,7 @@ class Welcome(commands.Cog):
     async def avatar_radius(self, ctx: commands.Context, r: int):
         """Sets the radius of the profile picture.
         Set to 0 to disable."""
-        await self.config.guild(ctx.guild).avatar_radius.set((x, y))
+        await self.config.guild(ctx.guild).avatar_radius.set(r)
         await ctx.send(f"Avatar radius set to {r}.")
 
     @welcomeset.command()
@@ -158,9 +158,9 @@ class Welcome(commands.Cog):
     async def avatar_border_color(self, ctx: commands.Context, red: int, green: int, blue: int):
         """Sets the profile picture border color using RGB values."""
         try:
-            color = discord.Color.from_rgb(red, green, blue)
-            await self.config.guild(ctx.guild).avatar_border_color.set(color.to_rgb())
-            await ctx.send(f"Avatar border color set to {color.to_rgb()}.")
+            color = discord.Color.from_rgb(red, green, blue).to_rgb()
+            await self.config.guild(ctx.guild).avatar_border_color.set(color)
+            await ctx.send(f"Avatar border color set to {color}.")
         except ValueError:
             await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
 
@@ -177,13 +177,6 @@ class Welcome(commands.Cog):
         """Sets the position of the member count overlay."""
         await self.config.guild(ctx.guild).member_count_overlay_pos.set((x, y))
         await ctx.send(f"Member count overlay position set to ({x}, {y}).")
-
-    @welcomeset.command()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def member_overlay(self, ctx: commands.Context, overlay: bool):
-        """Sets whether or not to overlay the member joined message on the background."""
-        await self.config.guild(ctx.guild).member_overlay.set(overlay)
-        await ctx.send(f"Member overlay set to {overlay}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -247,9 +240,9 @@ class Welcome(commands.Cog):
     async def text_color(self, ctx: commands.Context, red: int, green: int, blue: int):
         """Sets the color of the text using RGB values."""
         try:
-            color = discord.Color.from_rgb(red, green, blue)
-            await self.config.guild(ctx.guild).text_color.set(color.to_rgb())
-            await ctx.send(f"Text color set to {color.to_rgb()}.")
+            color = discord.Color.from_rgb(red, green, blue).to_rgb()
+            await self.config.guild(ctx.guild).text_color.set(color)
+            await ctx.send(f"Text color set to {color}.")
         except ValueError:
             await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
 
@@ -258,9 +251,9 @@ class Welcome(commands.Cog):
     async def count_color(self, ctx: commands.Context, red: int, green: int, blue: int):
         """Sets the color of the count using RGB values."""
         try:
-            color = discord.Color.from_rgb(red, green, blue)
-            await self.config.guild(ctx.guild).count_color.set(color.to_rgb())
-            await ctx.send(f"Count color set to {color.to_rgb()}.")
+            color = discord.Color.from_rgb(red, green, blue).to_rgb()
+            await self.config.guild(ctx.guild).count_color.set(color)
+            await ctx.send(f"Count color set to {color}.")
         except ValueError:
             await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
 
