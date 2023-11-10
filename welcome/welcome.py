@@ -128,12 +128,13 @@ class Welcome(commands.Cog):
         image.save(path)
 
         # Send a message saying that the background was set
-        await ctx.send(f"Background set to uploaded file.")
+        await ctx.send("Background set to uploaded file.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def avatar_radius(self, ctx: commands.Context, r: int):
-        """Sets the radius of the profile picture."""
+        """Sets the radius of the profile picture.
+        Set to 0 to disable."""
         await self.config.guild(ctx.guild).avatar_radius.set((x, y))
         await ctx.send(f"Avatar radius set to {r}.")
 
@@ -147,7 +148,8 @@ class Welcome(commands.Cog):
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def avatar_border(self, ctx: commands.Context, b: int):
-        """Sets the profile picture border width."""
+        """Sets the profile picture border width.
+        Set to 0 to disable."""
         await self.config.guild(ctx.guild).avatar_border.set(b)
         await ctx.send(f"Avatar border set to {b}.")
 
@@ -224,14 +226,16 @@ class Welcome(commands.Cog):
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def text_size(self, ctx: commands.Context, size: int):
-        """Sets the size of the text."""
+        """Sets the size of the text.
+        Set to 0 to disable."""
         await self.config.guild(ctx.guild).text_size.set(size)
         await ctx.send(f"Text size set to {size}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def count_size(self, ctx: commands.Context, size: int):
-        """Sets the size of the count."""
+        """Sets the size of the count.
+        Set to 0 to disable."""
         await self.config.guild(ctx.guild).count_size.set(size)
         await ctx.send(f"Count size set to {size}.")
 
