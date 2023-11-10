@@ -157,9 +157,12 @@ class Welcome(commands.Cog):
     @checks.admin_or_permissions(manage_guild=True)
     async def avatar_border_color(self, ctx: commands.Context, red: int, green: int, blue: int):
         """Sets the profile picture border color using RGB values."""
-        color = (red, green, blue)
-        await self.config.guild(ctx.guild).avatar_border_color.set(color)
-        await ctx.send(f"Avatar border color set to {color}.")
+        try:
+            color = discord.Color.from_rgb(red, green, blue)
+            await self.config.guild(ctx.guild).avatar_border_color.set(color.to_rgb())
+            await ctx.send(f"Avatar border color set to {color.to_rgb()}.")
+        except ValueError:
+            await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
@@ -243,17 +246,23 @@ class Welcome(commands.Cog):
     @checks.admin_or_permissions(manage_guild=True)
     async def text_color(self, ctx: commands.Context, red: int, green: int, blue: int):
         """Sets the color of the text using RGB values."""
-        color = (red, green, blue)
-        await self.config.guild(ctx.guild).text_color.set(color)
-        await ctx.send(f"Text color set to {color}.")
+        try:
+            color = discord.Color.from_rgb(red, green, blue)
+            await self.config.guild(ctx.guild).text_color.set(color.to_rgb())
+            await ctx.send(f"Text color set to {color.to_rgb()}.")
+        except ValueError:
+            await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def count_color(self, ctx: commands.Context, red: int, green: int, blue: int):
         """Sets the color of the count using RGB values."""
-        color = (red, green, blue)
-        await self.config.guild(ctx.guild).count_color.set(color)
-        await ctx.send(f"Count color set to {color}.")
+        try:
+            color = discord.Color.from_rgb(red, green, blue)
+            await self.config.guild(ctx.guild).count_color.set(color.to_rgb())
+            await ctx.send(f"Count color set to {color.to_rgb()}.")
+        except ValueError:
+            await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
 
 
     @welcomeset.command()
