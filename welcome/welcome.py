@@ -4,7 +4,7 @@ import time
 import os
 from contextlib import suppress
 from redbot.core import Config, commands, checks
-from redbot.core.data_manager import bundled_data_path, cog_data_path
+from redbot.core.data_manager import cog_data_path
 from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw, UnidentifiedImageError
 from typing import Optional
@@ -30,6 +30,7 @@ class Welcome(commands.Cog):
             "member_leave_message": "Goodbye {member}!",
             "member_join_roles": [],
             "join_channel": None,
+            "leave_channel": None,
         }
         self.config.register_guild(**default_guild)
 
@@ -90,8 +91,8 @@ class Welcome(commands.Cog):
                 image_binary.seek(0)
                 file = discord.File(fp=image_binary, filename=f"goodbye{member.id}.png")
 
-            if settings["join_channel"]:
-                channel = member.guild.get_channel(settings["join_channel"])
+            if settings["leave_channel"]:
+                channel = member.guild.get_channel(settings["leave_channel"])
                 await channel.send(settings["member_leave_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel), file=file)
 
             else:
@@ -106,7 +107,7 @@ class Welcome(commands.Cog):
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def background(self, ctx: commands.Context):
-        """Sets or removes the background image for the welcome message."""
+        """Set or remove the background image for the welcome message."""
         if not ctx.message.attachments:
             if os.path.isfile(cog_data_path(self) / f"background-{ctx.guild.id}.png"):
                 # Remove the file from the data folder
@@ -130,35 +131,25 @@ class Welcome(commands.Cog):
         # Send a message saying that the background was set
         await ctx.send("Background set to uploaded file.")
 
-    @welcomeset.command()
+    @welcomeset.group()
     @checks.admin_or_permissions(manage_guild=True)
-    async def avatar_radius(self, ctx: commands.Context, radius: int):
-        """Sets the radius of the profile picture.
-        Set to 0 to disable."""
-        r = abs(radius)
-        await self.config.guild(ctx.guild).avatar_radius.set(r)
-        await ctx.send(f"Avatar radius set to {r}.")
+    async def avatar(self, ctx: commands.Context):
+        """Avatar settings"""
+        pass
 
-    @welcomeset.command()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def avatar_pos(self, ctx: commands.Context, x: int, y: int):
-        """Sets the position of the profile picture."""
-        await self.config.guild(ctx.guild).avatar_pos.set((x, y))
-        await ctx.send(f"Member profile position set to ({x}, {y}).")
-
-    @welcomeset.command()
+    @avatar.command(name="border")
     @checks.admin_or_permissions(manage_guild=True)
     async def avatar_border(self, ctx: commands.Context, border: int):
-        """Sets the profile picture border width.
+        """Set the profile picture border width.
         Set to 0 to disable."""
         b = abs(border)
         await self.config.guild(ctx.guild).avatar_border.set(b)
         await ctx.send(f"Avatar border set to {b}.")
 
-    @welcomeset.command()
+    @avatar.command(name="border_color")
     @checks.admin_or_permissions(manage_guild=True)
     async def avatar_border_color(self, ctx: commands.Context, red: int, green: int, blue: int):
-        """Sets the profile picture border color using RGB values."""
+        """Set the profile picture border color using RGB values."""
         try:
             color = discord.Color.from_rgb(red, green, blue).to_rgb()
             await self.config.guild(ctx.guild).avatar_border_color.set(color)
@@ -166,87 +157,52 @@ class Welcome(commands.Cog):
         except ValueError:
             await ctx.send(f"Error setting avatar border color to {red}, {green}, {blue}.")
 
-    @welcomeset.command()
+    @avatar.command(name="position")
     @checks.admin_or_permissions(manage_guild=True)
-    async def member_count_overlay_pos(self, ctx: commands.Context, x: int, y: int):
-        """Sets the position of the member count overlay."""
-        await self.config.guild(ctx.guild).member_count_overlay_pos.set((x, y))
-        await ctx.send(f"Member count overlay position set to ({x}, {y}).")
+    async def avatar_pos(self, ctx: commands.Context, x: int, y: int):
+        """Set the position of the profile picture."""
+        await self.config.guild(ctx.guild).avatar_pos.set((x, y))
+        await ctx.send(f"Member profile position set to ({x}, {y}).")
 
-    @welcomeset.command()
+    @avatar.command(name="radius")
     @checks.admin_or_permissions(manage_guild=True)
-    async def member_overlay_pos(self, ctx: commands.Context, x: int, y: int):
-        """Sets the position of the member joined overlay."""
-        await self.config.guild(ctx.guild).member_overlay_pos.set((x, y))
-        await ctx.send(f"Member overlay position set to ({x}, {y}).")
+    async def avatar_radius(self, ctx: commands.Context, radius: int):
+        """Set the radius of the profile picture.
+        Set to 0 to disable."""
+        r = abs(radius)
+        await self.config.guild(ctx.guild).avatar_radius.set(r)
+        await ctx.send(f"Avatar radius set to {r}.")
 
-    @welcomeset.command()
+    @welcomeset.group()
     @checks.admin_or_permissions(manage_guild=True)
-    async def member_join_message(self, ctx: commands.Context, *, message: str):
-        """Sets the message to send when a member joins.
-        Variables: {member}, {guild}, {guild_owner}, {channel}
-        Example: !welcomeset member_join_message {member} joined {guild}! Welcome!
-        Variables in {} will be replaced with the appropriate value."""
-        await self.config.guild(ctx.guild).member_join_message.set(message)
-        await ctx.send(f"Member join message set to {message}.")
+    async def channel(self, ctx: commands.Context):
+        """Channel settings"""
+        pass
 
-    @welcomeset.command()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def member_join_roles(self, ctx: commands.Context, *roles: discord.Role):
-        """Sets the roles to give to a member when they join."""
-        await self.config.guild(ctx.guild).member_join_roles.set([role.id for role in roles])
-        await ctx.send(f"Member join roles set to {[role.name for role in roles]}.")
-
-    @welcomeset.command()
+    @channel.command(name="join")
     @checks.admin_or_permissions(manage_guild=True)
     async def join_channel(self, ctx: commands.Context, channel: discord.TextChannel):
-        """Sets the channel to send the welcome message in."""
+        """Set the channel to send the welcome message in."""
         await self.config.guild(ctx.guild).join_channel.set(channel.id)
         await ctx.send(f"Join channel set to {channel.mention}.")
 
-    @welcomeset.command()
+    @channel.command(name="leave")
     @checks.admin_or_permissions(manage_guild=True)
-    async def member_leave_message(self, ctx: commands.Context, *, message: str):
-        """Sets the message to send when a member leaves.
-        Variables: {member}
-        Example: !welcomeset member_leave_message {member} left! Goodbye!
-        Variables in {} will be replaced with the appropriate value."""
-        await self.config.guild(ctx.guild).member_leave_message.set(message)
-        await ctx.send(f"Member leave message set to {message}.")
+    async def leave_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+        """Set the channel to send the leave message in."""
+        await self.config.guild(ctx.guild).leave_channel.set(channel.id)
+        await ctx.send(f"Leave channel set to {channel.mention}.")
 
-    @welcomeset.command()
+    @welcomeset.group()
     @checks.admin_or_permissions(manage_guild=True)
-    async def text_size(self, ctx: commands.Context, size: int):
-        """Sets the size of the text.
-        Set to 0 to disable."""
-        s = abs(size)
-        await self.config.guild(ctx.guild).text_size.set(s)
-        await ctx.send(f"Text size set to {s}.")
+    async def count(self, ctx: commands.Context):
+        """Member counter settings"""
+        pass
 
-    @welcomeset.command()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def count_size(self, ctx: commands.Context, size: int):
-        """Sets the size of the count.
-        Set to 0 to disable."""
-        s = abs(size)
-        await self.config.guild(ctx.guild).count_size.set(s)
-        await ctx.send(f"Count size set to {s}.")
-
-    @welcomeset.command()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def text_color(self, ctx: commands.Context, red: int, green: int, blue: int):
-        """Sets the color of the text using RGB values."""
-        try:
-            color = discord.Color.from_rgb(red, green, blue).to_rgb()
-            await self.config.guild(ctx.guild).text_color.set(color)
-            await ctx.send(f"Text color set to {color}.")
-        except ValueError:
-            await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
-
-    @welcomeset.command()
+    @count.command(name="color")
     @checks.admin_or_permissions(manage_guild=True)
     async def count_color(self, ctx: commands.Context, red: int, green: int, blue: int):
-        """Sets the color of the count using RGB values."""
+        """Set the color of the counter using RGB values."""
         try:
             color = discord.Color.from_rgb(red, green, blue).to_rgb()
             await self.config.guild(ctx.guild).count_color.set(color)
@@ -254,11 +210,93 @@ class Welcome(commands.Cog):
         except ValueError:
             await ctx.send(f"Error setting count color to {red}, {green}, {blue}.")
 
+    @count.command(name="position")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def member_count_overlay_pos(self, ctx: commands.Context, x: int, y: int):
+        """Set the position of the member count overlay."""
+        await self.config.guild(ctx.guild).member_count_overlay_pos.set((x, y))
+        await ctx.send(f"Member count overlay position set to ({x}, {y}).")
+
+    @count.command(name="size")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def count_size(self, ctx: commands.Context, size: int):
+        """Set the font size of the counter.
+        Set to 0 to disable."""
+        s = abs(size)
+        await self.config.guild(ctx.guild).count_size.set(s)
+        await ctx.send(f"Count size set to {s}.")
+
+    @welcomeset.group()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def member(self, ctx: commands.Context):
+        """Member overlay settings"""
+        pass
+
+    @member.command(name="join_message")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def member_join_message(self, ctx: commands.Context, *, message: str):
+        """Set the message to send when a member joins.
+        Variables: {member}, {guild}, {guild_owner}, {channel}
+        Example: !welcomeset member_join_message {member} joined {guild}! Welcome!
+        Variables in {} will be replaced with the appropriate value."""
+        await self.config.guild(ctx.guild).member_join_message.set(message)
+        await ctx.send(f"Member join message set to {message}.")
+
+    @member.command(name="join_roles")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def member_join_roles(self, ctx: commands.Context, *roles: discord.Role):
+        """Set the roles to give to a member when they join."""
+        await self.config.guild(ctx.guild).member_join_roles.set([role.id for role in roles])
+        await ctx.send(f"Member join roles set to {[role.name for role in roles]}.")
+
+    @member.command(name="leave_message")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def member_leave_message(self, ctx: commands.Context, *, message: str):
+        """Set the message to send when a member leaves.
+        Variables: {member}
+        Example: !welcomeset member_leave_message {member} left! Goodbye!
+        Variables in {} will be replaced with the appropriate value."""
+        await self.config.guild(ctx.guild).member_leave_message.set(message)
+        await ctx.send(f"Member leave message set to {message}.")
+
+    @welcomeset.group()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def text(self, ctx: commands.Context):
+        """Member overlay settings"""
+        pass
+
+    @text.command(name="color")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def text_color(self, ctx: commands.Context, red: int, green: int, blue: int):
+        """Set the color of the text using RGB values."""
+        try:
+            color = discord.Color.from_rgb(red, green, blue).to_rgb()
+            await self.config.guild(ctx.guild).text_color.set(color)
+            await ctx.send(f"Text color set to {color}.")
+        except ValueError:
+            await ctx.send(f"Error setting text color to {red}, {green}, {blue}.")
+
+    @text.command(name="position")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def member_overlay_pos(self, ctx: commands.Context, x: int, y: int):
+        """Set the position of the member joined overlay."""
+        await self.config.guild(ctx.guild).member_overlay_pos.set((x, y))
+        await ctx.send(f"Member overlay position set to ({x}, {y}).")
+
+    @text.command(name="size")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def text_size(self, ctx: commands.Context, size: int):
+        """Set the font size of the text.
+        Set to 0 to disable."""
+        s = abs(size)
+        await self.config.guild(ctx.guild).text_size.set(s)
+        await ctx.send(f"Text size set to {s}.")
+
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def test(self, ctx: commands.Context, member: Optional[discord.Member]):
-        """Tests the welcome message."""
+        """Send a test message in the current channel."""
         if not member:
             member = ctx.author
 
@@ -323,7 +361,7 @@ class Welcome(commands.Cog):
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def reset(self, ctx: commands.Context):
-        """Resets all settings to default."""
+        """Reset all settings to the default values."""
         await self.config.guild(ctx.guild).clear()
         with suppress(FileNotFoundError):
             os.remove(cog_data_path(self) / f"background-{ctx.guild.id}.png")
