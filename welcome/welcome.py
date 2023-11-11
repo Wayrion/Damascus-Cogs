@@ -17,21 +17,24 @@ class Welcome(commands.Cog):
         self.config = Config.get_conf(self, 718395193090375700, force_registration=True)
         default_guild  = {
             'enabled': False,
-            "avatar_radius": 127,
             "avatar_border": 6,
             "avatar_border_color": (255, 255, 255),
             "avatar_pos": (550, 189),
+            "avatar_radius": 127,
             "member_overlay_pos": (550, 350),
             "member_count_overlay_pos": (550, 400),
-            "text_size": 40,
-            "count_size": 30,
             "text_color": (255, 255, 255),
+            "text_size": 40,
             "count_color": (180, 180, 180),
+            "count_size": 30,
             "member_join_message": "Welcome {member} to {guild}!",
             "member_leave_message": "Goodbye {member}!",
             "member_join_roles": [],
             "join_channel": None,
+            "join_image": True,
             "leave_channel": None,
+            "leave_enabled": True,
+            "leave_image": False,
         }
         self.config.register_guild(**default_guild)
 
@@ -52,20 +55,22 @@ class Welcome(commands.Cog):
             return
 
         async with self.config.guild(member.guild).all() as settings:
-            msg = f"{member.name} joined the server!"
-            background = await self.create_image(settings, member, msg)
+            file = None
+            if settings["join_image"]:
+                msg = f"{member.name} joined the server!"
+                background = await self.create_image(settings, member, msg)
 
-            with BytesIO() as image_binary:
-                background.save(image_binary, format="png")
-                image_binary.seek(0)
-                file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
+                with BytesIO() as image_binary:
+                    background.save(image_binary, format="png")
+                    image_binary.seek(0)
+                    file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
 
+            text = settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel)
             if settings["join_channel"]:
                 channel = member.guild.get_channel(settings["join_channel"])
-                await channel.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel), file=file)
-
+                await channel.send(text, file=file)
             else:
-                await member.guild.system_channel.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name), file=file)
+                await member.guild.system_channel.send(text, file=file)
 
             if settings["member_join_roles"]:
                 try:
@@ -80,24 +85,26 @@ class Welcome(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         """Sends a goodbye message with an image when a user leaves the server."""
-        if member.bot or not await self.config.guild(member.guild).enabled():
+        if member.bot or not await self.config.guild(member.guild).enabled() or not await self.config.guild(member.guild).leave_enabled():
             return
 
         async with self.config.guild(member.guild).all() as settings:
-            msg = f"{member.name} left the server."
-            background = await self.create_image(settings, member, msg)
+            file = None
+            if settings["leave_image"]:
+                msg = f"{member.name} left the server."
+                background = await self.create_image(settings, member, msg)
 
-            with BytesIO() as image_binary:
-                background.save(image_binary, format="png")
-                image_binary.seek(0)
-                file = discord.File(fp=image_binary, filename=f"goodbye{member.id}.png")
+                with BytesIO() as image_binary:
+                    background.save(image_binary, format="png")
+                    image_binary.seek(0)
+                    file = discord.File(fp=image_binary, filename=f"goodbye{member.id}.png")
 
+            text = settings["member_leave_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel)
             if settings["leave_channel"]:
                 channel = member.guild.get_channel(settings["leave_channel"])
-                await channel.send(settings["member_leave_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel), file=file)
-
+                await channel.send(text, file=file)
             else:
-                await member.guild.system_channel.send(settings["member_leave_message"].format(member=member.mention, guild=member.guild.name), file=file)
+                await member.guild.system_channel.send(text, file=file)
 
     @commands.group()
     @commands.guild_only()
@@ -234,6 +241,16 @@ class Welcome(commands.Cog):
         """Member overlay settings"""
         pass
 
+    @welcomeset.command(name="join_image")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def member_join_image(self, ctx: commands.Context) -> None:
+        """Enable or disable image when a member joins."""
+        enabled = not await self.config.guild(ctx.guild).join_image()
+        await self.config.guild(ctx.guild).join_image.set(enabled)
+
+        action = "enabled" if enabled else "disabled"
+        await ctx.send(f"Welcome image has been {action}.")
+
     @member.command(name="join_message")
     @checks.admin_or_permissions(manage_guild=True)
     async def member_join_message(self, ctx: commands.Context, *, message: str):
@@ -251,6 +268,16 @@ class Welcome(commands.Cog):
         await self.config.guild(ctx.guild).member_join_roles.set([role.id for role in roles])
         await ctx.send(f"Member join roles set to {[role.name for role in roles]}.")
 
+    @member.command(name="leave_image")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def member_leave_image(self, ctx: commands.Context) -> None:
+        """Enable or disable image when a member leaves."""
+        enabled = not await self.config.guild(ctx.guild).leave_image()
+        await self.config.guild(ctx.guild).leave_image.set(enabled)
+
+        action = "enabled" if enabled else "disabled"
+        await ctx.send(f"Welcome image has been {action}.")
+
     @member.command(name="leave_message")
     @checks.admin_or_permissions(manage_guild=True)
     async def member_leave_message(self, ctx: commands.Context, *, message: str):
@@ -260,6 +287,16 @@ class Welcome(commands.Cog):
         Variables in {} will be replaced with the appropriate value."""
         await self.config.guild(ctx.guild).member_leave_message.set(message)
         await ctx.send(f"Member leave message set to {message}.")
+
+    @member.command(name="leave_toggle")
+    @checks.admin_or_permissions(manage_guild=True)
+    async def member_leave_toggle(self, ctx: commands.Context) -> None:
+        """Enable or disable the leave message altogether."""
+        enabled = not await self.config.guild(ctx.guild).leave_enabled()
+        await self.config.guild(ctx.guild).leave_enabled.set(enabled)
+
+        action = "enabled" if enabled else "disabled"
+        await ctx.send(f"Welcome image has been {action}.")
 
     @welcomeset.group()
     @checks.admin_or_permissions(manage_guild=True)
@@ -294,25 +331,6 @@ class Welcome(commands.Cog):
         await self.config.guild(ctx.guild).text_size.set(s)
         await ctx.send(f"Text size set to {s}.")
 
-
-    @welcomeset.command()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def test(self, ctx: commands.Context, member: Optional[discord.Member]):
-        """Send a test message in the current channel."""
-        if not member:
-            member = ctx.author
-
-        async with self.config.guild(member.guild).all() as settings:
-            msg = f"{member.name} joined the server!"
-            background = await self.create_image(settings, member, msg)
-
-            with BytesIO() as image_binary:
-                background.save(image_binary, format="png")
-                image_binary.seek(0)
-                file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
-
-            await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=file)
-
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def toggle(self, ctx: commands.Context) -> None:
@@ -323,6 +341,26 @@ class Welcome(commands.Cog):
         action = "enabled" if enabled else "disabled"
         await ctx.send(f"Welcome has been {action}.")
 
+
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def test(self, ctx: commands.Context, member: Optional[discord.Member]):
+        """Send a test message in the current channel."""
+        if not member:
+            member = ctx.author
+
+        async with self.config.guild(member.guild).all() as settings:
+            file = None
+            if settings["join_image"]:
+                msg = f"{member.name} joined the server!"
+                background = await self.create_image(settings, member, msg)
+
+                with BytesIO() as image_binary:
+                    background.save(image_binary, format="png")
+                    image_binary.seek(0)
+                    file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
+
+            await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=file)
 
     async def create_image(self, settings: dict, member: discord.Member, msg: str) -> Image.Image:
         # Use PIL and overlay the background on the profile picture at the specified coordinates

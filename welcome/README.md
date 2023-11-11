@@ -40,9 +40,12 @@ All settings are available under `[p]welcomeset`.
 `[p]welcomeset member`
 | Command         | Description                                      |
 | :-------------- | :----------------------------------------------- |
+| `join_image`    | Enable or disable image when a member joins      |
 | `join_message`  | Set the message to send when a member joins      |
 | `join_roles`    | Set the roles to give to a member when they join |
+| `leave_image`   | Enable or disable image when a member leaves     |
 | `leave_message` | Set the message to send when a member leaves     |
+| `leave_toggle`  | Enable or disable the leave message altogether   |
 
 ### text
 `[p]welcomeset text`
