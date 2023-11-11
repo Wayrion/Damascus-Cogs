@@ -101,7 +101,7 @@ class Welcome(commands.Cog):
                     image_binary.seek(0)
                     file = discord.File(fp=image_binary, filename=f"goodbye{member.id}.png")
 
-            text = settings["member_leave_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel)
+            text = settings["member_leave_message"].format(member=member.mention)
             if settings["leave_channel"]:
                 channel = member.guild.get_channel(settings["leave_channel"])
                 await channel.send(text, file=file)
@@ -258,7 +258,7 @@ class Welcome(commands.Cog):
     async def member_join_message(self, ctx: commands.Context, *, message: str):
         """Set the message to send when a member joins.
         Variables: {member}, {guild}, {guild_owner}, {channel}
-        Example: !welcomeset member_join_message {member} joined {guild}! Welcome!
+        Example: `[p]welcomeset member join_message {member} joined {guild}! Welcome!`
         Variables in {} will be replaced with the appropriate value."""
         fail = []
         options = {'member', 'guild', 'guild_owner', 'channel'}
@@ -295,10 +295,10 @@ class Welcome(commands.Cog):
     async def member_leave_message(self, ctx: commands.Context, *, message: str):
         """Set the message to send when a member leaves.
         Variables: {member}
-        Example: !welcomeset member_leave_message {member} left! Goodbye!
+        Example: `[p]welcomeset member leave_message {member} left! Goodbye!`
         Variables in {} will be replaced with the appropriate value."""
         fail = []
-        options = {'member', 'guild', 'guild_owner', 'channel'}
+        options = {'member'}
         for x in [i[1] for i in Formatter().parse(message) if i[1] is not None and i[1] not in options]:
             fail.append(inline(x))
 
