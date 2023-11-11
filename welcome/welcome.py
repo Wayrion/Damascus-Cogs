@@ -71,7 +71,7 @@ class Welcome(commands.Cog):
             if settings["join_channel"]:
                 channel = member.guild.get_channel(settings["join_channel"])
                 await channel.send(text, file=file)
-            else:
+            elif member.guild.system_channel:
                 await member.guild.system_channel.send(text, file=file)
 
             if settings["member_join_roles"]:
@@ -105,7 +105,7 @@ class Welcome(commands.Cog):
             if settings["leave_channel"]:
                 channel = member.guild.get_channel(settings["leave_channel"])
                 await channel.send(text, file=file)
-            else:
+            elif member.guild.system_channel:
                 await member.guild.system_channel.send(text, file=file)
 
     @commands.group()
