@@ -288,7 +288,7 @@ class Welcome(commands.Cog):
         await self.config.guild(ctx.guild).leave_image.set(enabled)
 
         action = "enabled" if enabled else "disabled"
-        await ctx.send(f"Welcome image has been {action}.")
+        await ctx.send(f"Member leave image has been {action}.")
 
     @member.command(name="leave_message")
     @checks.admin_or_permissions(manage_guild=True)
@@ -318,7 +318,7 @@ class Welcome(commands.Cog):
         await self.config.guild(ctx.guild).leave_enabled.set(enabled)
 
         action = "enabled" if enabled else "disabled"
-        await ctx.send(f"Welcome image has been {action}.")
+        await ctx.send(f"Member leave message has been {action}.")
 
     @welcomeset.group()
     @checks.admin_or_permissions(manage_guild=True)
