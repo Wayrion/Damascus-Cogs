@@ -23,12 +23,12 @@ class Welcome(commands.Cog):
             "avatar_border_color": (255, 255, 255),
             "avatar_pos": (550, 189),
             "avatar_radius": 127,
-            "member_overlay_pos": (550, 350),
-            "member_count_overlay_pos": (550, 400),
+            "member_overlay_pos": (550, 368),
+            "member_count_overlay_pos": (550, 416),
             "text_color": (255, 255, 255),
-            "text_size": 40,
+            "text_size": 46,
             "count_color": (180, 180, 180),
-            "count_size": 30,
+            "count_size": 38,
             "member_join_message": "Hello {member}, welcome to **{guild}**!",
             "member_leave_message": "{member} has left the server.",
             "member_join_roles": [],
@@ -59,7 +59,7 @@ class Welcome(commands.Cog):
         async with self.config.guild(member.guild).all() as settings:
             file = None
             if settings["join_image"]:
-                msg = f"{member.name} joined the server!"
+                msg = f"{member.name} just joined the server!"
                 background = await self.create_image(settings, member, msg)
 
                 with BytesIO() as image_binary:
@@ -393,7 +393,7 @@ class Welcome(commands.Cog):
         else:
             background = Image.new(mode="RGBA", size=(1100, 500), color=(23, 24, 30))
             img = ImageDraw.Draw(background)
-            img.rectangle([(75, 25), (1025, 475)], fill=(0, 0, 0))
+            img.rectangle([(55, 25), (1045, 475)], fill=(0, 0, 0))
 
         if settings["avatar_border"] > 0 and settings["avatar_radius"] > 0:
             r = settings["avatar_radius"] + settings["avatar_border"]
