@@ -313,18 +313,12 @@ class Welcome(commands.Cog):
 
         if (size := settings["text_size"]) > 0:
             draw = ImageDraw.Draw(background)
-            draw.text(settings["member_overlay_pos"], msg, tuple(settings["text_color"]), font=self.get_font(size), anchor="mm")
+            draw.text(settings["member_overlay_pos"], msg, tuple(settings["text_color"]), font=ImageFont.load_default(size=size), anchor="mm")
 
         if (size := settings["count_size"]) > 0:
             draw = ImageDraw.Draw(background)
-            draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=self.get_font(size), anchor="mm")
+            draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=ImageFont.load_default(size=size), anchor="mm")
         return background
-
-    def get_font(self, size: int):
-        try:
-            return ImageFont.truetype(f"{bundled_data_path(self)}/arial.ttf", size)
-        except OSError:
-            return ImageFont.load_default(size=size)
 
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
