@@ -59,7 +59,7 @@ class Welcome(commands.Cog):
         async with self.config.guild(member.guild).all() as settings:
             file = None
             if settings["join_image"]:
-                msg = f"{member.name} just joined the server!"
+                msg = f"{member.name} just joined the server"
                 background = await self.create_image(settings, member, msg)
 
                 with BytesIO() as image_binary:
@@ -374,7 +374,7 @@ class Welcome(commands.Cog):
         async with self.config.guild(member.guild).all() as settings:
             file = None
             if settings["join_image"]:
-                msg = f"{member.name} joined the server!"
+                msg = f"{member.name} just joined the server"
                 background = await self.create_image(settings, member, msg)
 
                 with BytesIO() as image_binary:
