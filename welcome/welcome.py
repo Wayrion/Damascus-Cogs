@@ -5,8 +5,10 @@ import os
 from contextlib import suppress
 from redbot.core import Config, commands, checks
 from redbot.core.data_manager import cog_data_path
+from redbot.core.utils.chat_formatting import humanize_list, inline
 from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw, UnidentifiedImageError
+from string import Formatter
 from typing import Optional
 
 class Welcome(commands.Cog):
@@ -258,8 +260,18 @@ class Welcome(commands.Cog):
         Variables: {member}, {guild}, {guild_owner}, {channel}
         Example: !welcomeset member_join_message {member} joined {guild}! Welcome!
         Variables in {} will be replaced with the appropriate value."""
-        await self.config.guild(ctx.guild).member_join_message.set(message)
-        await ctx.send(f"Member join message set to {message}.")
+        fail = []
+        options = {'member', 'build', 'guild_owner', 'channel'}
+        for x in [i[1] for i in Formatter().parse(message) if i[1] is not None and i[1] not in options]:
+            fail.append(inline(x))
+
+        if fail:
+            msg = "You are not allowed to use {key} in the message.".format(key=humanize_list(fail))
+            await ctx.send(msg)
+            return
+        msg = message.replace("\\n", "\n").strip()
+        await self.config.guild(ctx.guild).member_join_message.set(msg)
+        await ctx.send(f"Member join message set to {msg}.")
 
     @member.command(name="join_roles")
     @checks.admin_or_permissions(manage_guild=True)
@@ -285,8 +297,18 @@ class Welcome(commands.Cog):
         Variables: {member}
         Example: !welcomeset member_leave_message {member} left! Goodbye!
         Variables in {} will be replaced with the appropriate value."""
-        await self.config.guild(ctx.guild).member_leave_message.set(message)
-        await ctx.send(f"Member leave message set to {message}.")
+        fail = []
+        options = {'member', 'build', 'guild_owner', 'channel'}
+        for x in [i[1] for i in Formatter().parse(message) if i[1] is not None and i[1] not in options]:
+            fail.append(inline(x))
+
+        if fail:
+            msg = "You are not allowed to use {key} in the message.".format(key=humanize_list(fail))
+            await ctx.send(msg)
+            return
+        msg = message.replace("\\n", "\n").strip()
+        await self.config.guild(ctx.guild).member_leave_message.set(msg)
+        await ctx.send(f"Member leave message set to {msg}.")
 
     @member.command(name="leave_toggle")
     @checks.admin_or_permissions(manage_guild=True)
