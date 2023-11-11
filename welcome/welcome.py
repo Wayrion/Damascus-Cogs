@@ -261,7 +261,7 @@ class Welcome(commands.Cog):
         Example: !welcomeset member_join_message {member} joined {guild}! Welcome!
         Variables in {} will be replaced with the appropriate value."""
         fail = []
-        options = {'member', 'build', 'guild_owner', 'channel'}
+        options = {'member', 'guild', 'guild_owner', 'channel'}
         for x in [i[1] for i in Formatter().parse(message) if i[1] is not None and i[1] not in options]:
             fail.append(inline(x))
 
@@ -298,7 +298,7 @@ class Welcome(commands.Cog):
         Example: !welcomeset member_leave_message {member} left! Goodbye!
         Variables in {} will be replaced with the appropriate value."""
         fail = []
-        options = {'member', 'build', 'guild_owner', 'channel'}
+        options = {'member', 'guild', 'guild_owner', 'channel'}
         for x in [i[1] for i in Formatter().parse(message) if i[1] is not None and i[1] not in options]:
             fail.append(inline(x))
 
