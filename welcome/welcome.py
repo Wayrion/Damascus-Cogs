@@ -16,6 +16,7 @@ class Welcome(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, 718395193090375700, force_registration=True)
         default_guild  = {
+            'enabled': False,
             "avatar_radius": 127,
             "avatar_border": 6,
             "avatar_border_color": (255, 255, 255),
@@ -47,7 +48,7 @@ class Welcome(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         """Welcomes a user to the server with an image."""
-        if member.bot:
+        if member.bot or not await self.config.guild(member.guild).enabled():
             return
 
         async with self.config.guild(member.guild).all() as settings:
@@ -79,7 +80,7 @@ class Welcome(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         """Sends a goodbye message with an image when a user leaves the server."""
-        if member.bot:
+        if member.bot or not await self.config.guild(member.guild).enabled():
             return
 
         async with self.config.guild(member.guild).all() as settings:
@@ -99,6 +100,7 @@ class Welcome(commands.Cog):
                 await member.guild.system_channel.send(settings["member_leave_message"].format(member=member.mention, guild=member.guild.name), file=file)
 
     @commands.group()
+    @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
     async def welcomeset(self, ctx: commands.Context):
         """Settings for the welcomer cog"""
@@ -310,6 +312,16 @@ class Welcome(commands.Cog):
                 file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
 
             await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=file)
+
+    @welcomeset.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def toggle(self, ctx: commands.Context) -> None:
+        """Enable or disable this cog in the current guild."""
+        enabled = not await self.config.guild(ctx.guild).enabled()
+        await self.config.guild(ctx.guild).enabled.set(enabled)
+
+        action = "enabled" if enabled else "disabled"
+        await ctx.send(f"Welcome has been {action}.")
 
 
     async def create_image(self, settings: dict, member: discord.Member, msg: str) -> Image.Image:
