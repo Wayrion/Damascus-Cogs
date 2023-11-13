@@ -30,7 +30,7 @@ class Welcome(commands.Cog):
             "count_color": (180, 180, 180),
             "count_size": 38,
             "member_join_message": "Hello {member}, welcome to **{guild}**!",
-            "member_leave_message": "{member} has left the server.",
+            "member_leave_message": "**{member}** has left the server.",
             "member_join_roles": [],
             "join_channel": None,
             "join_image": True,
