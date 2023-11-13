@@ -21,8 +21,8 @@ class Welcome(commands.Cog):
             'enabled': False,
             "avatar_border": 6,
             "avatar_border_color": (255, 255, 255),
-            "avatar_pos": (550, 189),
-            "avatar_radius": 127,
+            "avatar_pos": (550, 190),
+            "avatar_radius": 128,
             "member_overlay_pos": (550, 368),
             "member_count_overlay_pos": (550, 416),
             "text_color": (255, 255, 255),
@@ -67,12 +67,15 @@ class Welcome(commands.Cog):
                     image_binary.seek(0)
                     file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
 
-            text = settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel)
+            channel = None
             if settings["join_channel"]:
                 channel = member.guild.get_channel(settings["join_channel"])
-                await channel.send(text, file=file)
             elif member.guild.system_channel:
-                await member.guild.system_channel.send(text, file=file)
+                channel =  member.guild.system_channel
+
+            if channel:
+                text = settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel)
+                await channel.send(text, file=file)
 
             if settings["member_join_roles"]:
                 try:
@@ -101,12 +104,15 @@ class Welcome(commands.Cog):
                     image_binary.seek(0)
                     file = discord.File(fp=image_binary, filename=f"goodbye{member.id}.png")
 
-            text = settings["member_leave_message"].format(member=member.mention)
+            channel = None
             if settings["leave_channel"]:
                 channel = member.guild.get_channel(settings["leave_channel"])
-                await channel.send(text, file=file)
             elif member.guild.system_channel:
-                await member.guild.system_channel.send(text, file=file)
+                channel =  member.guild.system_channel
+
+            if channel:
+                text = settings["member_leave_message"].format(member=member.mention)
+                await channel.send(text, file=file)
 
     @commands.group()
     @commands.guild_only()
