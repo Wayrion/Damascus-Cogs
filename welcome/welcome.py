@@ -111,7 +111,7 @@ class Welcome(commands.Cog):
                 channel =  member.guild.system_channel
 
             if channel:
-                text = settings["member_leave_message"].format(member=member.mention)
+                text = settings["member_leave_message"].format(member=member.name)
                 await channel.send(text, file=file)
 
     @commands.group()
