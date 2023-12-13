@@ -410,7 +410,8 @@ class Welcome(commands.Cog):
             draw = ImageDraw.Draw(mask)
             draw.ellipse((0, 0, r*2, r*2), fill=255)
 
-            profile = Image.open(BytesIO(await member.avatar.read()))
+            pfp = member.avatar or member.display_avatar
+            profile = Image.open(BytesIO(await pfp.read()))
             profile = profile.resize((r*2, r*2))
 
             # Create a new image with a white background
