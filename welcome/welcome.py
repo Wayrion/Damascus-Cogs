@@ -30,7 +30,7 @@ class Welcome(commands.Cog):
             "count_color": (180, 180, 180),
             "count_size": 38,
             "member_join_message": "Hello {member}, welcome to **{guild}**!",
-            "member_leave_message": "{member} has left the server.",
+            "member_leave_message": "**{member}** has left the server.",
             "member_join_roles": [],
             "join_channel": None,
             "join_image": True,
@@ -410,7 +410,8 @@ class Welcome(commands.Cog):
             draw = ImageDraw.Draw(mask)
             draw.ellipse((0, 0, r*2, r*2), fill=255)
 
-            profile = Image.open(BytesIO(await member.avatar.read()))
+            pfp = member.avatar or member.display_avatar
+            profile = Image.open(BytesIO(await pfp.read()))
             profile = profile.resize((r*2, r*2))
 
             # Create a new image with a white background
