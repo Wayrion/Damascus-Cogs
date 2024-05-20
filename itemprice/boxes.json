@@ -1,4 +1,5 @@
-[{
+[
+    {
         "name": "Meme Box",
         "id": 0,
         "description": "Something actually worth opening.",
@@ -8,7 +9,8 @@
             "chance": 1
         },
         "price": 1.99,
-        "items": [{
+        "items": [
+            {
                 "name": "pizza",
                 "amount": "1"
             },
@@ -92,7 +94,8 @@
             "chance": 1
         },
         "price": 2.49,
-        "items": [{
+        "items": [
+            {
                 "name": "pepecoin",
                 "amount": "1"
             },
@@ -184,7 +187,8 @@
             "chance": 1
         },
         "price": 4.99,
-        "items": [{
+        "items": [
+            {
                 "name": "cutters",
                 "amount": "1"
             },

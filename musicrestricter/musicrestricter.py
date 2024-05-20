@@ -1,19 +1,18 @@
 import discord
 from redbot.core import commands
-from redbot.core import Config  
+from redbot.core import Config
+
 
 class MusicRestricter(commands.Cog):
     """A cog to stop multiple music bots from playing at once"""
-    
+
     def __init__(self, bot):
         self.bot = bot
-        self.config = Config.get_conf(self, identifier=718395193090375700, force_registration=True)
+        self.config = Config.get_conf(
+            self, identifier=718395193090375700, force_registration=True
+        )
 
-        default_guild = {
-            "state": True,
-            "channels": [],
-            "musicbots": []        
-        }
+        default_guild = {"state": True, "channels": [], "musicbots": []}
 
         self.config.register_guild(**default_guild)
 
@@ -36,7 +35,7 @@ class MusicRestricter(commands.Cog):
                     for i in after.channel.members:
                         if i.id == musicbot:
                             number_of_bots += 1
-        
+
         if number_of_bots > 1:
             await member.move_to(None)
 
@@ -56,7 +55,6 @@ class MusicRestricter(commands.Cog):
         """
         await self.config.guild(ctx.guild).state.set(state)
         await ctx.send(f"Cog state set to {state}")
-
 
     @musicrestrictersettings.command(name="musicbots")
     @commands.is_owner()
@@ -90,7 +88,6 @@ class MusicRestricter(commands.Cog):
                 channels.append(id)
                 await ctx.send("Channel added")
 
-    
     @musicrestrictersettings.command(name="reset")
     @commands.is_owner()
     async def vcloggersettings_reset(self, ctx):

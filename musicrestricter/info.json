@@ -1,5 +1,7 @@
 {
-    "author": ["Guyonsteroids (718395193090375700)"],
+    "author": [
+        "Guyonsteroids (718395193090375700)"
+    ],
     "short": "Music Restricter cog",
     "description": "Stop users from queing multiple music bots",
     "name": "musicrestricter",

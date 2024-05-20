@@ -1,8 +1,16 @@
 {
-    "author": ["Guyonsteroids (718395193090375700)"],
+    "author": [
+        "Guyonsteroids (718395193090375700)"
+    ],
     "short": "The Reddit Link parser cog",
     "description": "A cog to parse reddit link",
-    "requirements": ["moviepy", "beautifulsoup4", "pystreamable", "lxml", "requests"],
+    "requirements": [
+        "moviepy",
+        "beautifulsoup4",
+        "pystreamable",
+        "lxml",
+        "requests"
+    ],
     "name": "Redditparser",
     "install_msg": "This cog is broken and no longer suported\n\nThank you for instaling the Redditparser cog!. If you need support feel free to reach out to me in the #support (<#992344272529535087>) of this server.\nhttps://discord.gg/aYd3ZPr4Dn"
 }

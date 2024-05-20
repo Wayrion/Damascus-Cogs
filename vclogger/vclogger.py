@@ -5,23 +5,26 @@ import random
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
+
 class VCLogger(commands.Cog):
     """A VCLogger cog"""
-    
+
     def __init__(self, bot):
         self.bot = bot
-        self.config = Config.get_conf(self, identifier=718395193090375700, force_registration=True)
+        self.config = Config.get_conf(
+            self, identifier=718395193090375700, force_registration=True
+        )
 
         default_guild = {
             "state": True,
             "empty_only": True,
             "logchannel": None,
             "join_msg": ["{member.mention} joined the vc"],
-            "leave_msg": ["{member.mention} left the vc"]            
+            "leave_msg": ["{member.mention} left the vc"],
         }
 
         self.config.register_guild(**default_guild)
-    
+
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         join_msg = random.choice(await self.config.guild(member.guild).join_msg())
@@ -37,9 +40,9 @@ class VCLogger(commands.Cog):
             return
 
         if before.channel is None and after.channel is not None:
-            try: 
+            try:
                 channel = self.bot.get_channel(logchannel)
-                
+
                 if empty_only == False:
                     if "{member.mention}" in join_msg:
                         await channel.send(join_msg.format(member=member))
@@ -51,7 +54,7 @@ class VCLogger(commands.Cog):
                         await channel.send(join_msg.format(member=member))
                     elif join_msg != "":
                         await channel.send(join_msg)
-                                    
+
                 else:
                     return
 
@@ -148,20 +151,22 @@ class VCLogger(commands.Cog):
             else:
                 responses.append(response)
                 await ctx.send("Leave message added")
-    
+
     @vcloggersettings.command(name="listjoinmsg")
     @commands.is_owner()
     async def vcloggersettings_listjoinmsg(self, ctx: commands.Context):
         """
-        Lists the joins msgs for the vc logger cog with 
+        Lists the joins msgs for the vc logger cog with
         """
 
         guild_group = self.config.guild(ctx.guild)
         join_msg = await guild_group.join_msg()
-        x = [join_msg[i:i + 10] for i in range(0, len(join_msg), 10)]
+        x = [join_msg[i : i + 10] for i in range(0, len(join_msg), 10)]
         pages = []
         for a in x:
-            embed = discord.Embed(title="Join Messages", description=a, color=discord.Color.random())
+            embed = discord.Embed(
+                title="Join Messages", description=a, color=discord.Color.random()
+            )
             pages.append(embed)
 
         await menu(ctx, pages, DEFAULT_CONTROLS)
@@ -170,20 +175,21 @@ class VCLogger(commands.Cog):
     @commands.is_owner()
     async def vcloggersettings_listleavemsg(self, ctx: commands.Context):
         """
-        Lists the leave msgs for the vc logger cog with 
+        Lists the leave msgs for the vc logger cog with
         """
 
         guild_group = self.config.guild(ctx.guild)
         leave_msg = await guild_group.leave_msg()
-        x = [leave_msg[i:i + 10] for i in range(0, len(leave_msg), 10)]
+        x = [leave_msg[i : i + 10] for i in range(0, len(leave_msg), 10)]
         pages = []
         for a in x:
-            embed = discord.Embed(title="Leave Messages", description=a, color=discord.Color.random())
+            embed = discord.Embed(
+                title="Leave Messages", description=a, color=discord.Color.random()
+            )
             pages.append(embed)
 
         await menu(ctx, pages, DEFAULT_CONTROLS)
 
-    
     @vcloggersettings.command(name="reset")
     @commands.is_owner()
     async def vcloggersettings_reset(self, ctx: commands.Context):
@@ -199,15 +205,16 @@ class VCLogger(commands.Cog):
         """
         Shows current configurations for the cog
         """
-        
+
         logchannel = await self.config.guild(ctx.guild).logchannel()
         state = await self.config.guild(ctx.guild).state()
         empty_only = await self.config.guild(ctx.guild).empty_only()
 
-        embed = discord.Embed(title = "VCLogger cog settings", color=discord.Color.random())
-        embed.add_field(name="State:", value=state, inline = True)
-        embed.add_field(name="Empty Only:", value=empty_only, inline = True)
-        embed.add_field(name="Log Channel:", value=f"<#{logchannel}>", inline = True)
+        embed = discord.Embed(
+            title="VCLogger cog settings", color=discord.Color.random()
+        )
+        embed.add_field(name="State:", value=state, inline=True)
+        embed.add_field(name="Empty Only:", value=empty_only, inline=True)
+        embed.add_field(name="Log Channel:", value=f"<#{logchannel}>", inline=True)
 
         await ctx.send(embed=embed)
-        

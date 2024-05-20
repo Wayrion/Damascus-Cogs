@@ -1,5 +1,7 @@
 {
-    "author": ["Guyonsteroids (718395193090375700)"],
+    "author": [
+        "Guyonsteroids (718395193090375700)"
+    ],
     "short": "The Bible cog",
     "description": "A bible cog to look up verses and add notes to them.",
     "name": "Bible",

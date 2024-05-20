@@ -1,8 +1,12 @@
 {
-    "author": ["Guyonsteroids (718395193090375700)"],
+    "author": [
+        "Guyonsteroids (718395193090375700)"
+    ],
     "short": "The Welcome cog",
     "description": "A Welcome cog that welcomes new members to your server!",
     "name": "Welcome",
-    "requirements": ["pillow"],
+    "requirements": [
+        "pillow"
+    ],
     "install_msg": "Thank you for instaling the Welcome cog!. If you need support feel free to reach out to me in the #support (<#992344272529535087>) of this server.\nhttps://discord.gg/aYd3ZPr4Dn"
 }

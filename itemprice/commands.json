@@ -1,5 +1,6 @@
 {
-    "Animals": [{
+    "Animals": [
+        {
             "t": [
                 "animals"
             ],
@@ -183,7 +184,8 @@
             ]
         }
     ],
-    "Config": [{
+    "Config": [
+        {
             "t": [
                 "audit"
             ],
@@ -360,7 +362,8 @@
             ]
         }
     ],
-    "Currency": [{
+    "Currency": [
+        {
             "t": [
                 "achievements",
                 "achievement",
@@ -1081,7 +1084,8 @@
             ]
         }
     ],
-    "Fun": [{
+    "Fun": [
+        {
             "t": [
                 "8ball",
                 "fortune"
@@ -1502,7 +1506,8 @@
             ]
         }
     ],
-    "Games": [{
+    "Games": [
+        {
             "t": [
                 "connect4",
                 "c4"
@@ -1610,7 +1615,8 @@
             ]
         }
     ],
-    "Image": [{
+    "Image": [
+        {
             "t": [
                 "abandon",
                 "disown"
@@ -2985,7 +2991,8 @@
             ]
         }
     ],
-    "Memey": [{
+    "Memey": [
+        {
             "t": [
                 "4chan"
             ],
@@ -3259,7 +3266,8 @@
             ]
         }
     ],
-    "Utility": [{
+    "Utility": [
+        {
             "t": [
                 "choose"
             ],

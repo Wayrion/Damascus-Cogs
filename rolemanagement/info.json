@@ -15,10 +15,15 @@
 		"role search",
 		"massrole"
 	],
-	"requirements": ["pytz", "datetime", "argparse", "shlex", "contextlib"],
+	"requirements": [
+		"pytz",
+		"datetime",
+		"argparse",
+		"shlex",
+		"contextlib"
+	],
 	"hidden": false,
 	"min_bot_version": "3.5.0",
 	"end_user_data_statement": "This cog does not persistently store end user data. This cog does store discord IDs as needed for operation.",
 	"install_msg": "Thank you for instaling the RoleManagement cog!. If you need support feel free to reach out to me in the #support (<#992344272529535087>) of this server.\nhttps://discord.gg/aYd3ZPr4Dn\nNOTE: The original author of this cog is Sinbad."
-
 }
