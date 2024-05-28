@@ -1,3 +1,5 @@
+![Damascus-Cogs](https://github.com/Guyonsteroids/Damascus-Cogs/assets/82315185/ad4a74aa-54ec-431b-a3ab-65fe6927302f)
+
 # Damascus-Cogs
 Discord Cogs forged in the pits of hell... aka my development environment
 
