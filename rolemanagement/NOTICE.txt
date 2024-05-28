@@ -1,5 +1,5 @@
 Copyright 2017-present Michael Hall
 
-The code here was developed for https://github.com/mikeshardmind/SinbadCogs
+The code here was developed by https://github.com/mikeshardmind/SinbadCogs
 
-Edited by HellFire (718395193090375700)
+Edited by Guyonsteroids (718395193090375700)

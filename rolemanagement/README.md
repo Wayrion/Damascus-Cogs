@@ -18,3 +18,5 @@ will not take actions based on anything it does not own. The means if another co
 violates the settings in rolemanagement, rolemanagement won't do anything about it.
 
 This is intentional to prevent API loops with multiple cogs fighting eachother.
+
+### Please read NOTICE.txt
