@@ -13,6 +13,7 @@ class Notifier(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, 718395193090375700, force_registration=True)
         default_guild = {
+            "status": True,
             "annoucement_registry": {},  # Contains a dict of items where the name of the system message is the key and the role is the value
             "annoucement_channel": "",
         }
@@ -20,10 +21,13 @@ class Notifier(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.guild is None:
+        guild_group = self.config.guild(message.guild)
+        status = await self.config.guild(message.guild).status()
+        if not status:
             return
 
-        guild_group = self.config.guild(message.guild)
+        if message.guild is None:
+            return
 
         async with guild_group.annoucement_registry() as annoucement_registry:
 
