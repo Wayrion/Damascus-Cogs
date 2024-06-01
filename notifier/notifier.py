@@ -50,6 +50,16 @@ class Notifier(commands.Cog):
 
     @notifierset.command()
     @checks.admin_or_permissions(manage_guild=True)
+    async def togglestatus(self, ctx: commands.Context):
+        status = await self.config.guild(ctx.guild).status()
+        if status:
+            await self.config.status.set(False)
+            await ctx.send("Toggled off notifier")
+        else:
+            await ctx.send("Toggled on notifier")
+
+    @notifierset.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def addrole(self, ctx: commands.Context, name: str, role: int):
         """Add the <role> to ping when an annoucement from a <name> is made"""
         guild_group = self.config.guild(ctx.guild)
