@@ -23,17 +23,14 @@ class Notifier(commands.Cog):
         if message.guild is None:
             return
 
-        try:
-            role = annoucement_registry[message.author.name]
-        except KeyError:
-            return
-
-        if not role:
-            return
-
         guild_group = self.config.guild(message.guild)
 
         async with guild_group.annoucement_registry() as annoucement_registry:
+
+            try:
+                role = annoucement_registry[message.author.name]
+            except KeyError:
+                return
 
             await message.channel.send(
                 f"<@&{role}>",
