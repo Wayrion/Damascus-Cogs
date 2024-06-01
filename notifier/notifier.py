@@ -47,7 +47,7 @@ class Notifier(commands.Cog):
     @notifierset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def addrole(self, ctx: commands.Context, name: str, role: int):
-        """Set or remove the background image for the welcome message."""
+        """Add the <role> to ping when an annoucement from a <name> is made"""
         guild_group = self.config.guild(ctx.guild)
 
         annoucement_registry: Dict
@@ -59,7 +59,7 @@ class Notifier(commands.Cog):
     @notifierset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def removerole(self, ctx: commands.Context, name: str, role: int):
-        """Set or remove the background image for the welcome message."""
+        """Remove the <role> to ping when an annoucement from a <name> is made"""
         guild_group = self.config.guild(ctx.guild)
         annoucement_registry: Dict
         async with guild_group.annoucement_registry() as annoucement_registry:
