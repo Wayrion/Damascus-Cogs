@@ -38,6 +38,7 @@ class MiniMsg:
         self.channel = msg.channel
         self.author = msg.author
         self.content = msg.content
+        self.reaction = msg.reactions[0] if msg.reactions else None
         self.embed = msg.embeds[0] if msg.embeds else None
         self.deleted_at = int(time.time())
         self.created_at = int(calendar.timegm(msg.created_at.utctimetuple()))
@@ -437,7 +438,7 @@ class Snipe(commands.Cog):
 
     @commands.admin()
     @snipeset.command()
-    async def deletecache(self, ctx: commands.Context):
+    async def clearcache(self, ctx: commands.Context):
         """Clears the message cache for snipe"""
         self.deletecache = defaultdict(lambda: deque(maxlen=100))
         await ctx.send("Delete the cache")
