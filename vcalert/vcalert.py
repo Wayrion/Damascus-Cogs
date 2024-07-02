@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands
 from redbot.core import Config
 from discord.ext.commands import Greedy
+from redbot.core import checks
 
 
 class VCAlert(commands.Cog):
@@ -52,6 +53,7 @@ class VCAlert(commands.Cog):
                 return
 
     @commands.group()
+    @checks.admin_or_permissions(manage_guild=True)
     async def vcalert(self, ctx):
         """
         Settings for the VC Alert cog
@@ -59,6 +61,7 @@ class VCAlert(commands.Cog):
         pass
 
     @vcalert.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def state(self, ctx, state: bool):
         """
         Toggle the state of the VC Alert cog
@@ -67,6 +70,7 @@ class VCAlert(commands.Cog):
         await ctx.send(f"VC Alert state set to {state}")
 
     @vcalert.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def add(self, ctx, ids: Greedy[int] = None):
         """
         Adds user IDs to the alert list
@@ -90,6 +94,7 @@ class VCAlert(commands.Cog):
             await ctx.send(embed=embed)
 
     @vcalert.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def remove(self, ctx, ids: Greedy[int]):
         """
         Removes user IDs from the alert list
@@ -123,6 +128,7 @@ class VCAlert(commands.Cog):
         await ctx.send(embed=embed)
 
     @vcalert.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def list(self, ctx):
         """
         Lists the user IDs in the alert list
@@ -141,6 +147,7 @@ class VCAlert(commands.Cog):
         await ctx.send(embed=embed)
 
     @vcalert.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def padd(self, ctx, ids: Greedy[int] = None):
         """
         Adds user IDs to the ping list
@@ -168,6 +175,7 @@ class VCAlert(commands.Cog):
         await ctx.send(embed=embed)
 
     @vcalert.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def premove(self, ctx, ids: Greedy[int] = None):
         """
         Removes user IDs from the ping list
@@ -208,6 +216,7 @@ class VCAlert(commands.Cog):
         await ctx.send(embed=embed)
 
     @vcalert.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def plist(self, ctx):
         """
         Lists the user IDs in the ping list
@@ -221,6 +230,7 @@ class VCAlert(commands.Cog):
         await ctx.send(embed=embed)
 
     @vcalert.command()
+    @checks.admin_or_permissions(manage_guild=True)
     async def logchannel(self, ctx, channel: int = None):
         """
         Set the log channel for the VC Alert cog
