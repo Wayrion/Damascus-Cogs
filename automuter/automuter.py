@@ -1,6 +1,7 @@
 import discord
 from redbot.core import commands
 from redbot.core import Config, checks
+import asyncio
 
 
 class Automuter(commands.Cog):
@@ -12,27 +13,29 @@ class Automuter(commands.Cog):
             self, identifier=718395193090375700, force_registration=True
         )
 
-        default_guild = {
-            "state": True,
+        default_channel = {
+            "state": False,
             "unmute": True,
             "undeafen": True,
             "disconnect": False,
         }
 
-        self.config.register_guild(**default_guild)
+        self.config.register_channel(**default_channel)
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before, after):
 
-        state = await self.config.guild(member.guild).state()
-        unmute = await self.config.guild(member.guild).unmute()
-        undeafen = await self.config.guild(member.guild).undeafen()
-        disconnect = await self.config.guild(member.guild).disconnect()
+        vc: discord.VoiceChannel = after.channel
+
+        state = await self.config.channel(vc).state()
+        unmute = await self.config.channel(vc).unmute()
+        undeafen = await self.config.channel(vc).undeafen()
+        disconnect = await self.config.channel(vc).disconnect()
 
         if not state:
             return
 
-        if before.channel is None and after.channel is not None:
+        if after.channel is not None:
             try:
                 if unmute:
                     await member.edit(mute=False)
@@ -46,7 +49,7 @@ class Automuter(commands.Cog):
 
     @commands.group()
     @checks.admin_or_permissions(manage_guild=True)
-    async def automuter(self, ctx):
+    async def automuter(self, ctx: commands.Context):
         """
         Settings for the Automuter cog
         """
@@ -54,43 +57,43 @@ class Automuter(commands.Cog):
 
     @automuter.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def state(self, ctx, state: bool):
+    async def state(self, ctx: commands.Context, state: bool):
         """
         Toggle the state of the Automuter cog
         """
-        await self.config.guild(ctx.guild).state.set(state)
+        await self.config.channel(ctx.channel).state.set(state)
         await ctx.send(f"Automuter state set to {state}")
 
     @automuter.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def unmute(self, ctx, state: bool):
+    async def unmute(self, ctx: commands.Context, state: bool):
         """
         Toggle the state of the unmute
         """
-        await self.config.guild(ctx.guild).unmute.set(state)
+        await self.config.channel(ctx.channel).unmute.set(state)
         await ctx.send(f"Automuter unmute set to {state}")
 
     @automuter.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def undeafen(self, ctx, state: bool):
+    async def undeafen(self, ctx: commands.Context, state: bool):
         """
         Toggle the state of the undeafen
         """
-        await self.config.guild(ctx.guild).undeafen.set(state)
+        await self.config.channel(ctx.channel).undeafen.set(state)
         await ctx.send(f"Automuter undeafen set to {state}")
 
     @automuter.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def disconnect(self, ctx, state: bool):
+    async def disconnect(self, ctx: commands.Context, state: bool):
         """
         Toggle the state of the disconnect
         """
-        await self.config.guild(ctx.guild).disconnect.set(state)
+        await self.config.channel(ctx.channel).disconnect.set(state)
         await ctx.send(f"Automuter disconnect set to {state}")
 
     @automuter.command()
     @checks.admin()
     async def reset(self, ctx: commands.Context):
         """Reset all settings to the default values."""
-        await self.config.guild(ctx.guild).clear()
+        await self.config.channel(ctx.channel).clear()
         await ctx.send("Settings reset.")
