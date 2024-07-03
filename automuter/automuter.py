@@ -25,21 +25,21 @@ class Automuter(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before, after):
-
-        vc: discord.VoiceChannel = after.channel
-
-        state = await self.config.channel(vc).state()
-        unmute = await self.config.channel(vc).unmute()
-        undeafen = await self.config.channel(vc).undeafen()
-        disconnect = await self.config.channel(vc).disconnect()
-        time = int(await self.config.channel(vc).time())
-
-        if not state:
-            return
-
-        await asyncio.sleep(time)
-
         if after.channel is not None:
+            state = await self.config.channel(vc).state()
+
+            if not state:
+                return
+
+            vc: discord.VoiceChannel = after.channel
+
+            unmute = await self.config.channel(vc).unmute()
+            undeafen = await self.config.channel(vc).undeafen()
+            disconnect = await self.config.channel(vc).disconnect()
+            time = int(await self.config.channel(vc).time())
+
+            await asyncio.sleep(time)
+
             try:
                 if unmute:
                     await member.edit(mute=False)
