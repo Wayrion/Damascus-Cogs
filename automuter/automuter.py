@@ -65,6 +65,9 @@ class Automuter(commands.Cog):
         """
         Toggle the state of the Automuter cog
         """
+        if ctx.channel.type != "voice":
+            await ctx.send("You are not in a voice channel")
+            return
         await self.config.channel(ctx.channel).state.set(state)
         await ctx.send(f"Automuter state set to {state}")
 
@@ -74,6 +77,10 @@ class Automuter(commands.Cog):
         """
         Toggle the state of the unmute
         """
+        if ctx.channel.type != "voice":
+            await ctx.send("You are not in a voice channel")
+            return
+
         await self.config.channel(ctx.channel).unmute.set(state)
         await ctx.send(f"Automuter unmute set to {state}")
 
@@ -83,6 +90,9 @@ class Automuter(commands.Cog):
         """
         Toggle the state of the undeafen
         """
+        if ctx.channel.type != "voice":
+            await ctx.send("You are not in a voice channel")
+            return
         await self.config.channel(ctx.channel).undeafen.set(state)
         await ctx.send(f"Automuter undeafen set to {state}")
 
@@ -92,6 +102,9 @@ class Automuter(commands.Cog):
         """
         Toggle the state of the disconnect
         """
+        if ctx.channel.type != "voice":
+            await ctx.send("You are not in a voice channel")
+            return
         await self.config.channel(ctx.channel).disconnect.set(state)
         await ctx.send(f"Automuter disconnect set to {state}")
 
@@ -100,6 +113,9 @@ class Automuter(commands.Cog):
     async def time(self, ctx: commands.Context, time: int):
         """
         Toggle the amount of time before an action"""
+        if ctx.channel.type != "voice":
+            await ctx.send("You are not in a voice channel")
+            return
         await self.config.channel(ctx.channel).time.set(time)
         await ctx.send(f"Automuter waiting time set to {time}")
 
@@ -107,6 +123,9 @@ class Automuter(commands.Cog):
     @checks.admin()
     async def reset(self, ctx: commands.Context):
         """Reset channel settings to the default values."""
+        if ctx.channel.type != "voice":
+            await ctx.send("You are not in a voice channel")
+            return
         await self.config.channel(ctx.channel).clear()
         await ctx.send("Settings reset.")
 
