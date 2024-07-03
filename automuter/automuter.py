@@ -25,13 +25,12 @@ class Automuter(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before, after):
-        if after.channel is not None:
+        if after.channel:
+            vc = after.channel
             state = await self.config.channel(vc).state()
 
             if not state:
                 return
-
-            vc: discord.VoiceChannel = after.channel
 
             unmute = await self.config.channel(vc).unmute()
             undeafen = await self.config.channel(vc).undeafen()
