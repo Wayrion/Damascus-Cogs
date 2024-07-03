@@ -35,6 +35,8 @@ class Automuter(commands.Cog):
         if not state:
             return
 
+        await asyncio.sleep(5)
+
         if after.channel is not None:
             try:
                 if unmute:
@@ -97,3 +99,12 @@ class Automuter(commands.Cog):
         """Reset all settings to the default values."""
         await self.config.channel(ctx.channel).clear()
         await ctx.send("Settings reset.")
+
+    @automuter.command()
+    @checks.admin()
+    async def nukeconfig(self, ctx: commands.Context):
+        """
+        This command nukes the config
+        """
+        await self.config.clear_all()
+        await ctx.send("Config cleared")
