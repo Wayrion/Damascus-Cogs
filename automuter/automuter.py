@@ -96,7 +96,7 @@ class Automuter(commands.Cog):
     @automuter.command()
     @checks.admin()
     async def reset(self, ctx: commands.Context):
-        """Reset all settings to the default values."""
+        """Reset channel settings to the default values."""
         await self.config.channel(ctx.channel).clear()
         await ctx.send("Settings reset.")
 
