@@ -25,7 +25,7 @@ class Automuter(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before, after):
-        if after.channel:
+        if before.channel != after.channel:
             vc = after.channel
             state = await self.config.channel(vc).state()
 
