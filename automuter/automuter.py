@@ -97,7 +97,7 @@ class Automuter(commands.Cog):
 
     @automuter.command()
     @checks.admin_or_permissions(manage_guild=True)
-    async def disconnect(self, ctx: commands.Context, time: int):
+    async def time(self, ctx: commands.Context, time: int):
         """
         Toggle the amount of time before an action"""
         await self.config.channel(ctx.channel).time.set(time)
