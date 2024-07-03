@@ -18,6 +18,7 @@ class Automuter(commands.Cog):
             "unmute": True,
             "undeafen": True,
             "disconnect": False,
+            "time": 5,
         }
 
         self.config.register_channel(**default_channel)
@@ -31,11 +32,12 @@ class Automuter(commands.Cog):
         unmute = await self.config.channel(vc).unmute()
         undeafen = await self.config.channel(vc).undeafen()
         disconnect = await self.config.channel(vc).disconnect()
+        time = int(await self.config.channel(vc).time())
 
         if not state:
             return
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(time)
 
         if after.channel is not None:
             try:
@@ -92,6 +94,14 @@ class Automuter(commands.Cog):
         """
         await self.config.channel(ctx.channel).disconnect.set(state)
         await ctx.send(f"Automuter disconnect set to {state}")
+
+    @automuter.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def disconnect(self, ctx: commands.Context, time: int):
+        """
+        Toggle the amount of time before an action"""
+        await self.config.channel(ctx.channel).time.set(time)
+        await ctx.send(f"Automuter waiting time set to {time}")
 
     @automuter.command()
     @checks.admin()
