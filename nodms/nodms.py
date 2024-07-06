@@ -25,7 +25,7 @@ SOFTWARE.
 import typing
 
 import discord
-from redbot.core import commands, Config
+from redbot.core import commands, Config, checks
 
 SUCCESS = "Setting updated successfully. Changes will take effect upon cog reload (`[p]reload nodms`)."
 
@@ -40,10 +40,10 @@ class NoDMs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(
-            self, identifier=14000605, force_registration=True
+            self, identifier=718395193090375700, force_registration=True
         )
         default_global = {
-            "toggle": False,
+            "toggle": True,
             "allowed": [],
             "blocked": [],
             "message": "",
@@ -55,7 +55,7 @@ class NoDMs(commands.Cog):
         self.blocked = []
         self.message = ""
         self.embed = False
-        self.toggle = False
+        self.toggle = True
 
     async def initialize(self):
         settings = await self.config.all()
@@ -75,7 +75,7 @@ class NoDMs(commands.Cog):
         if (
             self.toggle  # NoDMs toggled on
             and (ctx.channel == ctx.author.dm_channel)  # Command is in DMs
-            and (ctx.author.id not in ctx.bot.owner_ids)  # Author is not a bot owner
+            # and (ctx.author.id not in ctx.bot.owner_ids)  # Author is not a bot owner
             and (
                 not isinstance(ctx.command, commands.commands._AlwaysAvailableMixin)
             )  # Command is not always-available
@@ -195,3 +195,12 @@ class NoDMs(commands.Cog):
                 """,
             )
         )
+
+    @commands.is_owner()
+    @_no_dms.command(name="nukeconfig")
+    async def nukeconfig(self, ctx: commands.Context):
+        """
+        This command nukes the config
+        """
+        await self.config.clear_all()
+        await ctx.send("Config cleared")
