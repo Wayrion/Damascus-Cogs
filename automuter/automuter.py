@@ -49,6 +49,9 @@ class Automuter(commands.Cog):
             if not state:
                 return
 
+            if member.voice.channel != vc:
+                return
+
             unmute = await self.config.channel(vc).unmute()
             undeafen = await self.config.channel(vc).undeafen()
             disconnect = await self.config.channel(vc).disconnect()
