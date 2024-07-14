@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands
 from redbot.core import Config, checks
 import asyncio
+from redbot.core.utils.chat_formatting import humanize_list
 
 
 class Automuter(commands.Cog):
@@ -30,13 +31,19 @@ class Automuter(commands.Cog):
         before: discord.VoiceState,
         after: discord.VoiceState,
     ):
+        if after.channel == None:
+            return
 
-        if before.channel != after.channel and after.channel is not None:
+        if before.channel != after.channel:
+            # This is some janky code
             vc = after.channel
             time = int(await self.config.channel(vc).time())
+            state = await self.config.channel(vc).state()
+
+            if not state:
+                return
             await asyncio.sleep(time)
 
-            vc = after.channel
             state = await self.config.channel(vc).state()
 
             if not state:
@@ -124,6 +131,21 @@ class Automuter(commands.Cog):
             return
         await self.config.channel(ctx.channel).time.set(time)
         await ctx.send(f"Automuter waiting time set to {time}")
+
+    @automuter.command()
+    @checks.admin_or_permissions(manage_guild=True)
+    async def list(self, ctx: commands.Context):
+        """
+        List all the channels that have automuter enabled
+        """
+        enabled_channels = []
+        for i in ctx.guild.channels:
+            state = await self.config.channel(i).state()
+
+            if state:
+                enabled_channels.append(f"<#{i.id}>\n")
+
+        await ctx.send(humanize_list(enabled_channels))
 
     @automuter.command()
     @checks.admin()
