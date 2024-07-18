@@ -1,9 +1,10 @@
-import discord
 import os
 from contextlib import suppress
-from redbot.core import Config, commands, checks
+from typing import Dict, List, Optional
+
+import discord
+from redbot.core import Config, checks, commands
 from redbot.core.data_manager import cog_data_path
-from typing import Optional, Dict, List
 
 
 class Notifier(commands.Cog):

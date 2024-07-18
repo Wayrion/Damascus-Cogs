@@ -263,7 +263,7 @@ class RoleManagement(
     @checks.is_owner()
     @commands.command(name="rrcleanup", hidden=True)
     async def rolemanagementcleanup(self, ctx: commands.GuildContext):
-        """ :eyes: """
+        """:eyes:"""
         data = await self.config.custom("REACTROLE").all()
 
         key_data = {}
@@ -977,7 +977,7 @@ class RoleManagement(
         """
         Lists the selfroles and any associated costs.
         """
-    
+
         MYPY = False
         if MYPY:
             # remove this when mypy supports type narrowing from :=
@@ -994,7 +994,7 @@ class RoleManagement(
                 for role_id, vals in (await self.config.all_roles()).items()
                 if (role := ctx.guild.get_role(role_id)) and vals["self_role"]
             }
-    
+
         if not data:
             return await ctx.send("There aren't any self roles here.")
 

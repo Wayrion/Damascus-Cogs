@@ -1,13 +1,13 @@
-import discord
-from redbot.core import commands
-from redbot.core import Config
-import secrets
-from flask import Flask, request, redirect, url_for
-from flask_discord import DiscordOAuth2Session, requires_authorization
-import os
 import asyncio
-from waitress import serve
+import os
+import secrets
 from threading import Thread
+
+import discord
+from flask import Flask, redirect, request, url_for
+from flask_discord import DiscordOAuth2Session, requires_authorization
+from redbot.core import Config, commands
+from waitress import serve
 
 
 class AltDetector(commands.Cog):

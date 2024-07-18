@@ -1,11 +1,12 @@
-import discord
-import os
 import json
-from redbot.core import commands, Config
+import os
 from typing import Union
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
-from redbot.core.utils.chat_formatting import pagify, box
+
+import discord
+from redbot.core import Config, commands
 from redbot.core.data_manager import bundled_data_path
+from redbot.core.utils.chat_formatting import box, pagify
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
 
 class Bible(commands.Cog):

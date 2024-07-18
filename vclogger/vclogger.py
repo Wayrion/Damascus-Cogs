@@ -1,9 +1,9 @@
-import discord
-from redbot.core import commands
-from redbot.core import Config
 import random
+
+import discord
+from redbot.core import Config, commands
 from redbot.core.utils.chat_formatting import pagify
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
 
 class VCLogger(commands.Cog):

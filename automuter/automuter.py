@@ -1,7 +1,7 @@
-import discord
-from redbot.core import commands
-from redbot.core import Config, checks
 import asyncio
+
+import discord
+from redbot.core import Config, checks, commands
 from redbot.core.utils.chat_formatting import humanize_list
 
 

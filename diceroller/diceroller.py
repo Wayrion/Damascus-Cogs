@@ -1,8 +1,9 @@
+import random
+
 import discord
 from redbot.core import commands
-import random
 from redbot.core.utils.chat_formatting import pagify
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
 
 class DiceRoller(commands.Cog):

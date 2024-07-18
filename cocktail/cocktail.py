@@ -1,11 +1,10 @@
-import discord
-from redbot.core import commands
-
 # from redbot.core import Config
 import aiohttp
+import discord
+from redbot.core import commands
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
-from .utils import drinksformatter, ingredientformatter, multipledrinksformatter, chunks
+from .utils import chunks, drinksformatter, ingredientformatter, multipledrinksformatter
 
 
 class Cocktail(commands.Cog):

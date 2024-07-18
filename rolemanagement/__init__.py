@@ -13,8 +13,9 @@
 #   limitations under the License.
 
 
-from .core import RoleManagement
 from redbot.core import commands
+
+from .core import RoleManagement
 
 __red_end_user_data_statement__ = (
     "This cog does not persistently store end user data. "

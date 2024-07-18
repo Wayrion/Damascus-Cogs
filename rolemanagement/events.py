@@ -13,12 +13,11 @@
 #   limitations under the License.
 from __future__ import annotations
 
-import pytz
-
 from datetime import datetime, timedelta
 from typing import List
 
 import discord
+import pytz
 from redbot.core import commands
 
 from .abc import MixinMeta
@@ -41,14 +40,14 @@ class EventMixin(MixinMeta):
         guild: discord.Guild = member.guild
         now = datetime.now(pytz.utc)
         level: int = guild.verification_level.value
-    
+
         if level >= 2 and member.created_at + timedelta(minutes=5) > now:  # medium
             return True
-    
+
         if level >= 3:  # high
             if not member.joined_at or member.joined_at + timedelta(minutes=10) > now:
                 return True
-    
+
         return False
 
     @commands.Cog.listener()

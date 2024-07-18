@@ -1,8 +1,6 @@
 import discord
-from redbot.core import commands
-from redbot.core import Config
 from discord.ext.commands import Greedy
-from redbot.core import checks
+from redbot.core import Config, checks, commands
 
 
 class VCAlert(commands.Cog):

@@ -1,6 +1,5 @@
 import discord
-from redbot.core import commands
-from redbot.core import Config
+from redbot.core import Config, commands
 
 
 class MusicRestricter(commands.Cog):

@@ -1,15 +1,17 @@
-import discord
 import asyncio
-import time
 import os
+import time
 from contextlib import suppress
-from redbot.core import Config, commands, checks
-from redbot.core.data_manager import cog_data_path
-from redbot.core.utils.chat_formatting import humanize_list, inline
 from io import BytesIO
-from PIL import Image, ImageFont, ImageDraw, UnidentifiedImageError
 from string import Formatter
 from typing import Optional
+
+import discord
+from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError
+from redbot.core import Config, checks, commands
+from redbot.core.data_manager import cog_data_path
+from redbot.core.utils.chat_formatting import humanize_list, inline
+
 
 class Welcome(commands.Cog):
     """Welcomes a user to the server with an image."""
@@ -17,8 +19,8 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, 718395193090375700, force_registration=True)
-        default_guild  = {
-            'enabled': False,
+        default_guild = {
+            "enabled": False,
             "avatar_border": 6,
             "avatar_border_color": (255, 255, 255),
             "avatar_pos": (550, 190),
@@ -40,13 +42,15 @@ class Welcome(commands.Cog):
         }
         self.config.register_guild(**default_guild)
 
-    async def wait_for_onboarding(self, member:discord.Member):
+    async def wait_for_onboarding(self, member: discord.Member):
         timeout = 300  # 5 minutes
         start_time = time.monotonic()
 
         while not member.flags.completed_onboarding:
             if time.monotonic() - start_time >= timeout:
-                raise asyncio.TimeoutError("Timed out waiting for member to complete onboarding")
+                raise asyncio.TimeoutError(
+                    "Timed out waiting for member to complete onboarding"
+                )
             await asyncio.sleep(5)
         return True
 
@@ -65,22 +69,33 @@ class Welcome(commands.Cog):
                 with BytesIO() as image_binary:
                     background.save(image_binary, format="png")
                     image_binary.seek(0)
-                    file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
+                    file = discord.File(
+                        fp=image_binary, filename=f"welcome{member.id}.png"
+                    )
 
             channel = None
             if settings["join_channel"]:
                 channel = member.guild.get_channel(settings["join_channel"])
             elif member.guild.system_channel:
-                channel =  member.guild.system_channel
+                channel = member.guild.system_channel
 
             if channel:
-                text = settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=channel)
+                text = settings["member_join_message"].format(
+                    member=member.mention,
+                    guild=member.guild.name,
+                    guild_owner=member.guild.owner,
+                    channel=channel,
+                )
                 await channel.send(text, file=file)
 
             if settings["member_join_roles"]:
                 try:
-                    await asyncio.wait_for(self.wait_for_onboarding(member), timeout=300)
-                    async with self.config.guild(member.guild).member_join_roles() as roles:
+                    await asyncio.wait_for(
+                        self.wait_for_onboarding(member), timeout=300
+                    )
+                    async with self.config.guild(
+                        member.guild
+                    ).member_join_roles() as roles:
                         for role in roles:
                             await member.add_roles(member.guild.get_role(role))
 
@@ -90,7 +105,11 @@ class Welcome(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         """Sends a goodbye message with an image when a user leaves the server."""
-        if member.bot or not await self.config.guild(member.guild).enabled() or not await self.config.guild(member.guild).leave_enabled():
+        if (
+            member.bot
+            or not await self.config.guild(member.guild).enabled()
+            or not await self.config.guild(member.guild).leave_enabled()
+        ):
             return
 
         async with self.config.guild(member.guild).all() as settings:
@@ -102,13 +121,15 @@ class Welcome(commands.Cog):
                 with BytesIO() as image_binary:
                     background.save(image_binary, format="png")
                     image_binary.seek(0)
-                    file = discord.File(fp=image_binary, filename=f"goodbye{member.id}.png")
+                    file = discord.File(
+                        fp=image_binary, filename=f"goodbye{member.id}.png"
+                    )
 
             channel = None
             if settings["leave_channel"]:
                 channel = member.guild.get_channel(settings["leave_channel"])
             elif member.guild.system_channel:
-                channel =  member.guild.system_channel
+                channel = member.guild.system_channel
 
             if channel:
                 text = settings["member_leave_message"].format(member=member.name)
@@ -165,14 +186,18 @@ class Welcome(commands.Cog):
 
     @avatar.command(name="border_color")
     @checks.admin_or_permissions(manage_guild=True)
-    async def avatar_border_color(self, ctx: commands.Context, red: int, green: int, blue: int):
+    async def avatar_border_color(
+        self, ctx: commands.Context, red: int, green: int, blue: int
+    ):
         """Set the profile picture border color using RGB values."""
         try:
             color = discord.Color.from_rgb(red, green, blue).to_rgb()
             await self.config.guild(ctx.guild).avatar_border_color.set(color)
             await ctx.send(f"Avatar border color set to {color}.")
         except ValueError:
-            await ctx.send(f"Error setting avatar border color to {red}, {green}, {blue}.")
+            await ctx.send(
+                f"Error setting avatar border color to {red}, {green}, {blue}."
+            )
 
     @avatar.command(name="position")
     @checks.admin_or_permissions(manage_guild=True)
@@ -267,12 +292,18 @@ class Welcome(commands.Cog):
         Example: `[p]welcomeset member join_message {member} joined {guild}! Welcome!`
         Variables in {} will be replaced with the appropriate value."""
         fail = []
-        options = {'member', 'guild', 'guild_owner', 'channel'}
-        for x in [i[1] for i in Formatter().parse(message) if i[1] is not None and i[1] not in options]:
+        options = {"member", "guild", "guild_owner", "channel"}
+        for x in [
+            i[1]
+            for i in Formatter().parse(message)
+            if i[1] is not None and i[1] not in options
+        ]:
             fail.append(inline(x))
 
         if fail:
-            msg = "You are not allowed to use {key} in the message.".format(key=humanize_list(fail))
+            msg = "You are not allowed to use {key} in the message.".format(
+                key=humanize_list(fail)
+            )
             await ctx.send(msg)
             return
         msg = message.replace("\\n", "\n").strip()
@@ -283,7 +314,9 @@ class Welcome(commands.Cog):
     @checks.admin_or_permissions(manage_guild=True)
     async def member_join_roles(self, ctx: commands.Context, *roles: discord.Role):
         """Set the roles to give to a member when they join."""
-        await self.config.guild(ctx.guild).member_join_roles.set([role.id for role in roles])
+        await self.config.guild(ctx.guild).member_join_roles.set(
+            [role.id for role in roles]
+        )
         await ctx.send(f"Member join roles set to {[role.name for role in roles]}.")
 
     @member.command(name="leave_image")
@@ -304,12 +337,18 @@ class Welcome(commands.Cog):
         Example: `[p]welcomeset member leave_message {member} left! Goodbye!`
         Variables in {} will be replaced with the appropriate value."""
         fail = []
-        options = {'member'}
-        for x in [i[1] for i in Formatter().parse(message) if i[1] is not None and i[1] not in options]:
+        options = {"member"}
+        for x in [
+            i[1]
+            for i in Formatter().parse(message)
+            if i[1] is not None and i[1] not in options
+        ]:
             fail.append(inline(x))
 
         if fail:
-            msg = "You are not allowed to use {key} in the message.".format(key=humanize_list(fail))
+            msg = "You are not allowed to use {key} in the message.".format(
+                key=humanize_list(fail)
+            )
             await ctx.send(msg)
             return
         msg = message.replace("\\n", "\n").strip()
@@ -369,7 +408,6 @@ class Welcome(commands.Cog):
         action = "enabled" if enabled else "disabled"
         await ctx.send(f"Welcome has been {action}.")
 
-
     @welcomeset.command()
     @checks.admin_or_permissions(manage_guild=True)
     async def test(self, ctx: commands.Context, member: Optional[discord.Member]):
@@ -386,11 +424,23 @@ class Welcome(commands.Cog):
                 with BytesIO() as image_binary:
                     background.save(image_binary, format="png")
                     image_binary.seek(0)
-                    file = discord.File(fp=image_binary, filename=f"welcome{member.id}.png")
+                    file = discord.File(
+                        fp=image_binary, filename=f"welcome{member.id}.png"
+                    )
 
-            await ctx.send(settings["member_join_message"].format(member=member.mention, guild=member.guild.name, guild_owner=member.guild.owner, channel=ctx.channel), file=file)
+            await ctx.send(
+                settings["member_join_message"].format(
+                    member=member.mention,
+                    guild=member.guild.name,
+                    guild_owner=member.guild.owner,
+                    channel=ctx.channel,
+                ),
+                file=file,
+            )
 
-    async def create_image(self, settings: dict, member: discord.Member, msg: str) -> Image.Image:
+    async def create_image(
+        self, settings: dict, member: discord.Member, msg: str
+    ) -> Image.Image:
         # Use PIL and overlay the background on the profile picture at the specified coordinates
         if os.path.isfile(cog_data_path(self) / f"background-{member.guild.id}.png"):
             path = cog_data_path(self) / f"background-{member.guild.id}.png"
@@ -403,23 +453,31 @@ class Welcome(commands.Cog):
 
         if settings["avatar_border"] > 0 and settings["avatar_radius"] > 0:
             r = settings["avatar_radius"] + settings["avatar_border"]
-            img.ellipse((settings["avatar_pos"][0]-r, settings["avatar_pos"][1]-r, settings["avatar_pos"][0]+r, settings["avatar_pos"][1]+r), fill=tuple(settings["avatar_border_color"]))
+            img.ellipse(
+                (
+                    settings["avatar_pos"][0] - r,
+                    settings["avatar_pos"][1] - r,
+                    settings["avatar_pos"][0] + r,
+                    settings["avatar_pos"][1] + r,
+                ),
+                fill=tuple(settings["avatar_border_color"]),
+            )
 
         if (r := settings["avatar_radius"]) > 0:
-            mask = Image.new("L", (r*2, r*2), 0)
+            mask = Image.new("L", (r * 2, r * 2), 0)
             draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0, r*2, r*2), fill=255)
+            draw.ellipse((0, 0, r * 2, r * 2), fill=255)
 
             pfp = member.avatar or member.display_avatar
             profile = Image.open(BytesIO(await pfp.read()))
-            profile = profile.resize((r*2, r*2))
+            profile = profile.resize((r * 2, r * 2))
 
             # Create a new image with a white background
-            circle_image = Image.new("RGBA", (r*2, r*2), (255, 255, 255, 0))
+            circle_image = Image.new("RGBA", (r * 2, r * 2), (255, 255, 255, 0))
 
             # Draw a circle on the new image
             draw = ImageDraw.Draw(circle_image)
-            draw.ellipse((0, 0, r*2, r*2), fill=(255, 255, 255, 255))
+            draw.ellipse((0, 0, r * 2, r * 2), fill=(255, 255, 255, 255))
 
             # Use the circle image as a mask for the profile image
             profile = Image.composite(profile, circle_image, circle_image)
@@ -430,11 +488,23 @@ class Welcome(commands.Cog):
 
         if (size := settings["text_size"]) > 0:
             draw = ImageDraw.Draw(background)
-            draw.text(settings["member_overlay_pos"], msg, tuple(settings["text_color"]), font=ImageFont.load_default(size=size), anchor="mm")
+            draw.text(
+                settings["member_overlay_pos"],
+                msg,
+                tuple(settings["text_color"]),
+                font=ImageFont.load_default(size=size),
+                anchor="mm",
+            )
 
         if (size := settings["count_size"]) > 0:
             draw = ImageDraw.Draw(background)
-            draw.text(settings["member_count_overlay_pos"], f"Member #{member.guild.member_count}", tuple(settings["count_color"]), font=ImageFont.load_default(size=size), anchor="mm")
+            draw.text(
+                settings["member_count_overlay_pos"],
+                f"Member #{member.guild.member_count}",
+                tuple(settings["count_color"]),
+                font=ImageFont.load_default(size=size),
+                anchor="mm",
+            )
         return background
 
     @welcomeset.command()

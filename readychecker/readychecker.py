@@ -1,6 +1,7 @@
+import asyncio
+
 import discord
 from redbot.core import commands
-import asyncio
 
 
 class Confirm(discord.ui.View):
