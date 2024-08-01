@@ -315,3 +315,4 @@ class BoosterRoles(commands.Cog):
         """Set the boosts of a user"""
         member = ctx.guild.get_member(user_id)
         await self.config.member(member).booster_role_level.set(abs(boosts))
+        await ctx.send(f"Set member's boost level to {abs(boosts)}")
