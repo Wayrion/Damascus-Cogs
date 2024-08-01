@@ -13,7 +13,7 @@ class BoosterRoles(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, 718395193090375700, force_registration=True)
         default_guild = {
-            "state": False,
+            "state": True,
             "role_position": 0,
             "role_threshold": 1,
         }
