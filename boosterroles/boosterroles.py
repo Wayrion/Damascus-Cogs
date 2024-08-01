@@ -14,7 +14,6 @@ class BoosterRoles(commands.Cog):
         self.config = Config.get_conf(self, 718395193090375700, force_registration=True)
         default_guild = {
             "state": False,
-            "boost_role": None,  # contains the booster role. discrord.Role data type.
             "role_position": 0,
             "role_threshold": 1,
         }
