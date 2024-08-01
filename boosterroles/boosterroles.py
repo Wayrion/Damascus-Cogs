@@ -75,7 +75,7 @@ class BoosterRoles(commands.Cog):
             position = ctx.guild.get_role(position_or_id).position
 
         await self.config.guild(ctx.guild).role_position.set(position)
-        await ctx.send(f"BoosterRoles position set to {position_or_id}")
+        await ctx.send(f"BoosterRoles position set to {position}")
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
