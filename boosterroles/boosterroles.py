@@ -71,6 +71,9 @@ class BoosterRoles(commands.Cog):
         """
         Set the position of the roles created by the BoosterRoles cog
         """
+        if position > 10000:
+            position = ctx.guild.get_role(position).position
+
         await self.config.guild(ctx.guild).role_position.set(position)
         await ctx.send(f"BoosterRoles position set to {position}")
 
