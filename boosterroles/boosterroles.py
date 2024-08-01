@@ -316,4 +316,4 @@ class BoosterRoles(commands.Cog):
     async def set(self, ctx: commands.Context, user_id: int, boosts: int = 1):
         """Set the boosts of a user"""
         member = await ctx.guild.get_member(user_id)
-        await self.config.member(member).booster_role_level.set(boosts)
+        await self.config.member(member).booster_role_level.set(abs(user_id))
