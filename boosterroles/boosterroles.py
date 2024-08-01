@@ -67,6 +67,24 @@ class BoosterRoles(commands.Cog):
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
+    async def position(self, ctx: commands.Context, position: int):
+        """
+        Set the position of the roles created by the BoosterRoles cog
+        """
+        await self.config.guild(ctx.guild).role_position.set(position)
+        await ctx.send(f"BoosterRoles position set to {position}")
+
+    @boosterroles.command()
+    @checks.has_permissions(manage_guild=True)
+    async def threshold(self, ctx: commands.Context, threshold: int):
+        """
+        Set the threshold required to use custom roles
+        """
+        await self.config.guild(ctx.guild).role_threshold.set(threshold)
+        await ctx.send(f"BoosterRoles position set to {threshold}")
+
+    @boosterroles.command()
+    @checks.has_permissions(manage_guild=True)
     async def printdata(self, ctx: commands.Context):
         """Show all settings."""
         data = await self.config.member(ctx.message.author).all()
