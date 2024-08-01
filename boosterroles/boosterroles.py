@@ -89,9 +89,13 @@ class BoosterRoles(commands.Cog):
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
-    async def printdata(self, ctx: commands.Context):
+    async def printdata(self, ctx: commands.Context, id: int = None):
         """Show all settings."""
-        data = await self.config.member(ctx.message.author).all()
+        if id:
+            member = ctx.guild.get_member(id)
+        else:
+            member = ctx.author
+        data = await self.config.member(member).all()
         await menu(ctx, list(pagify(str(data), page_length=2000)))
 
     @boosterroles.command()
