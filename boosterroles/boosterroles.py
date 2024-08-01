@@ -67,15 +67,15 @@ class BoosterRoles(commands.Cog):
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
-    async def position(self, ctx: commands.Context, position: int):
+    async def position(self, ctx: commands.Context, position_or_id: int):
         """
         Set the position of the roles created by the BoosterRoles cog
         """
-        if position > 10000:
-            position = ctx.guild.get_role(position).position
+        if position_or_id > 10000:
+            position = ctx.guild.get_role(position_or_id).position
 
         await self.config.guild(ctx.guild).role_position.set(position)
-        await ctx.send(f"BoosterRoles position set to {position}")
+        await ctx.send(f"BoosterRoles position set to {position_or_id}")
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
@@ -110,14 +110,6 @@ class BoosterRoles(commands.Cog):
     async def roles(self, ctx: commands.Context):
         """Configure your booster role"""
         pass
-
-    @roles.command()
-    @commands.guild_only()
-    @checks.has_permissions(manage_guild=True)
-    async def position(self, ctx: commands.Context, role_position: int):
-        """Set the position, where the roles will be added"""
-        await self.config.guild(ctx.guild).role_position.set(role_position)
-        await ctx.send(f"Position set to {role_position}")
 
     @roles.command()
     @commands.guild_only()
