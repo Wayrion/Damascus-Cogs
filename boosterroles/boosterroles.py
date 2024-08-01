@@ -83,6 +83,7 @@ class BoosterRoles(commands.Cog):
         """
         Set the threshold required to use custom roles
         """
+        threshold = abs(threshold)
         await self.config.guild(ctx.guild).role_threshold.set(threshold)
         await ctx.send(f"BoosterRoles position set to {threshold}")
 
