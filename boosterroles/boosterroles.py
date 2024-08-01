@@ -130,7 +130,6 @@ class BoosterRoles(commands.Cog):
                     color=discord.Color.pink(),
                     hoist=False,
                     mentionable=False,
-                    position=role_position,
                 )
                 await ctx.send("Done")
 
@@ -151,7 +150,6 @@ class BoosterRoles(commands.Cog):
                         color=discord.Color.pink(),
                         hoist=False,
                         mentionable=False,
-                        position=role_position,
                     )
                     await ctx.send("Done")
 
@@ -190,7 +188,6 @@ class BoosterRoles(commands.Cog):
                     color=color,
                     hoist=False,
                     mentionable=False,
-                    position=role_position,
                 )
                 await ctx.send("Done")
 
@@ -206,7 +203,6 @@ class BoosterRoles(commands.Cog):
                         color=color,
                         hoist=False,
                         mentionable=False,
-                        position=role_position,
                     )
                     await ctx.send("Done")
 
@@ -249,7 +245,6 @@ class BoosterRoles(commands.Cog):
                     display_icon=image,
                     hoist=False,
                     mentionable=False,
-                    position=role_position,
                 )
                 await ctx.send("Done")
 
@@ -266,7 +261,6 @@ class BoosterRoles(commands.Cog):
                         display_icon=image,
                         hoist=False,
                         mentionable=False,
-                        position=role_position,
                     )
                     await ctx.send("Done")
 
@@ -302,7 +296,6 @@ class BoosterRoles(commands.Cog):
                         color=discord.Color.pink(),
                         hoist=False,
                         mentionable=False,
-                        position=role_position,
                     )
 
                     await ctx.send(
