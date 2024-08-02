@@ -72,7 +72,7 @@ class BoosterRoles(commands.Cog):
     @checks.has_permissions(manage_guild=True)
     async def position(self, ctx: commands.Context, position_or_id: int):
         """
-        Set the position of the roles created by the BoosterRoles cog
+        Set the position of the roles created by the BoosterRoles cog. The role is created ABOVE the role you specify.
         """
         if position_or_id > 10000:
             position_or_id = ctx.guild.get_role(position_or_id).position
@@ -315,10 +315,26 @@ class BoosterRoles(commands.Cog):
             else:
                 role = ctx.guild.get_role(role_data)
 
-            if role in ctx.author.roles:
-                await ctx.author.remove_roles(role, reason="Unassigned role")
+            if not role:
+                role = await ctx.guild.create_role(
+                    name="Nitro Booster",
+                    reason="Booster Roles Cog",
+                    color=discord.Color.pink(),
+                    hoist=False,
+                    mentionable=False,
+                )
+
+                await ctx.send(
+                    "Assigned the default role, please configure it to your liking."
+                )
+                if role_position:
+                    await role.edit(position=role_position)
+                await self.config.member(ctx.author).role_data.set(role.id)
             else:
-                await ctx.author.add_roles(role)
+                if role in ctx.author.roles:
+                    await ctx.author.remove_roles(role, reason="Unassigned role")
+                else:
+                    await ctx.author.add_roles(role)
 
     @roles.command()
     @commands.guild_only()
