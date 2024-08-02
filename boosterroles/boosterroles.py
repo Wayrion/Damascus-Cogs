@@ -287,32 +287,30 @@ class BoosterRoles(commands.Cog):
     async def assign(self, ctx: commands.Context):
         """Assign / Unassign the booster role to yourself"""
 
-        if ctx.guild.premium_subscriber_role in ctx.author.roles:
-            role_threshold = await self.config.guild(ctx.guild).role_threshold()
-            boosts = await self.config.guild(ctx.guild).role_threshold()
+        # if ctx.guild.premium_subscriber_role in ctx.author.roles:
+        role_threshold = await self.config.guild(ctx.guild).role_threshold()
+        boosts = await self.config.guild(ctx.guild).role_threshold()
 
-            if boosts >= role_threshold:
-                role_data: int = await self.config.member(ctx.author).role_data()
-                role = await ctx.guild.get_role(role_data)
-                if not role:
-                    role_position: int = await self.config.guild(
-                        ctx.guild
-                    ).role_position()
+        if boosts >= role_threshold:
+            role_data: int = await self.config.member(ctx.author).role_data()
+            role = await ctx.guild.get_role(role_data)
+            if not role:
+                role_position: int = await self.config.guild(ctx.guild).role_position()
 
-                    role = await ctx.guild.create_role(
-                        name="Nitro Booster",
-                        reason="Booster Roles Cog",
-                        color=discord.Color.pink(),
-                        hoist=False,
-                        mentionable=False,
-                    )
+                role = await ctx.guild.create_role(
+                    name="Nitro Booster",
+                    reason="Booster Roles Cog",
+                    color=discord.Color.pink(),
+                    hoist=False,
+                    mentionable=False,
+                )
 
-                    await ctx.send(
-                        "Assigned the default role, please configure it to your liking."
-                    )
-                await role.edit(position=role_position)
-                if role in ctx.author.roles:
-                    await ctx.author.remove_roles(role, reason="Unassigned role")
+                await ctx.send(
+                    "Assigned the default role, please configure it to your liking."
+                )
+            await role.edit(position=role_position)
+            if role in ctx.author.roles:
+                await ctx.author.remove_roles(role, reason="Unassigned role")
 
     @roles.command()
     @commands.guild_only()
