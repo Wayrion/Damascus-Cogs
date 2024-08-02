@@ -34,12 +34,15 @@ class BoosterRoles(commands.Cog):
         if not message.is_system():
             return
 
-        if message.type == 8:
-            if message.guild.system_channel == message.channel:
-                booster_role_level = await self.config.member(
-                    message.author
-                ).booster_role_level()
-                booster_role_level += 1
+        # if message.type == 8:
+        if message.guild.system_channel == message.channel:
+            booster_role_level = await self.config.member(
+                message.author
+            ).booster_role_level()
+            booster_role_level += 1
+            await self.config.member(message.author).booster_role_level.set(
+                booster_role_level
+            )
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
@@ -157,6 +160,7 @@ class BoosterRoles(commands.Cog):
                     )
                     await ctx.send("Done")
 
+            await role.edit(position=role_position)
             await self.config.member(ctx.author).role_data.set(role.id)
 
         except discord.Forbidden:
@@ -210,6 +214,7 @@ class BoosterRoles(commands.Cog):
                     )
                     await ctx.send("Done")
 
+            await role.edit(position=role_position)
             await self.config.member(ctx.author).role_data.set(role.id)
 
         except discord.Forbidden:
@@ -267,7 +272,7 @@ class BoosterRoles(commands.Cog):
                         mentionable=False,
                     )
                     await ctx.send("Done")
-
+            await role.edit(position=role_position)
             await self.config.member(ctx.author).role_data.set(role.id)
 
         except discord.Forbidden:
@@ -305,6 +310,7 @@ class BoosterRoles(commands.Cog):
                     await ctx.send(
                         "Assigned the default role, please configure it to your liking."
                     )
+                await role.edit(position=role_position)
                 if role in ctx.author.roles:
                     await ctx.author.remove_roles(role, reason="Unassigned role")
 
