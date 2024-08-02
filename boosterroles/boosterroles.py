@@ -366,7 +366,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    @checks.is_owner
+    @checks.is_owner()
     async def delete(self, ctx: commands.Context):
         """Delete all booster roles"""
         for member in ctx.guild.premium_subscribers:
