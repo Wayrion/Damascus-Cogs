@@ -128,7 +128,7 @@ class BoosterRoles(commands.Cog):
             ctx.guild.get_member(ctx.author.id)
         ).role_data()
 
-        role_position: int = await self.config.guild(ctx.guild).role_position()
+        role_position = int(await self.config.guild(ctx.guild).role_position())
         try:
             if not role_id:
                 role = await ctx.guild.create_role(
@@ -176,7 +176,7 @@ class BoosterRoles(commands.Cog):
         role_id: Union[int | None] = await self.config.member(
             ctx.guild.get_member(ctx.author.id)
         ).role_data()
-        role_position: int = await self.config.guild(ctx.guild).role_position()
+        role_position = int(await self.config.guild(ctx.guild).role_position())
         try:
             color = discord.Color.from_str(color)
         except ValueError:
@@ -236,7 +236,7 @@ class BoosterRoles(commands.Cog):
             ctx.guild.get_member(ctx.author.id)
         ).role_data()
 
-        role_position: int = await self.config.guild(ctx.guild).role_position()
+        role_position = int(await self.config.guild(ctx.guild).role_position())
 
         # Get the attached file and check its validity
         # Thanks Mr 42
@@ -290,13 +290,12 @@ class BoosterRoles(commands.Cog):
         # if ctx.guild.premium_subscriber_role in ctx.author.roles:
         role_threshold = await self.config.guild(ctx.guild).role_threshold()
         boosts = await self.config.guild(ctx.guild).role_threshold()
-        role_position = await self.config.guild(ctx.guild).role_position()
+        role_position = int(await self.config.guild(ctx.guild).role_position())
 
         if boosts >= role_threshold:
             role_data = await self.config.member(ctx.author).role_data()
 
             if not role_data:
-
                 role = await ctx.guild.create_role(
                     name="Nitro Booster",
                     reason="Booster Roles Cog",
