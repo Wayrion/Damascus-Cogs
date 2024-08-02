@@ -316,7 +316,7 @@ class BoosterRoles(commands.Cog):
 
         # if ctx.guild.premium_subscriber_role in ctx.author.roles:
         role_threshold = await self.config.guild(ctx.guild).role_threshold()
-        boosts = await self.config.guild(ctx.guild).role_threshold()
+        boosts = await self.config.member(ctx.author).booster_role_level()
         role_position = int(await self.config.guild(ctx.guild).role_position())
 
         if boosts >= role_threshold:
@@ -363,6 +363,24 @@ class BoosterRoles(commands.Cog):
                     await role.delete()
                 else:
                     await ctx.author.add_roles(role)
+
+    @roles.command()
+    @commands.guild_only()
+    @checks.is_owner
+    async def delete(self, ctx: commands.Context):
+        """Delete all booster roles"""
+        for member in ctx.guild.premium_subscribers:
+            await self.config.member(member).booster_role_level.set(0)
+            # Get and remove their custom role when they stop boosting
+            role_data = await self.config.member(member).role_data()
+            role = member.guild.get_role(role_data)
+            try:
+                # Remove priviliges when the user looses their booster role
+                await role.delete()
+            except:
+                pass
+
+            await self.config.member(member).role_data.set(None)
 
     @roles.command()
     @commands.guild_only()
