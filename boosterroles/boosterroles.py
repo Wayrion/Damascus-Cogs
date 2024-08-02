@@ -161,7 +161,7 @@ class BoosterRoles(commands.Cog):
                     )
                     await ctx.send("Done")
 
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
             await role.edit(position=role_position)
             await self.config.member(ctx.author).role_data.set(role.id)
 
@@ -216,7 +216,7 @@ class BoosterRoles(commands.Cog):
                     )
                     await ctx.send("Done")
 
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
             await role.edit(position=role_position)
             await self.config.member(ctx.author).role_data.set(role.id)
 
@@ -275,7 +275,7 @@ class BoosterRoles(commands.Cog):
                         mentionable=False,
                     )
                     await ctx.send("Done")
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
             await role.edit(position=role_position)
             await self.config.member(ctx.author).role_data.set(role.id)
 
@@ -312,7 +312,7 @@ class BoosterRoles(commands.Cog):
                     "Assigned the default role, please configure it to your liking."
                 )
                 if role_position:
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(5)
                     await role.edit(position=role_position)
                 await self.config.member(ctx.author).role_data.set(role.id)
 
@@ -332,7 +332,7 @@ class BoosterRoles(commands.Cog):
                     "Assigned the default role, please configure it to your liking."
                 )
                 if role_position:
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(5)
                     await role.edit(position=role_position)
                 await self.config.member(ctx.author).role_data.set(role.id)
             else:
