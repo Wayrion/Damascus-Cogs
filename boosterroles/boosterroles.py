@@ -316,6 +316,8 @@ class BoosterRoles(commands.Cog):
 
             if role in ctx.author.roles:
                 await ctx.author.remove_roles(role, reason="Unassigned role")
+            else:
+                await ctx.author.add_roles(roles=role)
 
     @roles.command()
     @commands.guild_only()
