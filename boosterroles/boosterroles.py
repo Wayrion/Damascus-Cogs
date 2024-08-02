@@ -292,10 +292,10 @@ class BoosterRoles(commands.Cog):
         boosts = await self.config.guild(ctx.guild).role_threshold()
 
         if boosts >= role_threshold:
-            role_data: int = await self.config.member(ctx.author).role_data()
+            role_data = await self.config.member(ctx.author).role_data()
 
             if not role_data:
-                role_position: int = await self.config.guild(ctx.guild).role_position()
+                role_position = await self.config.guild(ctx.guild).role_position()
 
                 role = await ctx.guild.create_role(
                     name="Nitro Booster",
@@ -309,6 +309,7 @@ class BoosterRoles(commands.Cog):
                     "Assigned the default role, please configure it to your liking."
                 )
                 await role.edit(position=role_position)
+                await self.config.member(ctx.author).role_data.set(role.id)
 
             else:
                 role = await ctx.guild.get_role(role_data)
