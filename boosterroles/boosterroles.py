@@ -52,7 +52,12 @@ class BoosterRoles(commands.Cog):
             and before.guild.premium_subscriber_role in before.roles
         ):
             # Remove priviliges when the user looses their booster role
-            await self.config.member(before).booster_role_level().set(0)
+            await self.config.member(before).booster_role_level.set(0)
+            # Get and remove their custom role when they stop boosting
+            role_data = await self.config.member(before).role_data()
+            role = before.guild.get_role(role_data)
+            await role.delete()
+            await self.config.member(before).role_data.set(None)
 
     @commands.group()
     @checks.has_permissions(manage_guild=True)
