@@ -75,10 +75,10 @@ class BoosterRoles(commands.Cog):
         Set the position of the roles created by the BoosterRoles cog
         """
         if position_or_id > 10000:
-            position = ctx.guild.get_role(position_or_id).position
+            position_or_id = ctx.guild.get_role(position_or_id).position
 
-        await self.config.guild(ctx.guild).role_position.set(position)
-        await ctx.send(f"BoosterRoles position set to {position}")
+        await self.config.guild(ctx.guild).role_position.set(position_or_id)
+        await ctx.send(f"BoosterRoles position set to {position_or_id}")
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
@@ -290,12 +290,12 @@ class BoosterRoles(commands.Cog):
         # if ctx.guild.premium_subscriber_role in ctx.author.roles:
         role_threshold = await self.config.guild(ctx.guild).role_threshold()
         boosts = await self.config.guild(ctx.guild).role_threshold()
+        role_position = await self.config.guild(ctx.guild).role_position()
 
         if boosts >= role_threshold:
             role_data = await self.config.member(ctx.author).role_data()
 
             if not role_data:
-                role_position = await self.config.guild(ctx.guild).role_position()
 
                 role = await ctx.guild.create_role(
                     name="Nitro Booster",
@@ -308,7 +308,8 @@ class BoosterRoles(commands.Cog):
                 await ctx.send(
                     "Assigned the default role, please configure it to your liking."
                 )
-                await role.edit(position=role_position)
+                if role_position:
+                    await role.edit(position=role_position)
                 await self.config.member(ctx.author).role_data.set(role.id)
 
             else:
