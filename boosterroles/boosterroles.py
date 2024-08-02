@@ -360,7 +360,7 @@ class BoosterRoles(commands.Cog):
                 await self.config.member(ctx.author).role_data.set(role.id)
             else:
                 if role in ctx.author.roles:
-                    await ctx.author.remove_roles(role, reason="Unassigned role")
+                    await role.delete()
                 else:
                     await ctx.author.add_roles(role)
 
