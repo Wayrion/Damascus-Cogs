@@ -51,13 +51,31 @@ class BoosterRoles(commands.Cog):
             before.guild.premium_subscriber_role not in after.roles
             and before.guild.premium_subscriber_role in before.roles
         ):
-            # Remove priviliges when the user looses their booster role
             await self.config.member(before).booster_role_level.set(0)
             # Get and remove their custom role when they stop boosting
             role_data = await self.config.member(before).role_data()
             role = before.guild.get_role(role_data)
-            await role.delete()
+            try:
+                # Remove priviliges when the user looses their booster role
+                await role.delete()
+            except:
+                pass
+
             await self.config.member(before).role_data.set(None)
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member: discord.Member):
+        await self.config.member(member).booster_role_level.set(0)
+        # Get and remove their custom role when they stop boosting
+        role_data = await self.config.member(member).role_data()
+        role = member.guild.get_role(role_data)
+        try:
+            # Remove priviliges when the user looses their booster role
+            await role.delete()
+        except:
+            pass
+
+        await self.config.member(member).role_data.set(None)
 
     @commands.group()
     @checks.has_permissions(manage_guild=True)
