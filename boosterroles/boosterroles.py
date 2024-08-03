@@ -488,6 +488,7 @@ class BoosterRoles(commands.Cog):
                 if role_position:
                     await asyncio.sleep(5)
                     await role.edit(position=role_position)
+                await ctx.author.add_roles(role)
                 await self.config.member(ctx.author).role_data.set(role.id)
 
             else:
