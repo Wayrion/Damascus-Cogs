@@ -168,7 +168,6 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    # @commands.bot_has_permissions(manage_roles=True)
     async def name(self, ctx: commands.Context, name: str):
         """Set the name of your custom role"""
         role_id: Optional[int] = await self.config.member(
@@ -225,7 +224,6 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    # @commands.bot_has_permissions(manage_roles=True)
     async def color(self, ctx: commands.Context, color: str):
         """Set the color of your custom role"""
         role_id: Union[int | None] = await self.config.member(
@@ -287,7 +285,6 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    # @commands.bot_has_permissions(manage_roles=True)
     async def hoist(self, ctx: commands.Context, true_or_false: bool):
         """Set wether to hoist your role or not"""
         role_id: Union[int | None] = await self.config.member(
@@ -340,7 +337,6 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    # @commands.bot_has_permissions(manage_roles=True)
     async def mentionable(self, ctx: commands.Context, true_or_false: bool):
         """Set wether to your role is mentionable or not"""
         role_id: Union[int | None] = await self.config.member(
@@ -393,7 +389,6 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    # @commands.bot_has_permissions(manage_roles=True)
     async def icon(self, ctx: commands.Context):
         """Set the display icon of your role."""
         if "ROLE_ICONS" not in ctx.guild.features:
@@ -461,7 +456,6 @@ class BoosterRoles(commands.Cog):
     @roles.command()
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.guild)
-    # @commands.bot_has_permissions(manage_roles=True)
     async def assign(self, ctx: commands.Context):
         """Assign / Unassign the booster role to yourself"""
 
