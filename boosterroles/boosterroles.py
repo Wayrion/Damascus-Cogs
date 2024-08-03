@@ -168,7 +168,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    async def name(self, ctx: commands.Context, name: str):
+    async def name(self, ctx: commands.Context, *, name: str):
         """Set the name of your custom role"""
         role_id: Optional[int] = await self.config.member(
             ctx.guild.get_member(ctx.author.id)
