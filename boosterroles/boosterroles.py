@@ -20,6 +20,8 @@ class BoosterRoles(commands.Cog):
             "role_threshold": 1,
             "default_name": "Nitro Booster",
             "default_color": "#000001",
+            "default_hoist": False,
+            "default_mentionable": False,
         }
         default_member = {
             "booster_role_level": 0,  # Number of boosts the member has
@@ -81,7 +83,6 @@ class BoosterRoles(commands.Cog):
         await self.config.member(member).role_data.set(None)
 
     @commands.group()
-    @checks.has_permissions(manage_guild=True)
     async def boosterroles(self, ctx: commands.Context):
         """Settings for the welcomer cog"""
         pass
