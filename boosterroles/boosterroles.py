@@ -238,6 +238,11 @@ class BoosterRoles(commands.Cog):
         default_hoist = await self.config.guild(ctx.guild).default_hoist()
         default_mentionable = await self.config.guild(ctx.guild).default_mentionable()
 
+        try:
+            default_color = discord.Color.from_str(default_color)
+        except ValueError:
+            default_color = discord.Color.pink()
+
         if color.lower() == "random":
             color = discord.Color.random()
         else:
@@ -250,7 +255,7 @@ class BoosterRoles(commands.Cog):
                     Like CSS, <number> can be either 0-255 or 0-100% and <hex> can be either a 6 digit hex number or a 3 digit hex shortcut (e.g. #FFF).
                     Replace <hex> or <number> with the actual values. The quotations are important in the RGB input to ensure correct parsing. Furthermore, #000000 or rgb(0,0,0) turns the role color invisible. For black use #000001 or rgb(1,1,1)
                     """,
-                    color=discord.Color.yellow(),
+                    color=color,
                 )
                 await ctx.send(embed=embed)
                 return
@@ -553,7 +558,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    @checks.is_owner()
+    @checks.has_permissions(manage_guild=True)
     async def list(self, ctx: commands.Context):
         """List all the roles and which users they belong to"""
         message = "@silent \n"
@@ -564,7 +569,7 @@ class BoosterRoles(commands.Cog):
             booster_role_level = await self.config.member(member).booster_role_level()
             table.append([member.mention, f"<@&{role_data}>", f"{booster_role_level}"])
         message += tabulate(table, headers=headers)
-        await ctx.send(message)
+        await ctx.send(message, allowed_mentions=False)
 
     @roles.command()
     @commands.guild_only()
