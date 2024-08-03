@@ -19,7 +19,7 @@ class BoosterRoles(commands.Cog):
             "role_position": 1,
             "role_threshold": 1,
             "default_name": "Nitro Booster",
-            "default_color": "pink",
+            "default_color": "#000001",
         }
         default_member = {
             "booster_role_level": 0,  # Number of boosts the member has
@@ -117,9 +117,15 @@ class BoosterRoles(commands.Cog):
         await self.config.guild(ctx.guild).role_threshold.set(threshold)
         await ctx.send(f"BoosterRoles position set to {threshold}")
 
-    @boosterroles.command()
+    @commands.group()
     @checks.has_permissions(manage_guild=True)
-    async def default_name(self, ctx: commands.Context, *, name: str):
+    async def default(self, ctx: commands.Context):
+        """Set the default values"""
+        pass
+
+    @default.command()
+    @checks.has_permissions(manage_guild=True)
+    async def name(self, ctx: commands.Context, *, name: str):
         """
         Set the default name of the custom roles
         """
@@ -127,9 +133,9 @@ class BoosterRoles(commands.Cog):
         await self.config.guild(ctx.guild).default_name.set(name)
         await ctx.send(f"BoosterRoles default name set to {name}")
 
-    @boosterroles.command()
+    @default.command()
     @checks.has_permissions(manage_guild=True)
-    async def default_color(self, ctx: commands.Context, color: str):
+    async def color(self, ctx: commands.Context, color: str):
         """
         Set the default color of the custom roles.
         """
@@ -137,7 +143,7 @@ class BoosterRoles(commands.Cog):
         await self.config.guild(ctx.guild).default_color.set(color)
         await ctx.send(f"BoosterRoles default color set to {color}")
 
-    @boosterroles.command()
+    @default.command()
     @checks.has_permissions(manage_guild=True)
     async def printdata(self, ctx: commands.Context, id: int = None):
         """Show all settings."""
@@ -147,12 +153,6 @@ class BoosterRoles(commands.Cog):
             member = ctx.author
         data = await self.config.member(member).all()
         await menu(ctx, list(pagify(str(data), page_length=2000)))
-
-    @boosterroles.command()
-    async def resetme(self, ctx: commands.Context):
-        """Reset your settings to the default values."""
-        await self.config.member(ctx.message.author).clear()
-        await ctx.send("Settings reset.")
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
@@ -560,3 +560,9 @@ class BoosterRoles(commands.Cog):
         member = ctx.guild.get_member(user_id)
         await self.config.member(member).booster_role_level.set(abs(boosts))
         await ctx.send(f"Set member's boost level to {abs(boosts)}")
+
+    @roles.command()
+    async def resetme(self, ctx: commands.Context):
+        """Reset your settings to the default values."""
+        await self.config.member(ctx.message.author).clear()
+        await ctx.send("Settings reset.")
