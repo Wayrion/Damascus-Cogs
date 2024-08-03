@@ -533,6 +533,7 @@ class BoosterRoles(commands.Cog):
                 pass
 
             await self.config.member(member).role_data.set(None)
+        await ctx.send("Done")
 
     @roles.command()
     @commands.guild_only()
