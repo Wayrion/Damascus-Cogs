@@ -202,17 +202,20 @@ class BoosterRoles(commands.Cog):
             ctx.guild.get_member(ctx.author.id)
         ).role_data()
         role_position = int(await self.config.guild(ctx.guild).role_position())
-        try:
-            color = discord.Color.from_str(color)
-        except ValueError:
-            await ctx.send(
-                """Improper input. The following formats are accepted:\n- 0x<hex>\n- #<hex>\n- 0x#<hex>\n- "rgb(<number>, <number>, <number>)"
+        if color.lower() == "random":
+            color = discord.Color.random()
+        else:
+            try:
+                color = discord.Color.from_str(color)
+            except ValueError:
+                await ctx.send(
+                    """Improper input. The following formats are accepted:\n- 0x<hex>\n- #<hex>\n- 0x#<hex>\n- "rgb(<number>, <number>, <number>)"\n- "random" for random color
 
-            Like CSS, <number> can be either 0-255 or 0-100% and <hex> can be either a 6 digit hex number or a 3 digit hex shortcut (e.g. #FFF).
-            Replace <hex> or <number> with the actual values. The quotations are important in the RGB input to ensure correct parsing. Furthermore, #000000 or rgb(0,0,0) turns the role color invisible. For black use #000001 or rgb(1,1,1)
-            """
-            )
-            return
+                Like CSS, <number> can be either 0-255 or 0-100% and <hex> can be either a 6 digit hex number or a 3 digit hex shortcut (e.g. #FFF).
+                Replace <hex> or <number> with the actual values. The quotations are important in the RGB input to ensure correct parsing. Furthermore, #000000 or rgb(0,0,0) turns the role color invisible. For black use #000001 or rgb(1,1,1)
+                """
+                )
+                return
         try:
             if not role_id:
                 role = await ctx.guild.create_role(
