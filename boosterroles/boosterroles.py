@@ -192,8 +192,8 @@ class BoosterRoles(commands.Cog):
                     name=name,
                     reason="Booster Roles Cog",
                     color=default_color,
-                    hoist=False,
-                    mentionable=False,
+                    hoist=default_hoist,
+                    mentionable=default_mentionable,
                 )
                 await ctx.send("Done")
 
@@ -212,8 +212,8 @@ class BoosterRoles(commands.Cog):
                         name=name,
                         reason="Booster Roles Cog",
                         color=default_color,
-                        hoist=False,
-                        mentionable=False,
+                        hoist=default_hoist,
+                        mentionable=default_mentionable,
                     )
                     await ctx.send("Done")
 
@@ -235,6 +235,8 @@ class BoosterRoles(commands.Cog):
         ).role_data()
         role_position = int(await self.config.guild(ctx.guild).role_position())
         default_name = await self.config.guild(ctx.guild).default_name()
+        default_hoist = await self.config.guild(ctx.guild).default_hoist()
+        default_mentionable = await self.config.guild(ctx.guild).default_mentionable()
 
         if color.lower() == "random":
             color = discord.Color.random()
@@ -258,8 +260,8 @@ class BoosterRoles(commands.Cog):
                     name=default_name,
                     reason="Booster Roles Cog",
                     color=color,
-                    hoist=False,
-                    mentionable=False,
+                    hoist=default_hoist,
+                    mentionable=default_mentionable,
                 )
                 await ctx.send("Done")
 
@@ -273,8 +275,8 @@ class BoosterRoles(commands.Cog):
                         name=default_name,
                         reason="Booster Roles Cog",
                         color=color,
-                        hoist=False,
-                        mentionable=False,
+                        hoist=default_hoist,
+                        mentionable=default_mentionable,
                     )
                     await ctx.send("Done")
 
@@ -313,7 +315,7 @@ class BoosterRoles(commands.Cog):
                     reason="Booster Roles Cog",
                     color=default_color,
                     hoist=true_or_false,
-                    mentionable=False,
+                    mentionable=default_mentionable,
                 )
                 await ctx.send("Done")
 
@@ -328,7 +330,7 @@ class BoosterRoles(commands.Cog):
                         reason="Booster Roles Cog",
                         color=default_color,
                         hoist=true_or_false,
-                        mentionable=False,
+                        mentionable=default_mentionable,
                     )
                     await ctx.send("Done")
 
@@ -366,7 +368,7 @@ class BoosterRoles(commands.Cog):
                     name=default_name,
                     reason="Booster Roles Cog",
                     color=default_color,
-                    hoist=False,
+                    hoist=default_hoist,
                     mentionable=true_or_false,
                 )
                 await ctx.send("Done")
@@ -381,7 +383,7 @@ class BoosterRoles(commands.Cog):
                         name=default_name,
                         reason="Booster Roles Cog",
                         color=default_color,
-                        hoist=False,
+                        hoist=default_hoist,
                         mentionable=true_or_false,
                     )
                     await ctx.send("Done")
@@ -434,8 +436,8 @@ class BoosterRoles(commands.Cog):
                     reason="Booster Roles Cog",
                     color=default_color,
                     display_icon=image,
-                    hoist=False,
-                    mentionable=False,
+                    hoist=default_hoist,
+                    mentionable=default_mentionable,
                 )
                 await ctx.send("Done")
 
@@ -450,8 +452,8 @@ class BoosterRoles(commands.Cog):
                         reason="Booster Roles Cog",
                         color=discord.Color.pink(),
                         display_icon=image,
-                        hoist=False,
-                        mentionable=False,
+                        hoist=default_hoist,
+                        mentionable=default_mentionable,
                     )
                     await ctx.send("Done")
             await asyncio.sleep(5)
@@ -490,8 +492,8 @@ class BoosterRoles(commands.Cog):
                     name=default_name,
                     reason="Booster Roles Cog",
                     color=default_color,
-                    hoist=False,
-                    mentionable=False,
+                    hoist=default_hoist,
+                    mentionable=default_mentionable,
                 )
 
                 await ctx.send(
@@ -511,8 +513,8 @@ class BoosterRoles(commands.Cog):
                     name=default_name,
                     reason="Booster Roles Cog",
                     color=default_color,
-                    hoist=False,
-                    mentionable=False,
+                    hoist=default_hoist,
+                    mentionable=default_mentionable,
                 )
 
                 await ctx.send(
