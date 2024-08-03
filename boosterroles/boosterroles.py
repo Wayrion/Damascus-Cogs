@@ -118,7 +118,7 @@ class BoosterRoles(commands.Cog):
         await self.config.guild(ctx.guild).role_threshold.set(threshold)
         await ctx.send(f"BoosterRoles position set to {threshold}")
 
-    @commands.group()
+    @boosterroles.group()
     @checks.has_permissions(manage_guild=True)
     async def default(self, ctx: commands.Context):
         """Set the default values"""
