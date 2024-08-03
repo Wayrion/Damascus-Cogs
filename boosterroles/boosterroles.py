@@ -2,6 +2,7 @@ import asyncio
 from typing import *
 
 import discord
+from tabulate import tabulate
 from redbot.core import Config, checks, commands
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import menu
@@ -386,6 +387,21 @@ class BoosterRoles(commands.Cog):
                 pass
 
             await self.config.member(member).role_data.set(None)
+
+    @roles.command()
+    @commands.guild_only()
+    @checks.is_owner()
+    async def list(self, ctx: commands.Context):
+        """List all the roles and which users they belong to"""
+        message = "@silent \n"
+        table = []
+        headers = ["User", "Role", "Boost Level"]
+        for member in ctx.guild.premium_subscribers:
+            role_data = await self.config.member(member).role_data()
+            booster_role_level = await self.config.member(member).booster_role_level()
+            table.append([member.mention, f"<@&{role_data}>", f"{booster_role_level}"])
+        message += tabulate(table, headers=headers)
+        await ctx.send(message)
 
     @roles.command()
     @commands.guild_only()
