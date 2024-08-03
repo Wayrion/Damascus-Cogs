@@ -370,7 +370,7 @@ class BoosterRoles(commands.Cog):
     @roles.command()
     @commands.guild_only()
     @checks.is_owner()
-    async def delete(self, ctx: commands.Context):
+    async def cleanup(self, ctx: commands.Context):
         """Delete all booster roles"""
         for member in ctx.guild.premium_subscribers:
             await self.config.member(member).booster_role_level.set(0)
