@@ -16,7 +16,7 @@ class BoosterRoles(commands.Cog):
         self.config = Config.get_conf(self, 718395193090375700, force_registration=True)
         default_guild = {
             "state": True,
-            "role_position": 0,
+            "role_position": 1,
             "role_threshold": 1,
             "default_name": "Nitro Booster",
             "default_color": "pink",
@@ -119,7 +119,7 @@ class BoosterRoles(commands.Cog):
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
-    async def default_name(self, ctx: commands.Context, name: str):
+    async def default_name(self, ctx: commands.Context, *, name: str):
         """
         Set the default name of the custom roles
         """
@@ -168,7 +168,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    async def name(self, ctx: commands.Context, *, name: str):
+    async def name(self, ctx: commands.Context, *, name):
         """Set the name of your custom role"""
         role_id: Optional[int] = await self.config.member(
             ctx.guild.get_member(ctx.author.id)
