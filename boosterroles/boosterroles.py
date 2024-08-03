@@ -257,6 +257,96 @@ class BoosterRoles(commands.Cog):
     @roles.command()
     @commands.guild_only()
     # @commands.bot_has_permissions(manage_roles=True)
+    async def hoist(self, ctx: commands.Context, true_or_false: bool):
+        """Set wether to hoist your role or not"""
+        role_id: Union[int | None] = await self.config.member(
+            ctx.guild.get_member(ctx.author.id)
+        ).role_data()
+        role_position = int(await self.config.guild(ctx.guild).role_position())
+
+        try:
+            if not role_id:
+                role = await ctx.guild.create_role(
+                    name="Nitro Booster",
+                    reason="Booster Roles Cog",
+                    color=discord.Color.pink(),
+                    hoist=true_or_false,
+                    mentionable=False,
+                )
+                await ctx.send("Done")
+
+            else:
+                try:
+                    role = ctx.guild.get_role(role_id)
+                    await role.edit(hoist=true_or_false)
+                    await ctx.send(f"Changed hoist to {true_or_false}")
+                except AttributeError:  # If the role is deleted after being set
+                    role = await ctx.guild.create_role(
+                        name="Nitro Booster",
+                        reason="Booster Roles Cog",
+                        color=discord.Color.pink(),
+                        hoist=true_or_false,
+                        mentionable=False,
+                    )
+                    await ctx.send("Done")
+
+            await asyncio.sleep(5)
+            await role.edit(position=role_position)
+            await self.config.member(ctx.author).role_data.set(role.id)
+
+        except discord.Forbidden:
+            await ctx.send(
+                "I do not have enough permissions / role heirarchy to change your role. Please contact the bot owner."
+            )
+
+    @roles.command()
+    @commands.guild_only()
+    # @commands.bot_has_permissions(manage_roles=True)
+    async def mentionable(self, ctx: commands.Context, true_or_false: bool):
+        """Set wether to your role is mentionable or not"""
+        role_id: Union[int | None] = await self.config.member(
+            ctx.guild.get_member(ctx.author.id)
+        ).role_data()
+        role_position = int(await self.config.guild(ctx.guild).role_position())
+
+        try:
+            if not role_id:
+                role = await ctx.guild.create_role(
+                    name="Nitro Booster",
+                    reason="Booster Roles Cog",
+                    color=discord.Color.pink(),
+                    hoist=False,
+                    mentionable=true_or_false,
+                )
+                await ctx.send("Done")
+
+            else:
+                try:
+                    role = ctx.guild.get_role(role_id)
+                    await role.edit(mentionable=true_or_false)
+                    await ctx.send(f"Changed mentionable to {true_or_false}")
+                except AttributeError:  # If the role is deleted after being set
+                    role = await ctx.guild.create_role(
+                        name="Nitro Booster",
+                        reason="Booster Roles Cog",
+                        color=discord.Color.pink(),
+                        hoist=False,
+                        mentionable=true_or_false,
+                    )
+                    await ctx.send("Done")
+
+            await asyncio.sleep(5)
+            await role.edit(position=role_position)
+            await self.config.member(ctx.author).role_data.set(role.id)
+
+        except discord.Forbidden:
+            await ctx.send(
+                "I do not have enough permissions / role heirarchy to change your role. Please contact the bot owner."
+            )
+
+    @roles.command()
+    @commands.guild_only()
+    # @commands.bot_has_permissions(manage_roles=True)
     async def icon(self, ctx: commands.Context):
         """Set the display icon of your role."""
         if "ROLE_ICONS" not in ctx.guild.features:
