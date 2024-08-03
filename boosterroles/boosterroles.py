@@ -18,6 +18,8 @@ class BoosterRoles(commands.Cog):
             "state": True,
             "role_position": 0,
             "role_threshold": 1,
+            "default_name": "Nitro Booster",
+            "default_color": "pink",
         }
         default_member = {
             "booster_role_level": 0,  # Number of boosts the member has
@@ -117,6 +119,26 @@ class BoosterRoles(commands.Cog):
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
+    async def default_name(self, ctx: commands.Context, name: str):
+        """
+        Set the default name of the custom roles
+        """
+
+        await self.config.guild(ctx.guild).default_name.set(name)
+        await ctx.send(f"BoosterRoles default name set to {name}")
+
+    @boosterroles.command()
+    @checks.has_permissions(manage_guild=True)
+    async def default_color(self, ctx: commands.Context, color: str):
+        """
+        Set the default color of the custom roles.
+        """
+
+        await self.config.guild(ctx.guild).default_color.set(color)
+        await ctx.send(f"BoosterRoles default color set to {color}")
+
+    @boosterroles.command()
+    @checks.has_permissions(manage_guild=True)
     async def printdata(self, ctx: commands.Context, id: int = None):
         """Show all settings."""
         if id:
@@ -154,12 +176,19 @@ class BoosterRoles(commands.Cog):
         ).role_data()
 
         role_position = int(await self.config.guild(ctx.guild).role_position())
+        default_color = await self.config.guild(ctx.guild).default_color()
+
+        try:
+            default_color = discord.Color.from_str(default_color)
+        except ValueError:
+            default_color = discord.Color.pink()
+
         try:
             if not role_id:
                 role = await ctx.guild.create_role(
                     name=name,
                     reason="Booster Roles Cog",
-                    color=discord.Color.pink(),
+                    color=default_color,
                     hoist=False,
                     mentionable=False,
                 )
@@ -179,7 +208,7 @@ class BoosterRoles(commands.Cog):
                     role = await ctx.guild.create_role(
                         name=name,
                         reason="Booster Roles Cog",
-                        color=discord.Color.pink(),
+                        color=default_color,
                         hoist=False,
                         mentionable=False,
                     )
@@ -203,6 +232,8 @@ class BoosterRoles(commands.Cog):
             ctx.guild.get_member(ctx.author.id)
         ).role_data()
         role_position = int(await self.config.guild(ctx.guild).role_position())
+        default_name = await self.config.guild(ctx.guild).default_name()
+
         if color.lower() == "random":
             color = discord.Color.random()
         else:
@@ -222,7 +253,7 @@ class BoosterRoles(commands.Cog):
         try:
             if not role_id:
                 role = await ctx.guild.create_role(
-                    name="Nitro Booster",
+                    name=default_name,
                     reason="Booster Roles Cog",
                     color=color,
                     hoist=False,
@@ -237,7 +268,7 @@ class BoosterRoles(commands.Cog):
                     await ctx.send("Changed role color")
                 except AttributeError:  # If the role is deleted after being set
                     role = await ctx.guild.create_role(
-                        name="Nitro Booster",
+                        name=default_name,
                         reason="Booster Roles Cog",
                         color=color,
                         hoist=False,
@@ -264,12 +295,20 @@ class BoosterRoles(commands.Cog):
         ).role_data()
         role_position = int(await self.config.guild(ctx.guild).role_position())
 
+        default_name = await self.config.guild(ctx.guild).default_name()
+        default_color = await self.config.guild(ctx.guild).default_color()
+
+        try:
+            default_color = discord.Color.from_str(default_color)
+        except ValueError:
+            default_color = discord.Color.pink()
+
         try:
             if not role_id:
                 role = await ctx.guild.create_role(
-                    name="Nitro Booster",
+                    name=default_name,
                     reason="Booster Roles Cog",
-                    color=discord.Color.pink(),
+                    color=default_color,
                     hoist=true_or_false,
                     mentionable=False,
                 )
@@ -282,9 +321,9 @@ class BoosterRoles(commands.Cog):
                     await ctx.send(f"Changed hoist to {true_or_false}")
                 except AttributeError:  # If the role is deleted after being set
                     role = await ctx.guild.create_role(
-                        name="Nitro Booster",
+                        name=default_name,
                         reason="Booster Roles Cog",
-                        color=discord.Color.pink(),
+                        color=default_color,
                         hoist=true_or_false,
                         mentionable=False,
                     )
@@ -309,12 +348,20 @@ class BoosterRoles(commands.Cog):
         ).role_data()
         role_position = int(await self.config.guild(ctx.guild).role_position())
 
+        default_name = await self.config.guild(ctx.guild).default_name()
+        default_color = await self.config.guild(ctx.guild).default_color()
+
+        try:
+            default_color = discord.Color.from_str(default_color)
+        except ValueError:
+            default_color = discord.Color.pink()
+
         try:
             if not role_id:
                 role = await ctx.guild.create_role(
-                    name="Nitro Booster",
+                    name=default_name,
                     reason="Booster Roles Cog",
-                    color=discord.Color.pink(),
+                    color=default_color,
                     hoist=False,
                     mentionable=true_or_false,
                 )
@@ -327,9 +374,9 @@ class BoosterRoles(commands.Cog):
                     await ctx.send(f"Changed mentionable to {true_or_false}")
                 except AttributeError:  # If the role is deleted after being set
                     role = await ctx.guild.create_role(
-                        name="Nitro Booster",
+                        name=default_name,
                         reason="Booster Roles Cog",
-                        color=discord.Color.pink(),
+                        color=default_color,
                         hoist=False,
                         mentionable=true_or_false,
                     )
@@ -367,12 +414,20 @@ class BoosterRoles(commands.Cog):
         if image == None:
             await ctx.send("Please attach an image to add as a role icon.")
 
+        default_name = await self.config.guild(ctx.guild).default_name()
+        default_color = await self.config.guild(ctx.guild).default_color()
+
+        try:
+            default_color = discord.Color.from_str(default_color)
+        except ValueError:
+            default_color = discord.Color.pink()
+
         try:
             if not role_id:
                 role = await ctx.guild.create_role(
-                    name="Nitro Booster",
+                    name=default_name,
                     reason="Booster Roles Cog",
-                    color=discord.Color.pink(),
+                    color=default_color,
                     display_icon=image,
                     hoist=False,
                     mentionable=False,
@@ -414,15 +469,21 @@ class BoosterRoles(commands.Cog):
         role_threshold = await self.config.guild(ctx.guild).role_threshold()
         boosts = await self.config.member(ctx.author).booster_role_level()
         role_position = int(await self.config.guild(ctx.guild).role_position())
+        default_name = await self.config.guild(ctx.guild).default_name()
+        default_color = await self.config.guild(ctx.guild).default_color()
 
+        try:
+            default_color = discord.Color.from_str(default_color)
+        except ValueError:
+            default_color = discord.Color.pink()
         if boosts >= role_threshold:
             role_data = await self.config.member(ctx.author).role_data()
 
             if not role_data:
                 role = await ctx.guild.create_role(
-                    name="Nitro Booster",
+                    name=default_name,
                     reason="Booster Roles Cog",
-                    color=discord.Color.pink(),
+                    color=default_color,
                     hoist=False,
                     mentionable=False,
                 )
@@ -440,9 +501,9 @@ class BoosterRoles(commands.Cog):
 
             if not role:
                 role = await ctx.guild.create_role(
-                    name="Nitro Booster",
+                    name=default_name,
                     reason="Booster Roles Cog",
-                    color=discord.Color.pink(),
+                    color=default_color,
                     hoist=False,
                     mentionable=False,
                 )
