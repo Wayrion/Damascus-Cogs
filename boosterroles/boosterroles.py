@@ -176,6 +176,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
+    @commands.cooldown(1, 360, commands.BucketType.guild)
     async def name(self, ctx: commands.Context, *, name):
         """Set the name of your custom role"""
         role_id: Optional[int] = await self.config.member(
@@ -235,6 +236,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
+    @commands.cooldown(1, 360, commands.BucketType.guild)
     async def color(self, ctx: commands.Context, color: str):
         """Set the color of your custom role"""
         role_id: Union[int | None] = await self.config.member(
@@ -303,6 +305,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
+    @commands.cooldown(1, 360, commands.BucketType.guild)
     async def hoist(self, ctx: commands.Context, true_or_false: bool):
         """Set wether to hoist your role or not"""
         role_id: Union[int | None] = await self.config.member(
@@ -357,6 +360,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
+    @commands.cooldown(1, 360, commands.BucketType.guild)
     async def mentionable(self, ctx: commands.Context, true_or_false: bool):
         """Set wether to your role is mentionable or not"""
         role_id: Union[int | None] = await self.config.member(
@@ -411,6 +415,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
+    @commands.cooldown(1, 360, commands.BucketType.guild)
     async def icon(self, ctx: commands.Context):
         """Set the display icon of your role."""
         if "ROLE_ICONS" not in ctx.guild.features:
@@ -479,7 +484,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    @commands.cooldown(1, 10, commands.BucketType.guild)
+    @commands.cooldown(1, 360, commands.BucketType.guild)
     async def assign(self, ctx: commands.Context):
         """Assign / Unassign the booster role to yourself"""
 
@@ -513,6 +518,7 @@ class BoosterRoles(commands.Cog):
                     "Assigned the default role, please configure it to your liking."
                 )
                 if role_position:
+                    await ctx.send(f"role pos: {role_position}")
                     await asyncio.sleep(3)
                     await role.edit(position=role_position)
                 await ctx.author.add_roles(role)
