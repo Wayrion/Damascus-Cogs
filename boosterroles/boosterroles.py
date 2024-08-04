@@ -98,15 +98,15 @@ class BoosterRoles(commands.Cog):
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
-    async def position(self, ctx: commands.Context, position_or_id: int):
+    async def position(self, ctx: commands.Context, role_id: int):
         """
-        Set the position of the roles created by the BoosterRoles cog. The role is created ABOVE the role you specify.
+        Set the role below which the booster roles will be created
         """
-        if position_or_id > 10000:
-            position_or_id = ctx.guild.get_role(position_or_id).position
 
-        await self.config.guild(ctx.guild).role_position.set(position_or_id)
-        await ctx.send(f"BoosterRoles position set to {position_or_id}")
+        pos = ctx.guild.get_role(role_id).position
+
+        await self.config.guild(ctx.guild).role_position.set(pos)
+        await ctx.send(f"BoosterRoles position set to {pos}")
 
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
@@ -158,9 +158,16 @@ class BoosterRoles(commands.Cog):
     @boosterroles.command()
     @checks.has_permissions(manage_guild=True)
     async def clear(self, ctx: commands.Context):
-        """Reset all settings to the default values."""
+        """Reset all settings to the default values for this guild. (Guild clear)"""
         await self.config.guild(ctx.guild).clear()
         await ctx.send("Settings reset.")
+
+    @boosterroles.command()
+    @checks.is_owner()
+    async def nukeconfig(self, ctx: commands.Context):
+        """Clear ALLLLLLLLL the data from config (Global clear)"""
+        await self.config.clear_all()
+        await ctx.send("Nuked the config")
 
     @boosterroles.group()
     async def roles(self, ctx: commands.Context):
@@ -489,6 +496,7 @@ class BoosterRoles(commands.Cog):
             default_color = discord.Color.from_str(default_color)
         except ValueError:
             default_color = discord.Color.pink()
+
         if boosts >= role_threshold:
             role_data = await self.config.member(ctx.author).role_data()
 
@@ -505,37 +513,18 @@ class BoosterRoles(commands.Cog):
                     "Assigned the default role, please configure it to your liking."
                 )
                 if role_position:
-                    await asyncio.sleep(5)
+                    await asyncio.sleep(3)
                     await role.edit(position=role_position)
                 await ctx.author.add_roles(role)
                 await self.config.member(ctx.author).role_data.set(role.id)
-
             else:
-                role = ctx.guild.get_role(role_data)
-
-            if not role:
-                role = await ctx.guild.create_role(
-                    name=default_name,
-                    reason="Booster Roles Cog",
-                    color=default_color,
-                    hoist=default_hoist,
-                    mentionable=default_mentionable,
-                )
-
-                await ctx.send(
-                    "Assigned the default role, please configure it to your liking."
-                )
-                if role_position:
-                    await asyncio.sleep(5)
-                    await role.edit(position=role_position)
-                    await ctx.author.add_roles(role)
-
-                await self.config.member(ctx.author).role_data.set(role.id)
-            else:
-                if role in ctx.author.roles:
+                try:
+                    await self.config.member(ctx.author).role_data.set(None)
+                    role = ctx.guild.get_role(role_data)
                     await role.delete()
-                else:
-                    await ctx.author.add_roles(role)
+                    await ctx.send("Removed the custom role")
+                except:
+                    pass
 
     @roles.command()
     @commands.guild_only()
