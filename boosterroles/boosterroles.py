@@ -563,7 +563,7 @@ class BoosterRoles(commands.Cog):
             role_data = await self.config.member(member).role_data()
             booster_role_level = await self.config.member(member).booster_role_level()
             table.append([member.mention, f"<@&{role_data}>", f"{booster_role_level}"])
-        message += tabulate(table, headers=headers)
+        message += tabulate(table, headers=headers, tablefmt="github")
         await ctx.send(message, allowed_mentions=False)
 
     @roles.command()
