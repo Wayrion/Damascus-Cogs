@@ -566,7 +566,11 @@ class BoosterRoles(commands.Cog):
             table.append([member.id, f"{role_data}", f"{booster_role_level}"])
         message += tabulate(table, headers=headers, tablefmt="github")
         message += "```"
-        await ctx.send(embed=discord.Embed(title="Booster roles", description=message))
+        await ctx.send(
+            embed=discord.Embed(
+                title="Booster roles", description=message, color=default_color
+            )
+        )
 
     @roles.command()
     @commands.guild_only()
