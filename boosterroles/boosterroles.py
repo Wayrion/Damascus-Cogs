@@ -560,6 +560,11 @@ class BoosterRoles(commands.Cog):
         headers = ["User ID", "Role ID", "Boost Level"]
         default_color = await self.config.guild(ctx.guild).default_color()
 
+        try:
+            default_color = discord.Color.from_str(default_color)
+        except ValueError:
+            default_color = discord.Color.pink()
+
         for member in ctx.guild.premium_subscribers:
             role_data = await self.config.member(member).role_data()
             booster_role_level = await self.config.member(member).booster_role_level()
