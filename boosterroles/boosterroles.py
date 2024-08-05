@@ -551,7 +551,7 @@ class BoosterRoles(commands.Cog):
             await self.config.member(member).role_data.set(None)
         await ctx.send("Done")
 
-    @roles.command()
+    @boosterroles.command()
     @commands.guild_only()
     @checks.has_permissions(manage_guild=True)
     async def list(self, ctx: commands.Context):
@@ -576,6 +576,7 @@ class BoosterRoles(commands.Cog):
         await ctx.send(f"Set member's boost level to {abs(boosts)}")
 
     @roles.command()
+    @commands.guild_only()
     async def resetme(self, ctx: commands.Context):
         """Reset your settings to the default values."""
         await self.config.member(ctx.message.author).clear()
