@@ -556,7 +556,7 @@ class BoosterRoles(commands.Cog):
     @checks.has_permissions(manage_guild=True)
     async def list(self, ctx: commands.Context):
         """List all the roles and which users they belong to"""
-        message = "@silent \n"
+        message = ""
         table = []
         headers = ["User", "Role", "Boost Level"]
         for member in ctx.guild.premium_subscribers:
