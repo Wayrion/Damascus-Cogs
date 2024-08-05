@@ -484,7 +484,7 @@ class BoosterRoles(commands.Cog):
 
     @roles.command()
     @commands.guild_only()
-    @commands.cooldown(1, 360, commands.BucketType.guild)
+    @commands.cooldown(1, 300, commands.BucketType.guild)
     async def assign(self, ctx: commands.Context):
         """Assign / Unassign the booster role to yourself"""
 
