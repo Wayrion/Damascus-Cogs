@@ -100,7 +100,7 @@ class BoosterRoles(commands.Cog):
     @checks.has_permissions(manage_guild=True)
     async def position(self, ctx: commands.Context, role_id: int):
         """
-        Set the role below which the booster roles will be created
+        Set the role below which the booster roles will be created. The role is created above the role specified.
         """
 
         pos = ctx.guild.get_role(role_id).position
@@ -518,7 +518,6 @@ class BoosterRoles(commands.Cog):
                     "Assigned the default role, please configure it to your liking."
                 )
                 if role_position:
-                    await ctx.send(f"role pos: {role_position}")
                     await asyncio.sleep(3)
                     await role.edit(position=role_position)
                 await ctx.author.add_roles(role)
