@@ -558,13 +558,13 @@ class BoosterRoles(commands.Cog):
         """List all the roles and which users they belong to"""
         message = "```"
         table = []
-        headers = ["User", "Role", "Boost Level"]
+        headers = ["User ID", "Role ID", "Boost Level"]
         default_color = await self.config.guild(ctx.guild).default_color()
 
         for member in ctx.guild.premium_subscribers:
             role_data = await self.config.member(member).role_data()
             booster_role_level = await self.config.member(member).booster_role_level()
-            table.append([member.id, f"<@&{role_data}>", f"{booster_role_level}"])
+            table.append([member.id, f"{role_data}", f"{booster_role_level}"])
         message += tabulate(table, headers=headers, tablefmt="github")
         message += "```"
         await ctx.send(embed=discord.Embed(title="Booster roles", description=message))
