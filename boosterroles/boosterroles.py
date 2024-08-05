@@ -564,7 +564,7 @@ class BoosterRoles(commands.Cog):
             booster_role_level = await self.config.member(member).booster_role_level()
             table.append([member.mention, f"<@&{role_data}>", f"{booster_role_level}"])
         message += tabulate(table, headers=headers, tablefmt="github")
-        await ctx.send(message, allowed_mentions=False)
+        await ctx.send(embed=discord.Embed(title="Booster roles", description=message))
 
     @roles.command()
     @commands.guild_only()
