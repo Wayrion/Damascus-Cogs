@@ -428,9 +428,9 @@ class BoosterRoles(commands.Cog):
 
         # Get the attached file and check its validity
         # Thanks Mr 42
-
-        image = await ctx.message.attachments[0].read()
-        if image == None:
+        try:
+            image = await ctx.message.attachments[0].read()
+        except:
             await ctx.send("Please attach an image to add as a role icon.")
 
         default_name = await self.config.guild(ctx.guild).default_name()
