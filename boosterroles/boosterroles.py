@@ -554,7 +554,7 @@ class BoosterRoles(commands.Cog):
         """List all the roles and which users they belong to"""
         message = "```"
         table = []
-        headers = ["User ID", "Role ID", "Boost Level"]
+        headers = ["User ID", "Role ID", "Booster List"]
         default_color = await self.config.guild(ctx.guild).default_color()
 
         try:
