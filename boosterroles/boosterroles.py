@@ -184,7 +184,6 @@ class BoosterRoles(commands.Cog):
         ).role_data()
 
         role_position = int(await self.config.guild(ctx.guild).role_position())
-        default_name = await self.config.guild(ctx.guild).default_name()
         default_color = await self.config.guild(ctx.guild).default_color()
         default_hoist = await self.config.guild(ctx.guild).default_hoist()
         default_mentionable = await self.config.guild(ctx.guild).default_mentionable()
@@ -315,7 +314,6 @@ class BoosterRoles(commands.Cog):
 
         default_name = await self.config.guild(ctx.guild).default_name()
         default_color = await self.config.guild(ctx.guild).default_color()
-        default_hoist = await self.config.guild(ctx.guild).default_hoist()
         default_mentionable = await self.config.guild(ctx.guild).default_mentionable()
 
         try:
@@ -371,7 +369,6 @@ class BoosterRoles(commands.Cog):
         default_name = await self.config.guild(ctx.guild).default_name()
         default_color = await self.config.guild(ctx.guild).default_color()
         default_hoist = await self.config.guild(ctx.guild).default_hoist()
-        default_mentionable = await self.config.guild(ctx.guild).default_mentionable()
 
         try:
             default_color = discord.Color.from_str(default_color)
