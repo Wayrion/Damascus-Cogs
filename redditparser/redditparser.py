@@ -7,6 +7,7 @@ import os
 import aiohttp
 import discord
 import moviepy.editor as mpe
+import redvid
 import requests  # Playing both sides here hehe
 from bs4 import BeautifulSoup
 from moviepy.video.io.ffmpeg_tools import *
@@ -316,7 +317,7 @@ class Redditparser(commands.Cog):
     # SETTINGS
     @commands.is_owner()
     @commands.group()
-    async def rpsettings(self, ctx):
+    async def rpsettings(self, ctx: commands.Context):
         """
         This settings for the redditparser cog
         """
@@ -324,7 +325,7 @@ class Redditparser(commands.Cog):
 
     @commands.is_owner()
     @rpsettings.command()
-    async def state(self, ctx, state: bool):
+    async def state(self, ctx: commands.Context, state: bool):
         """
         This command enables or disables the redditparser cog
         """
@@ -333,7 +334,7 @@ class Redditparser(commands.Cog):
 
     @commands.is_owner()
     @rpsettings.command()
-    async def ignoreusers(self, ctx, state: bool):
+    async def ignoreusers(self, ctx: commands.Context, state: bool):
         """
         This command enables or disables link parsing for users
         """
@@ -342,7 +343,7 @@ class Redditparser(commands.Cog):
 
     @commands.is_owner()
     @rpsettings.command()
-    async def ignorebots(self, ctx, state: bool):
+    async def ignorebots(self, ctx: commands.Context, state: bool):
         """
         This command enables or disables link parsing for bots
         """
@@ -351,7 +352,7 @@ class Redditparser(commands.Cog):
 
     @commands.is_owner()
     @rpsettings.command()
-    async def addchannel(self, ctx, *, channelID: int):
+    async def addchannel(self, ctx: commands.Context, *, channelID: int):
         """
         This command adds a channel to the list of channels to parse
         """
@@ -365,7 +366,7 @@ class Redditparser(commands.Cog):
 
     @commands.is_owner()
     @rpsettings.command()
-    async def removechannel(self, ctx, *, channelID: int):
+    async def removechannel(self, ctx: commands.Context, *, channelID: int):
         """
         This command adds a channel to the list of channels to parse
         """
@@ -382,7 +383,7 @@ class Redditparser(commands.Cog):
     @commands.is_owner()
     @commands.dm_only()
     @rpsettings.command()
-    async def mail(self, ctx, *, ID: str):
+    async def mail(self, ctx: commands.Context, *, ID: str):
         """
         Add your streamable mail
         """
@@ -392,7 +393,7 @@ class Redditparser(commands.Cog):
     @commands.is_owner()
     @commands.dm_only()
     @rpsettings.command()
-    async def password(self, ctx, *, secret: str):
+    async def password(self, ctx: commands.Context, *, secret: str):
         """
         Add your streamable password
         """
@@ -401,7 +402,7 @@ class Redditparser(commands.Cog):
 
     @commands.is_owner()
     @rpsettings.command()
-    async def nukeconfig(self, ctx):
+    async def nukeconfig(self, ctx: commands.Context):
         """
         This command nukes the config
         """

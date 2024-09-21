@@ -3,3 +3,5 @@ Copyright 2017-present Michael Hall
 The code here was developed by https://github.com/mikeshardmind/SinbadCogs
 
 Edited by Guyonsteroids (718395193090375700)
+
+The LICENSE.txt only applies to this folder.

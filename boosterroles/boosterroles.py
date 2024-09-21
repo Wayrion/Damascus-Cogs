@@ -2,10 +2,10 @@ import asyncio
 from typing import *
 
 import discord
-from tabulate import tabulate
 from redbot.core import Config, checks, commands
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import menu
+from tabulate import tabulate
 
 
 class BoosterRoles(commands.Cog):
@@ -429,7 +429,6 @@ class BoosterRoles(commands.Cog):
         # Get the attached file and check its validity
         # Thanks Mr 42
         try:
-
             image = await ctx.message.attachments[0].read()
         except:
             await ctx.send("Please attach an image to add as a role icon.")
