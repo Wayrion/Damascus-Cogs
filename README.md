@@ -1,4 +1,4 @@
-![Damascus-Cogs](https://github.com/Wayrion/Damascus-Cogs/assets/82315185/ad4a74aa-54ec-431b-a3ab-65fe6927302f)
+![Damascus-Cogs](https://repository-images.githubusercontent.com/610264379/79de2e87-292f-4440-92ce-81c95229b46b)
 
 # Damascus-Cogs
 Discord Cogs forged in the pits of hell... aka my development environment
