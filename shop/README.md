@@ -1,0 +1,1 @@
+This cog is a modified version from https://github.com/Redjumpman/Jumper-Plugins. I have added a few features. The original cog was made by Redjumpman, However please do not contact him for support. If you have any issues with this cog, please contact me on discord (@Wayrion) or join my discord server at https://discord.gg/aYd3ZPr4Dn
