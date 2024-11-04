@@ -6,7 +6,7 @@
     "description": "A Welcome cog that welcomes new members to your server!",
     "name": "Welcome",
     "requirements": [
-        "pillow"
+        "pillow==10.4.0"
     ],
     "install_msg": "Thank you for instaling the Welcome cog!. If you need support feel free to reach out to me in the #support (<#992344272529535087>) of this server.\nhttps://discord.gg/aYd3ZPr4Dn"
 }
