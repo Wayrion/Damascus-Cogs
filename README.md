@@ -24,14 +24,3 @@ Then to install a cog (replace `<cog name you want>` with the name of the cog yo
 ## Contribution
 
 Any contributions in the form of issues, ideas or bug fixes are welcomed. Feel free to contact me to discuss any such opportunities.
-
-## Contributors
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
