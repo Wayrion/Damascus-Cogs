@@ -1145,7 +1145,7 @@ class ShopManager:
             # The command is in the form "command subcommand | arg1 arg2.."
             # The " | " allows for subcommands to not be processed as an arg
             text_command = text_command.split(" | ")
-            cmd = self.bot.get_command(text_command[0])
+            cmd = self.ctx.bot.get_command(text_command[0])
             args = text_command[1].format(user=self.ctx.author)
             args = text_command[1].split(" ")
             await cmd(self.ctx, *args)
