@@ -1144,11 +1144,15 @@ class ShopManager:
             # Returns the command with the arguments without the prefix.
             # The command is in the form "command subcommand | arg1 arg2.."
             # The " | " allows for subcommands to not be processed as an arg
-            text_command = text_command.split(" | ")
-            cmd = self.ctx.bot.get_command(text_command[0])
-            args = text_command[1].format(user=self.ctx.author)
-            args = text_command[1].split(" ")
-            await cmd(self.ctx, *args)
+            if "|" in text_command:
+                text_command = text_command.split(" | ")
+                cmd = self.ctx.bot.get_command(text_command[0])
+                args = text_command[1].format(user=self.ctx.author)
+                args = text_command[1].split(" ")
+                await cmd(self.ctx, *args)
+            else:
+                cmd = self.ctx.bot.get_command(text_command)
+                await cmd(self.ctx)
 
             await im.remove(shop, item, stock, amount)
             return await self.ctx.send("Item purchased.")
