@@ -1,4 +1,5 @@
 # Shop was made by Redjumpman for Red Bot.
+import json
 
 # Standard Library
 import asyncio
@@ -10,12 +11,13 @@ import uuid
 from bisect import bisect
 from copy import deepcopy, copy
 from itertools import zip_longest
-from typing import Literal
+from typing import Dict, List, Literal, Union, Optional
 
 # Shop
 from .menu import ShopMenu
 from .inventory import Inventory
 from .checks import Checks
+
 
 # Discord.py
 import discord
@@ -1138,7 +1140,6 @@ class ShopManager:
             await self.auto_handler(shop, item, amount)
             await im.remove(shop, item, stock, amount)
             return await self.ctx.send("Message sent.")
-
         if _type == "cmd":
             text_command: str = shops[shop]["Items"][item]["Role"]
             # Returns the command with the arguments without the prefix.
@@ -1147,9 +1148,17 @@ class ShopManager:
             if "|" in text_command:
                 text_command = text_command.split(" | ")
                 cmd = self.ctx.bot.get_command(text_command[0])
-                args = text_command[1].format(user=self.ctx.author)
-                args = text_command[1].split(" ")
-                await cmd(self.ctx, *args)
+                kwargs = dict(json.loads(text_command[1]))
+                for i, j in kwargs.items():
+                    j.format(
+                        user=self.ctx.author,
+                        channel=self.ctx.channel,
+                        guild=self.ctx.guild,
+                    )
+                # args = text_command[1].split()
+                # args = [string[1:-1] for string in args]
+                # print(args)
+                await cmd(self.ctx, **kwargs)
             else:
                 cmd = self.ctx.bot.get_command(text_command)
                 await cmd(self.ctx)
@@ -1664,7 +1673,11 @@ class Parser:
         keys = ("Shop", "Item", "Type", "Qty", "Cost", "Info", "Role", "Messages")
         raw_data = [
             [f.strip() for f in y]
-            for y in [x.split(",") for x in text.strip("`").split("\n") if x]
+            for y in [
+                x.split(",", maxsplit=6) if "cmd" in x else x.split(",")
+                for x in text.strip("`").split("\n")
+                if x
+            ]
             if 6 <= len(y) <= 8
         ]
         bulk = [{key: value for key, value in zip_longest(keys, x)} for x in raw_data]
