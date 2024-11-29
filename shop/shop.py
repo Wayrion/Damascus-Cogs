@@ -1029,9 +1029,9 @@ class Shop(commands.Cog):
 
         if data[item]["Type"].lower() == "role":
             return await self.assign_role(ctx, instance, item, data[item]["Role"])
-        if data[item]["Type"].lower() == "cmd":
-            command = data[item]["Role"]
-            # Process the command
+        # if data[item]["Type"].lower() == "cmd":
+        #    command = data[item]["Role"]
+        #    # Process the command
 
         else:
             await self.pending_add(ctx, item)
@@ -1143,25 +1143,8 @@ class ShopManager:
         if _type == "cmd":
             text_command: str = shops[shop]["Items"][item]["Role"]
             # Returns the command with the arguments without the prefix.
-            # The command is in the form "command subcommand | arg1 arg2.."
-            # The " | " allows for subcommands to not be processed as an arg
-            if "|" in text_command:
-                text_command = text_command.split(" | ")
-                cmd = self.ctx.bot.get_command(text_command[0])
-                kwargs = dict(json.loads(text_command[1]))
-                for i, j in kwargs.items():
-                    j.format(
-                        user=self.ctx.author,
-                        channel=self.ctx.channel,
-                        guild=self.ctx.guild,
-                    )
-                # args = text_command[1].split()
-                # args = [string[1:-1] for string in args]
-                # print(args)
-                await cmd(self.ctx, **kwargs)
-            else:
-                cmd = self.ctx.bot.get_command(text_command)
-                await cmd(self.ctx)
+
+            await self.ctx.bot.dispatch("message", text_command)
 
             await im.remove(shop, item, stock, amount)
             return await self.ctx.send("Item purchased.")
@@ -1616,6 +1599,11 @@ class Parser:
         if row["Type"].lower() not in ("basic", "random", "auto", "role", "cmd"):
             log.warning("Row {} was not added because of an invalid type.".format(idx))
             return False
+        elif row["Type"].lower() == "cmd":
+            msg = copy(self.ctx.message)
+            row["Type"].lower() = msg.content = self.ctx.prefix + row["Role"]
+            pass
+
         elif row["Type"].lower() == "role" and not row["Role"]:
             log.warning(
                 "Row {} was not added because the type is a role, but no role was set.".format(
