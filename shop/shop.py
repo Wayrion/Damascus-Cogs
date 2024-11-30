@@ -1143,7 +1143,7 @@ class ShopManager:
         if _type == "cmd":
             text_command: str = shops[shop]["Items"][item]["Role"]
             # Returns the command with the arguments without the prefix.
-
+            print(text_command)
             await self.ctx.bot.dispatch("message", text_command)
 
             await im.remove(shop, item, stock, amount)
@@ -1601,7 +1601,8 @@ class Parser:
             return False
         elif row["Type"].lower() == "cmd":
             msg = copy(self.ctx.message)
-            row["Type"].lower() = msg.content = self.ctx.prefix + row["Role"]
+            msg.content = self.ctx.prefix + row["Role"]
+            row["Type"] = msg
             pass
 
         elif row["Type"].lower() == "role" and not row["Role"]:
