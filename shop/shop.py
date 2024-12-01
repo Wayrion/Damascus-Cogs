@@ -1143,8 +1143,6 @@ class ShopManager:
         if _type == "cmd":
             text_command = shops[shop]["Items"][item]["Role"]
             # Returns the command with the arguments without the prefix.
-            print(text_command)
-            # text_command = discord.Message(data=text_command)
             msg = await self.ctx.fetch_message(text_command[0])
             if msg:
                 msg.content = text_command[1]
