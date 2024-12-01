@@ -1,33 +1,33 @@
 # Shop was made by Redjumpman for Red Bot.
-import json
-
 # Standard Library
 import asyncio
 import csv
+import json
 import logging
 import random
 import textwrap
 import uuid
+from asyncio import to_thread
 from bisect import bisect
-from copy import deepcopy, copy
+from copy import copy, deepcopy
 from itertools import zip_longest
-from typing import Dict, List, Literal, Union, Optional
-
-# Shop
-from .menu import ShopMenu
-from .inventory import Inventory
-from .checks import Checks
-
+from typing import Dict, List, Literal, Optional, Union
 
 # Discord.py
 import discord
 
 # Red
 from redbot.core import Config, bank, commands
-from redbot.core.utils import AsyncIter
-from redbot.core.utils.chat_formatting import humanize_list
 from redbot.core.data_manager import bundled_data_path
 from redbot.core.errors import BalanceTooHigh
+from redbot.core.utils import AsyncIter
+from redbot.core.utils.chat_formatting import humanize_list
+
+from .checks import Checks
+from .inventory import Inventory
+
+# Shop
+from .menu import ShopMenu
 
 log = logging.getLogger("red.shop")
 
@@ -1141,10 +1141,16 @@ class ShopManager:
             await im.remove(shop, item, stock, amount)
             return await self.ctx.send("Message sent.")
         if _type == "cmd":
-            text_command: str = shops[shop]["Items"][item]["Role"]
+            text_command = shops[shop]["Items"][item]["Role"]
             # Returns the command with the arguments without the prefix.
             print(text_command)
-            await self.ctx.bot.dispatch("message", text_command)
+            # text_command = discord.Message(data=text_command)
+            msg = await self.ctx.fetch_message(text_command[0])
+            if msg:
+                msg.content = text_command[1]
+                self.ctx.bot.dispatch("message", msg)
+            else:
+                return await self.ctx.send("Failed to retrieve item.")
 
             await im.remove(shop, item, stock, amount)
             return await self.ctx.send("Item purchased.")
@@ -1599,11 +1605,6 @@ class Parser:
         if row["Type"].lower() not in ("basic", "random", "auto", "role", "cmd"):
             log.warning("Row {} was not added because of an invalid type.".format(idx))
             return False
-        elif row["Type"].lower() == "cmd":
-            msg = copy(self.ctx.message)
-            msg.content = self.ctx.prefix + row["Role"]
-            row["Type"] = msg
-            pass
 
         elif row["Type"].lower() == "role" and not row["Role"]:
             log.warning(
@@ -1706,6 +1707,18 @@ class Parser:
                 }
                 if data["Qty"] == 0:
                     data["Qty"] = "--"
+                if data["Type"].lower() == "cmd":
+                    data["Role"] = [
+                        self.ctx.message.id,
+                        str(self.ctx.prefix + data["Role"]),
+                    ]
+
+                    # msg: discord.Message = copy(self.ctx.message)
+                    # msg.content = (
+                    #    self.ctx.prefix + data["Role"]
+                    # )  # .format(user=self.ctx.message.author, )
+                    # data["Role"] = str([self, msg.channel, str(msg)])
+
                 item_manager = ItemManager(self.ctx, self.instance)
                 await item_manager.add(data, row["Shop"], row["Item"], new_allowed=True)
         await self.msg.edit(

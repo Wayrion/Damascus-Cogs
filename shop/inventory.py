@@ -1,6 +1,8 @@
 import asyncio
+
 import discord
 from redbot.core.utils.chat_formatting import box
+
 from .menu import MenuCheck
 
 
@@ -37,8 +39,12 @@ class Inventory:
         maximum = len(groups) - 1
         while True:
             check = MenuCheck(self.ctx, groups, page, maximum)
-            choice = await self.ctx.bot.wait_for("message", timeout=35.0, check=check.predicate)
-            if choice.content.isdigit() and int(choice.content) in range(1, len(groups[page]) + 1):
+            choice = await self.ctx.bot.wait_for(
+                "message", timeout=35.0, check=check.predicate
+            )
+            if choice.content.isdigit() and int(choice.content) in range(
+                1, len(groups[page]) + 1
+            ):
                 try:
                     await choice.delete()
                     await msg.delete()
@@ -64,7 +70,10 @@ class Inventory:
             msg, _ = await self.setup(groups=groups, page=page, msg=msg)
 
     def splitter(self):
-        return [self.data[i : i + 5] if len(self.data) > 5 else self.data for i in range(0, len(self.data), 5)]
+        return [
+            self.data[i : i + 5] if len(self.data) > 5 else self.data
+            for i in range(0, len(self.data), 5)
+        ]
 
     def update(self, groups, page=0):
         header = f"{'#':<3} {'Items':<29} {'Qty':<7} {'Type':<8}\n{'--':<3} {'-'*29:<29} {'-'*4:<7} {'-'*8:<8}"
@@ -72,13 +81,21 @@ class Inventory:
         for idx, x in enumerate(groups[page], 1):
             line_one = f"{f'{idx}.': <{3}} {x[0]: <{28}s} {x[1]['Qty']: < {9}}{x[1]['Type']: <{7}s}"
             fmt.append(line_one)
-            fmt.append(f'< {x[1]["Info"][:50]} >' if len(x[1]["Info"]) < 50 else f'< {x[1]["Info"][:47]}... >')
-            fmt.append("",)
+            fmt.append(
+                f'< {x[1]["Info"][:50]} >'
+                if len(x[1]["Info"]) < 50
+                else f'< {x[1]["Info"][:47]}... >'
+            )
+            fmt.append(
+                "",
+            )
         return box("\n".join(fmt), lang="md")
 
     def build_embed(self, options, page, groups):
         title = "{}'s Inventory".format(self.ctx.author.name)
-        footer = "You are viewing page {} of {}.".format(page + 1 if page > 0 else 1, len(groups))
+        footer = "You are viewing page {} of {}.".format(
+            page + 1 if page > 0 else 1, len(groups)
+        )
         instructions = (
             "Type the number for your selection or one of the words below "
             "for page navigation if there are multiple pages available.\n"

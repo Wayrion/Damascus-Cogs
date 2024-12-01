@@ -1,7 +1,8 @@
 import asyncio
+
 import discord
-from tabulate import tabulate
 from redbot.core.utils.chat_formatting import box
+from tabulate import tabulate
 
 
 class ShopMenu:
@@ -36,7 +37,9 @@ class ShopMenu:
     async def setup(self, data=None, msg=None):
         if data is None:
             data = self.origin
-        if (self.shop is None and self.mode == 0) or (self.user is None and self.mode == 1):
+        if (self.shop is None and self.mode == 0) or (
+            self.user is None and self.mode == 1
+        ):
             data = await self.parse_data(data)
 
         groups = self.group_data(data)
@@ -52,8 +55,12 @@ class ShopMenu:
     async def menu_loop(self, data, groups, page, maximum, msg):
         while True:
             check = MenuCheck(self.ctx, groups, page, maximum)
-            choice = await self.ctx.bot.wait_for("message", timeout=35.0, check=check.predicate)
-            if choice.content.isdigit() and int(choice.content) in range(1, len(groups[page]) + 1):
+            choice = await self.ctx.bot.wait_for(
+                "message", timeout=35.0, check=check.predicate
+            )
+            if choice.content.isdigit() and int(choice.content) in range(
+                1, len(groups[page]) + 1
+            ):
                 selection = groups[page][int(choice.content) - 1]
                 try:
                     await choice.delete()
@@ -111,7 +118,11 @@ class ShopMenu:
         if self.shop is None and self.mode == 0:
             perms = self.ctx.author.guild_permissions.administrator
             author_roles = [r.name for r in self.ctx.author.roles]
-            return [x for x, y in data.items() if (y["Role"] in author_roles or perms) and y["Items"]]
+            return [
+                x
+                for x, y in data.items()
+                if (y["Role"] in author_roles or perms) and y["Items"]
+            ]
         else:
             try:
                 return list(data.items())
@@ -119,28 +130,45 @@ class ShopMenu:
                 return data
 
     async def build_menu(self, groups, page):
-        footer = "You are viewing page {} of {}.".format(page + 1 if page > 0 else 1, len(groups))
+        footer = "You are viewing page {} of {}.".format(
+            page + 1 if page > 0 else 1, len(groups)
+        )
         if self.shop is None and self.mode == 0:
-            output = ["{} - {}".format(idx, ele) for idx, ele in enumerate(groups[page], 1)]
+            output = [
+                "{} - {}".format(idx, ele) for idx, ele in enumerate(groups[page], 1)
+            ]
         elif self.mode == 0:
             header = f"{'#':<3} {'Name':<29} {'Qty':<7} {'Cost':<8}\n{'--':<3} {'-'*29:<29} {'-'*4:<7} {'-'*8:<8}"
             fmt = [header]
             for idx, x in enumerate(groups[page], 1):
                 line_one = f"{f'{idx}.': <{3}} {x[0]: <{29}s} {x[1]['Qty']:<{8}}{x[1]['Cost']: < {7}}"
                 fmt.append(line_one)
-                fmt.append(f'< {x[1]["Info"][:50]} >' if len(x[1]["Info"]) < 50 else f'< {x[1]["Info"][:47]}... >')
-                fmt.append("",)
+                fmt.append(
+                    f'< {x[1]["Info"][:50]} >'
+                    if len(x[1]["Info"]) < 50
+                    else f'< {x[1]["Info"][:47]}... >'
+                )
+                fmt.append(
+                    "",
+                )
             output = box("\n".join(fmt), "md")
         elif self.mode == 1 and self.user is None:
             headers = ("#", "User", "Pending Items")
             fmt = [
-                (idx, discord.utils.get(self.ctx.bot.users, id=int(x[0])).name, len(x[1]))
+                (
+                    idx,
+                    discord.utils.get(self.ctx.bot.users, id=int(x[0])).name,
+                    len(x[1]),
+                )
                 for idx, x in enumerate(groups[page], 1)
             ]
             output = box(tabulate(fmt, headers=headers, numalign="left"), lang="md")
         elif self.mode == 1:
             headers = ("#", "Item", "Order ID", "Timestamp")
-            fmt = [(idx, x[1]["Item"], x[0], x[1]["Timestamp"]) for idx, x in enumerate(groups[page], 1)]
+            fmt = [
+                (idx, x[1]["Item"], x[0], x[1]["Timestamp"])
+                for idx, x in enumerate(groups[page], 1)
+            ]
 
             output = box(tabulate(fmt, headers=headers, numalign="left"), lang="md")
         else:
@@ -232,7 +260,10 @@ class MenuCheck:
                 return True
             elif m.content.lower() in ("exit", "prev", "p", "x", "e"):
                 return True
-            elif m.content.lower() in ("n", ">", "next") and (self.page + 1) <= self.maximum:
+            elif (
+                m.content.lower() in ("n", ">", "next")
+                and (self.page + 1) <= self.maximum
+            ):
                 return True
             elif m.content.lower() in ("b", "<", "back") and (self.page - 1) >= 0:
                 return True
