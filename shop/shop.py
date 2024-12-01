@@ -1143,9 +1143,16 @@ class ShopManager:
         if _type == "cmd":
             text_command = shops[shop]["Items"][item]["Role"]
             # Returns the command with the arguments without the prefix.
-            msg = await self.ctx.fetch_message(text_command[0])
+            msg: Union[discord.Message, None] = await self.ctx.fetch_message(
+                text_command[0]
+            )
             if msg:
-                msg.content = text_command[1]
+                msg.content = text_command[1].format(
+                    user=self.ctx.message.author,
+                    userid=self.ctx.message.author.id,
+                    guild=self.ctx.message.guild,
+                    channel=self.ctx.message.channel,
+                )
                 self.ctx.bot.dispatch("message", msg)
             else:
                 return await self.ctx.send("Failed to retrieve item.")
