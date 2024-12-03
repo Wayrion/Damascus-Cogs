@@ -1029,9 +1029,6 @@ class Shop(commands.Cog):
 
         if data[item]["Type"].lower() == "role":
             return await self.assign_role(ctx, instance, item, data[item]["Role"])
-        # if data[item]["Type"].lower() == "cmd":
-        #    command = data[item]["Role"]
-        #    # Process the command
 
         else:
             await self.pending_add(ctx, item)
