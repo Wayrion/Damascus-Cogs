@@ -2,16 +2,14 @@
 # Standard Library
 import asyncio
 import csv
-import json
 import logging
 import random
 import textwrap
 import uuid
-from asyncio import to_thread
 from bisect import bisect
-from copy import copy, deepcopy
+from copy import deepcopy
 from itertools import zip_longest
-from typing import Dict, List, Literal, Optional, Union
+from typing import Literal, Union
 
 # Discord.py
 import discord
