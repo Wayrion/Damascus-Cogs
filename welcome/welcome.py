@@ -470,7 +470,7 @@ class Welcome(commands.Cog):
 
             pfp = member.avatar or member.display_avatar
             profile = Image.open(BytesIO(await pfp.read()))
-            profile = profile.resize((r * 2, r * 2))
+            profile = profile.resize((r * 2, r * 2), Image.Resampling.LANCZOS)
 
             # Create a new image with a white background
             circle_image = Image.new("RGBA", (r * 2, r * 2), (255, 255, 255, 0))
