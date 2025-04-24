@@ -88,8 +88,21 @@ class ResolutionView(discord.ui.View):
             )
         #        await interaction.response.defer(ephemeral=True)
         self.ffmpeg_processing = True
-        await interaction.response.send_message("1080p selected", ephemeral=True)
+        # await interaction.response.send_message("1080p selected", ephemeral=True)
+        await self.disable_buttons(interaction)
         await self.scale_videos("1080p")
+        time_elapsed = 0
+        while self.ffmpeg_processing and time_elapsed <= 120:
+            await asyncio.sleep(10)
+            time_elapsed += 10
+
+        if time_elapsed >= 120:
+            return
+
+        else:
+            await self.media_parser.send_video(
+                self.message, True, self.path, self.selected_file
+            )
 
     @discord.ui.button(label="720p", style=discord.ButtonStyle.primary, emoji="📺")
     async def button_720p(
@@ -101,8 +114,21 @@ class ResolutionView(discord.ui.View):
             )
         #        await interaction.response.defer(ephemeral=True)
         self.ffmpeg_processing = True
-        await interaction.response.send_message("720p selected", ephemeral=True)
+        # await interaction.response.send_message("720p selected", ephemeral=True)
+        await self.disable_buttons(interaction)
         await self.scale_videos("720p")
+        time_elapsed = 0
+        while self.ffmpeg_processing and time_elapsed <= 120:
+            await asyncio.sleep(10)
+            time_elapsed += 10
+
+        if time_elapsed >= 120:
+            return
+
+        else:
+            await self.media_parser.send_video(
+                self.message, True, self.path, self.selected_file
+            )
 
     @discord.ui.button(label="480p", style=discord.ButtonStyle.primary, emoji="📱")
     async def button_480p(
@@ -114,8 +140,21 @@ class ResolutionView(discord.ui.View):
             )
         #        await interaction.response.defer(ephemeral=True)
         self.ffmpeg_processing = True
-        await interaction.response.send_message("480p selected", ephemeral=True)
+        # await interaction.response.send_message("480p selected", ephemeral=True)
+        await self.disable_buttons(interaction)
         await self.scale_videos("480p")
+        time_elapsed = 0
+        while self.ffmpeg_processing and time_elapsed <= 120:
+            await asyncio.sleep(10)
+            time_elapsed += 10
+
+        if time_elapsed >= 120:
+            return
+
+        else:
+            await self.media_parser.send_video(
+                self.message, True, self.path, self.selected_file
+            )
 
     @discord.ui.button(label="360p", style=discord.ButtonStyle.primary, emoji="📹")
     async def button_360p(
@@ -127,21 +166,11 @@ class ResolutionView(discord.ui.View):
             )
         #        await interaction.response.defer(ephemeral=True)
         self.ffmpeg_processing = True
-        await interaction.response.send_message("360p selected", ephemeral=True)
-        await self.scale_videos("360p")
-
-    @discord.ui.button(label="Download", style=discord.ButtonStyle.success, emoji="⬇️")
-    async def button_download(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
-        if interaction.user.id != self.message.author.id:
-            return await interaction.response.send_message(
-                "You are not allowed to use this button.", ephemeral=True
-            )
+        #  await interaction.response.send_message("360p selected", ephemeral=True)
 
         await interaction.response.defer(ephemeral=True)
         await self.disable_buttons(interaction)
-
+        await self.scale_videos("360p")
         time_elapsed = 0
         while self.ffmpeg_processing and time_elapsed <= 120:
             await asyncio.sleep(10)
@@ -198,6 +227,8 @@ class FileSelect(discord.ui.Select):
             )
 
         view.selected_file = self.values[0]
+        inv_map = {v: k for k, v in self.file_dict.items()}
         await interaction.response.send_message(
-            f"Selected file: {self.file_dict.get(str(self.values[0]))}", ephemeral=True
+            f"Selected file: {inv_map[self.values[0]]}",
+            ephemeral=True,
         )
