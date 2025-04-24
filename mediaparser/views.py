@@ -5,11 +5,18 @@ import asyncio
 
 
 class ResolutionView(discord.ui.View):
-    def __init__(self, message: discord.Message, path: str, media_parser):
+    def __init__(
+        self,
+        message: discord.Message,
+        path: str,
+        media_parser,
+        embed_menu: discord.Message,
+    ):
         super().__init__()
         self.message = message
         self.path = path
         self.media_parser = media_parser
+        self.embed_menu = embed_menu
         self.selected_file = None
         self.add_item(FileSelect(path))
         self.ffmpeg_processing = None
@@ -90,6 +97,7 @@ class ResolutionView(discord.ui.View):
         self.ffmpeg_processing = True
         # await interaction.response.send_message("1080p selected", ephemeral=True)
         await self.disable_buttons(interaction)
+        await self.embed_menu.delete()
         await self.scale_videos("1080p")
         time_elapsed = 0
         while self.ffmpeg_processing and time_elapsed <= 120:
@@ -116,6 +124,7 @@ class ResolutionView(discord.ui.View):
         self.ffmpeg_processing = True
         # await interaction.response.send_message("720p selected", ephemeral=True)
         await self.disable_buttons(interaction)
+        await self.embed_menu.delete()
         await self.scale_videos("720p")
         time_elapsed = 0
         while self.ffmpeg_processing and time_elapsed <= 120:
@@ -142,6 +151,7 @@ class ResolutionView(discord.ui.View):
         self.ffmpeg_processing = True
         # await interaction.response.send_message("480p selected", ephemeral=True)
         await self.disable_buttons(interaction)
+        await self.embed_menu.delete()
         await self.scale_videos("480p")
         time_elapsed = 0
         while self.ffmpeg_processing and time_elapsed <= 120:
@@ -170,6 +180,7 @@ class ResolutionView(discord.ui.View):
 
         await interaction.response.defer(ephemeral=True)
         await self.disable_buttons(interaction)
+        await self.embed_menu.delete()
         await self.scale_videos("360p")
         time_elapsed = 0
         while self.ffmpeg_processing and time_elapsed <= 120:
@@ -193,13 +204,11 @@ class ResolutionView(discord.ui.View):
                 "You are not allowed to use this button.", ephemeral=True
             )
         await self.disable_buttons(interaction)
+        await self.embed_menu.delete()
         await self.media_parser.send_video(
             self.message, False, self.path, self.selected_file
         )  # Sends a False to the send_video function which means that the video isnt sent.
         await interaction.response.send_message("Download cancelled", ephemeral=True)
-
-
-#        await interaction.response.defer(ephemeral=True)
 
 
 class FileSelect(discord.ui.Select):

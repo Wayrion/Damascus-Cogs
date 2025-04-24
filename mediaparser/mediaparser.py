@@ -144,8 +144,11 @@ class MediaParser(commands.Cog):
                 description="Choose the resolution for the download:",
             )
 
-            view = ResolutionView(message, path, self)
-            await message.channel.send(embed=embed, view=view)
+            embed_menu = await message.channel.send(embed=embed, view=view)
+
+            view = ResolutionView(
+                message, path, self, embed_menu
+            )  # Self is an instance of Mediaparser
 
     async def send_video(
         self,
