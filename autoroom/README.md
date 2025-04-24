@@ -3,7 +3,7 @@ THIS IS AN EDITED VERSION OF PCX'S AUTOROOM COG. THE ORIGINAL CAN BE FOUND [HERE
 
 This cog has been edited to the needs of a client, as detailed in this [post](https://cogboard.discord.red/t/35-some-cog-requests/1284)
 
-For any support regarding this cog, please contact @Guyonsteroids on Discord and not PhasecoreX
+For any support regarding this cog, please contact @Wayrion on Discord and not PhasecoreX
 
 # AutoRoom
 

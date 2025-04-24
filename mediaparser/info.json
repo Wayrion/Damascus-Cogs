@@ -1,0 +1,21 @@
+{
+    "author": [
+        "Wayrion (718395193090375700)"
+    ],
+    "short": "Media parser cog",
+    "description": "A cog to automatically parse and embed media links in chat.",
+    "name": "MediaParser",
+    "requirements": [
+        "instaloader",
+        "requests",
+        "fake-useragent",
+        "httpx",
+        "redvid",
+        "yt-dlp[default]",
+        "ffmpeg-python",
+        "pystreamable",
+        "beautifulsoup4",
+        "shutil"
+    ],
+    "install_msg": "Thank you for instaling the MediaParser cog!. If you need support feel free to reach out to me in the #support (<#992344272529535087>) of this server.\nhttps://discord.gg/aYd3ZPr4Dn. For this cog, please ensure to download FFMPEG and add it as a path variable."
+}
