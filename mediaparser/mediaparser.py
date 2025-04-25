@@ -160,16 +160,9 @@ class MediaParser(commands.Cog):
     ):
 
         if decision:
-            boost_level = message.guild.premium_tier
-            file_limits = {
-                0: 10485760,  # 10MB
-                1: 10485760,  # 10MB
-                2: 52428800,  # 50MB
-                3: 104857600,  # 100MB
-            }
             file_path = os.path.join(folder_path, selected_file)
             file_size = os.path.getsize(file_path)
-            if file_limits[boost_level] > file_size:
+            if message.guild.filesize_limit > file_size:
                 await message.channel.send(
                     content=f"Post downloaded by {message.author.mention}",
                     file=discord.File(file_path),
