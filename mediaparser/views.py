@@ -18,6 +18,7 @@ class ResolutionView(discord.ui.View):
         self.media_parser = media_parser
         self.embed_menu = embed_menu
         self.selected_file = None
+        self.clear_items()
         self.add_item(FileSelect(path))
         self.ffmpeg_processing = None
 
@@ -85,6 +86,16 @@ class ResolutionView(discord.ui.View):
                 child.disabled = True
         await interaction.edit_original_response(view=self)
 
+    async def show_resolution_buttons(self):
+        """Dynamically add resolution buttons after file selection."""
+        self.clear_items()  # Remove the FileSelect dropdown
+        self.add_item(self.button_1080p)
+        self.add_item(self.button_720p)
+        self.add_item(self.button_480p)
+        self.add_item(self.button_360p)
+        self.add_item(self.button_cancel)
+        await self.embed_menu.edit(view=self)  # Edit the embed_menu message directly
+
     @discord.ui.button(label="1080p", style=discord.ButtonStyle.primary, emoji="🎥")
     async def button_1080p(
         self, interaction: discord.Interaction, button: discord.ui.Button
@@ -94,6 +105,8 @@ class ResolutionView(discord.ui.View):
                 "You are not allowed to use this button.", ephemeral=True
             )
         self.ffmpeg_processing = True
+
+        await interaction.response.defer(ephemeral=True)
         await self.disable_buttons(interaction)
         await self.embed_menu.delete()
         await self.scale_videos("1080p")
@@ -119,6 +132,8 @@ class ResolutionView(discord.ui.View):
                 "You are not allowed to use this button.", ephemeral=True
             )
         self.ffmpeg_processing = True
+
+        await interaction.response.defer(ephemeral=True)
         await self.disable_buttons(interaction)
         await self.embed_menu.delete()
         await self.scale_videos("720p")
@@ -135,7 +150,7 @@ class ResolutionView(discord.ui.View):
                 self.message, True, self.path, self.selected_file
             )
 
-    @discord.ui.button(label="480p", style=discord.ButtonStyle.primary, emoji="📱")
+    @discord.ui.button(label="480p", style=discord.ButtonStyle.primary, emoji="📹")
     async def button_480p(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
@@ -143,9 +158,9 @@ class ResolutionView(discord.ui.View):
             return await interaction.response.send_message(
                 "You are not allowed to use this button.", ephemeral=True
             )
-        #        await interaction.response.defer(ephemeral=True)
         self.ffmpeg_processing = True
-        # await interaction.response.send_message("480p selected", ephemeral=True)
+
+        await interaction.response.defer(ephemeral=True)
         await self.disable_buttons(interaction)
         await self.embed_menu.delete()
         await self.scale_videos("480p")
@@ -162,7 +177,7 @@ class ResolutionView(discord.ui.View):
                 self.message, True, self.path, self.selected_file
             )
 
-    @discord.ui.button(label="360p", style=discord.ButtonStyle.primary, emoji="📹")
+    @discord.ui.button(label="360p", style=discord.ButtonStyle.primary, emoji="📱")
     async def button_360p(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
@@ -235,3 +250,5 @@ class FileSelect(discord.ui.Select):
             f"Selected file: {inv_map[self.values[0]]}",
             ephemeral=True,
         )
+
+        await view.show_resolution_buttons()  # Update the embed_menu with buttons
