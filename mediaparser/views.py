@@ -93,9 +93,7 @@ class ResolutionView(discord.ui.View):
             return await interaction.response.send_message(
                 "You are not allowed to use this button.", ephemeral=True
             )
-        #        await interaction.response.defer(ephemeral=True)
         self.ffmpeg_processing = True
-        # await interaction.response.send_message("1080p selected", ephemeral=True)
         await self.disable_buttons(interaction)
         await self.embed_menu.delete()
         await self.scale_videos("1080p")
@@ -120,9 +118,7 @@ class ResolutionView(discord.ui.View):
             return await interaction.response.send_message(
                 "You are not allowed to use this button.", ephemeral=True
             )
-        #        await interaction.response.defer(ephemeral=True)
         self.ffmpeg_processing = True
-        # await interaction.response.send_message("720p selected", ephemeral=True)
         await self.disable_buttons(interaction)
         await self.embed_menu.delete()
         await self.scale_videos("720p")
@@ -174,9 +170,7 @@ class ResolutionView(discord.ui.View):
             return await interaction.response.send_message(
                 "You are not allowed to use this button.", ephemeral=True
             )
-        #        await interaction.response.defer(ephemeral=True)
         self.ffmpeg_processing = True
-        #  await interaction.response.send_message("360p selected", ephemeral=True)
 
         await interaction.response.defer(ephemeral=True)
         await self.disable_buttons(interaction)
@@ -236,7 +230,7 @@ class FileSelect(discord.ui.Select):
             )
 
         view.selected_file = self.values[0]
-        inv_map = {v: k for k, v in self.file_dict.items()}
+        inv_map = {v: k for k, v in self.file_dict.items()}  # This is stupid
         await interaction.response.send_message(
             f"Selected file: {inv_map[self.values[0]]}",
             ephemeral=True,

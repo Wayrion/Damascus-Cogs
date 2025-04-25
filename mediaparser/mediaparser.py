@@ -178,7 +178,6 @@ class MediaParser(commands.Cog):
                 self.remove_output_dir(folder_path)
 
             else:
-                # await message.channel.send("limit exceeded")
                 shortcode = await self.upload_media(
                     file_path, str(selected_file), folder_path
                 )
