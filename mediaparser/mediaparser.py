@@ -78,10 +78,7 @@ class MediaParser(commands.Cog):
         try:
             vid = await asyncio.to_thread(api.upload_video, media, title)
             vid = dict(vid)
-            while vid.get("status") != 2:
-                await asyncio.sleep(10)
-                vid = await asyncio.to_thread(api.get_video, vid["shortcode"])
-                vid = dict(vid)
+            await asyncio.sleep(60)
             url = "https://streamable.com/" + vid["shortcode"]
             return url
 
@@ -174,7 +171,9 @@ class MediaParser(commands.Cog):
                 shortcode = await self.upload_media(
                     file_path, str(selected_file), folder_path
                 )
-                await message.channel.send(shortcode)
+                await message.channel.send(
+                    f"Post downloaded by {message.author.mention}\n{shortcode}"
+                )
                 await asyncio.sleep(10)
                 self.remove_output_dir(folder_path)
 
