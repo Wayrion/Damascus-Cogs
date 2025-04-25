@@ -23,7 +23,7 @@ class Cocktail(commands.Cog):
         """Get a random cocktail"""
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://www.thecocktaildb.com/api/json/v1/1/random.php"
+                "https://www.thecocktaildb.com/api/json/v1/1/random.php"
             ) as resp:
 
                 response = await resp.json()
@@ -48,7 +48,7 @@ class Cocktail(commands.Cog):
 
                 response = await resp.json()
                 data = response.get("drinks")
-                if data != None:
+                if data:
                     embed = drinksformatter(data)
                     await ctx.send(embed=embed)
 
@@ -72,16 +72,16 @@ class Cocktail(commands.Cog):
                 Pages = []
 
                 Cocktails = []
-                if data != None:
+                if data:
                     for i in data:
                         a = i.get("strDrink")
                         Cocktails.append(a)
                         Pages.append(multipledrinksformatter(i, list(data).index(i)))
 
-                    embed.add_field(name=f"Name:", value=f"Page Number", inline=False)
+                    embed.add_field(name="Name:", value="Page Number", inline=False)
                     for i in Cocktails:
                         embed.add_field(
-                            name=f"Results:",
+                            name="Results:",
                             value=f"{i} : {Cocktails.index(i)}",
                             inline=False,
                         )
@@ -102,7 +102,7 @@ class Cocktail(commands.Cog):
 
                 response = await resp.json()
                 data = response.get("ingredients")
-                if data != None:
+                if data:
                     embed = ingredientformatter(data)
                     await menu(ctx, embed, DEFAULT_CONTROLS)
 
@@ -125,7 +125,7 @@ class Cocktail(commands.Cog):
 
                 response = await resp.json()
                 data = response.get("drinks")
-                if data != None:
+                if data:
                     embed = drinksformatter(data)
                     await ctx.send(embed=embed)
 
@@ -143,7 +143,7 @@ class Cocktail(commands.Cog):
                 response = await resp.json()
                 data = response.get("ingredients")
 
-                if data != None:
+                if data:
                     embed = ingredientformatter(data)
                     await menu(ctx, embed, DEFAULT_CONTROLS)
 
@@ -168,13 +168,13 @@ class Cocktail(commands.Cog):
                     response = await resp.json()
                     data = response.get("drinks")
                     embed = discord.Embed(
-                        title=f"List of all alcoholic cocktails",
+                        title="List of all alcoholic cocktails",
                         color=discord.Color.random(),
                     )
                     Pages = []
 
                     Cocktails = []
-                    if data != None:
+                    if data:
                         for i in data:
                             a = i.get("strDrink")
                             Cocktails.append(a)
@@ -183,11 +183,11 @@ class Cocktail(commands.Cog):
                             )
 
                         embed.add_field(
-                            name=f"Name: ", value=f"Page Number", inline=False
+                            name="Name: ", value="Page Number", inline=False
                         )
                         for i in Cocktails:
                             embed.add_field(
-                                name=f"Results: ",
+                                name="Results: ",
                                 value=f"{i} : {Cocktails.index(i)}\n",
                                 inline=False,
                             )
@@ -220,7 +220,7 @@ class Cocktail(commands.Cog):
                     Pages = []
 
                     Cocktails = []
-                    if data != None:
+                    if data:
                         for i in data:
                             a = i.get("strDrink")
                             Cocktails.append(a)
@@ -229,11 +229,11 @@ class Cocktail(commands.Cog):
                             )
 
                         embed.add_field(
-                            name=f"Name: ", value=f"Page Number", inline=False
+                            name="Name: ", value="Page Number", inline=False
                         )
                         for i in Cocktails:
                             embed.add_field(
-                                name=f"Results: ",
+                                name="Results: ",
                                 value=f"{i} : {Cocktails.index(i)}\n",
                                 inline=False,
                             )
@@ -266,7 +266,7 @@ class Cocktail(commands.Cog):
                     Pages = []
 
                     Cocktails = []
-                    if data != None:
+                    if data:
                         for i in data:
                             a = i.get("strDrink")
                             Cocktails.append(a)
@@ -275,11 +275,11 @@ class Cocktail(commands.Cog):
                             )
 
                         embed.add_field(
-                            name=f"Name: ", value=f"Page Number", inline=False
+                            name="Name: ", value="Page Number", inline=False
                         )
                         for i in Cocktails:
                             embed.add_field(
-                                name=f"Results: ",
+                                name="Results: ",
                                 value=f"{i} : {Cocktails.index(i)}\n",
                                 inline=False,
                             )
@@ -307,17 +307,17 @@ class Cocktail(commands.Cog):
         embed = discord.Embed(color=discord.Color.random())
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list"
+                "https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list"
             ) as resp:
 
                 response = await resp.json()
-                if response != None:
+                if response:
                     data = response.get("drinks")
                     for Drink in data:
                         categorylist.append(Drink.get("strCategory"))
 
                     embed.add_field(
-                        name=f"List of all Categories:",
+                        name="List of all Categories:",
                         value=f"{categorylist}",
                         inline=False,
                     )
@@ -332,16 +332,16 @@ class Cocktail(commands.Cog):
         embed = discord.Embed(color=discord.Color.random())
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://www.thecocktaildb.com/api/json/v1/1/list.php?g=list"
+                "https://www.thecocktaildb.com/api/json/v1/1/list.php?g=list"
             ) as resp:
 
                 response = await resp.json()
-                if response != None:
+                if response:
                     data = response.get("drinks")
                     for Glass in data:
                         glasseslist.append(Glass.get("strGlass"))
                     embed.add_field(
-                        name=f"List of all Glasses:",
+                        name="List of all Glasses:",
                         value=f"{glasseslist}",
                         inline=False,
                     )
@@ -356,18 +356,18 @@ class Cocktail(commands.Cog):
         embed = discord.Embed(color=discord.Color.random())
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list"
+                "https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list"
             ) as resp:
 
                 response = await resp.json()
-                if response != None:
+                if response:
                     data = response.get("drinks")
                     for Ingredient in data:
                         ingredientlist.append(Ingredient.get("strIngredient1"))
 
                     for i in chunks(ingredientlist, 20):
                         embed.add_field(
-                            name=f"List of all Ingredients:", value=f"{i}", inline=False
+                            name="List of all Ingredients:", value=f"{i}", inline=False
                         )
                     await ctx.send(embed=embed)
 
@@ -381,15 +381,15 @@ class Cocktail(commands.Cog):
         embed = discord.Embed(color=discord.Color.random())
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://www.thecocktaildb.com/api/json/v1/1/list.php?a=list"
+                "https://www.thecocktaildb.com/api/json/v1/1/list.php?a=list"
             ) as resp:
                 response = await resp.json()
-                if response != None:
+                if response:
                     data = response.get("drinks")
                     for Alcoholic in data:
                         alcoholiclist.append(Alcoholic.get("strAlcoholic"))
                     embed.add_field(
-                        name=f"List of all Alcoholic Filters:",
+                        name="List of all Alcoholic Filters:",
                         value=f"{alcoholiclist}",
                         inline=False,
                     )
@@ -409,7 +409,7 @@ class Cocktail(commands.Cog):
 
                 response = await resp.json()
                 data = response.get("drinks")
-                if data != None:
+                if data:
                     embed = drinksformatter(data)
                     await ctx.send(embed=embed)
 
@@ -433,16 +433,16 @@ class Cocktail(commands.Cog):
                 Pages = []
 
                 Cocktails = []
-                if data != None:
+                if data:
                     for i in data:
                         a = i.get("strDrink")
                         Cocktails.append(a)
                         Pages.append(multipledrinksformatter(i, list(data).index(i)))
 
-                    embed.add_field(name=f"Name:", value=f"Page Number", inline=False)
+                    embed.add_field(name="Name:", value="Page Number", inline=False)
                     for i in Cocktails:
                         embed.add_field(
-                            name=f"Results:",
+                            name="Results:",
                             value=f"{i} : {Cocktails.index(i)}",
                             inline=False,
                         )
@@ -458,7 +458,7 @@ class Cocktail(commands.Cog):
         """Get a random cocktail"""
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://www.thecocktaildb.com/api/json/v1/1/random.php"
+                "https://www.thecocktaildb.com/api/json/v1/1/random.php"
             ) as resp:
 
                 response = await resp.json()
@@ -477,7 +477,7 @@ class Cocktail(commands.Cog):
 
                 response = await resp.json()
                 data = response.get("ingredients")
-                if data != None:
+                if data:
                     embed = ingredientformatter(data)
                     await menu(ctx, embed, DEFAULT_CONTROLS)
 
