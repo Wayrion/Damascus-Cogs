@@ -22,7 +22,21 @@ class ResolutionView(discord.ui.View):
         self.embed_menu = embed_menu
         self.selected_file: Union[str, None] = None
         self.clear_items()
-        self.add_item(FileSelect(path))
+        files = [
+            file
+            for file in os.listdir(path)
+            if file.endswith((".mp4", ".mkv", ".avi", ".jpg", ".jpeg", ".png", ".gif"))
+        ]
+        if len(files) != 1:
+            self.add_item(FileSelect(path))
+        else:
+            self.selected_file = files[0]
+            self.add_item(self.button_1080p)
+            self.add_item(self.button_720p)
+            self.add_item(self.button_480p)
+            self.add_item(self.button_360p)
+            self.add_item(self.button_cancel)
+
         self.ffmpeg_processing = None
 
     async def scale_videos(self, resolution: str):
@@ -34,7 +48,8 @@ class ResolutionView(discord.ui.View):
         if self.selected_file:
             input_path = os.path.join(self.path, self.selected_file)
             output_path = os.path.join(
-                self.path, f"{os.path.splitext(self.selected_file)[0]}_{resolution}.{self.selected_file.split(".", 2)[1]}"
+                self.path,
+                f"{os.path.splitext(self.selected_file)[0]}_{resolution}.{os.path.splitext(self.selected_file)[1]}",
             )
             video_paths = ["mp4", "mkv"]
             if self.selected_file.split(".", 2)[1] not in video_paths:
