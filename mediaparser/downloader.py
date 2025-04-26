@@ -189,7 +189,7 @@ async def instagram_downloader(url: str, mail: str, password: str):
 
     post = instaloader.Post.from_shortcode(InstaLoader.context, shortcode)
 
-    InstaLoader.download_post(post, target=output_dir, silent=True)
+    InstaLoader.download_post(post, target=output_dir)
 
     return output_dir
 
