@@ -52,7 +52,7 @@ class ResolutionView(discord.ui.View):
                                 .output(
                                     output_path,
                                     vf=f"scale={target_width}:{new_height}",
-                                    # loglevel="quiet",
+                                    loglevel="quiet",
                                 )
                                 .run,
                                 overwrite_output=False,

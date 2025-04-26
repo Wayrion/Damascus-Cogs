@@ -18,13 +18,13 @@ from bs4 import BeautifulSoup as bs4
 from pathlib import Path
 import aiofiles
 
-# import logging
+import logging
 
-# logging.getLogger("httpx").setLevel(logging.ERROR)
+logging.getLogger("httpx").setLevel(logging.ERROR)
 # Or logging.ERROR or logging.CRITICAL
 # Or, to completely disable:
-# logging.getLogger("httpx").propagate = False
-# logging.getLogger("httpx").addHandler(logging.NullHandler())
+logging.getLogger("httpx").propagate = False
+logging.getLogger("httpx").addHandler(logging.NullHandler())
 
 
 async def get_content(
