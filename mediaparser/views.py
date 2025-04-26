@@ -4,6 +4,7 @@ import discord.ui
 import asyncio
 import discord
 from redbot.core import commands
+from typing import Union
 
 
 class ResolutionView(discord.ui.View):
@@ -19,7 +20,7 @@ class ResolutionView(discord.ui.View):
         self.path = path
         self.media_parser = media_parser
         self.embed_menu = embed_menu
-        self.selected_file = None
+        self.selected_file: Union[str, None] = None
         self.clear_items()
         self.add_item(FileSelect(path))
         self.ffmpeg_processing = None
@@ -35,6 +36,10 @@ class ResolutionView(discord.ui.View):
             output_path = os.path.join(
                 self.path, f"{os.path.splitext(self.selected_file)[0]}_{resolution}.mp4"
             )
+            video_paths = ["mp4", "mkv"]
+            if self.selected_file.split(".", 2)[1] not in video_paths:
+                self.ffmpeg_processing = None
+                return
 
             try:
                 async with ctx.typing():
