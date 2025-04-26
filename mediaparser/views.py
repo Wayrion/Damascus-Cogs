@@ -236,7 +236,7 @@ class FileSelect(discord.ui.Select):
             if file.endswith((".mp4", ".mkv", ".avi", ".jpg", ".jpeg", ".png", ".gif"))
         ]
         self.file_dict = {
-            f"Post {i+1}.{os.path.splitext(file)[0]}": file
+            f"Post {i+1}.{os.path.splitext(file)[1]}": file
             for i, file in enumerate(files)
         }  # I regret making this one line
 
