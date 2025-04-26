@@ -26,6 +26,10 @@ logging.getLogger("httpx").setLevel(logging.ERROR)
 logging.getLogger("httpx").propagate = False
 logging.getLogger("httpx").addHandler(logging.NullHandler())
 
+logging.getLogger("instaloader").setLevel(logging.ERROR)
+logging.getLogger("instaloader").propagate = False
+logging.getLogger("instaloader").addHandler(logging.NullHandler())
+
 
 async def get_content(
     url: str, output: str = "video.mp4", cookies: httpx.Cookies = None
