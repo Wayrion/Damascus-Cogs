@@ -2,6 +2,8 @@ import os
 import ffmpeg
 import discord.ui
 import asyncio
+import discord
+from redbot.core import commands
 
 
 class ResolutionView(discord.ui.View):
@@ -26,6 +28,8 @@ class ResolutionView(discord.ui.View):
         resolution_map = {"1080p": "1920", "720p": "1280", "480p": "854", "360p": "640"}
         target_width = resolution_map.get(resolution)
 
+        ctx: commands.Context = await self.get_context(self.message)
+
         if self.selected_file:
             input_path = os.path.join(self.path, self.selected_file)
             output_path = os.path.join(
@@ -33,40 +37,43 @@ class ResolutionView(discord.ui.View):
             )
 
             try:
-                probe = ffmpeg.probe(input_path)
-                streams = probe.get("streams", [])
-                if streams:
-                    video_stream = next(
-                        (s for s in streams if s["codec_type"] == "video"), None
-                    )
-                    if video_stream:
-                        height = video_stream.get("height")
-                        width = video_stream.get("width")
-                        if height and width:
-                            new_height = int(height * (int(target_width) / width))
-                            if new_height % 2 != 0:
-                                new_height -= 1
+                async with ctx.typing():
+                    probe = ffmpeg.probe(input_path)
+                    streams = probe.get("streams", [])
+                    if streams:
+                        video_stream = next(
+                            (s for s in streams if s["codec_type"] == "video"), None
+                        )
+                        if video_stream:
+                            height = video_stream.get("height")
+                            width = video_stream.get("width")
+                            if height and width:
+                                new_height = int(height * (int(target_width) / width))
+                                if new_height % 2 != 0:
+                                    new_height -= 1
 
-                            await asyncio.to_thread(
-                                ffmpeg.input(input_path)
-                                .output(
-                                    output_path,
-                                    vf=f"scale={target_width}:{new_height}",
-                                    loglevel="quiet",
+                                await asyncio.to_thread(
+                                    ffmpeg.input(input_path)
+                                    .output(
+                                        output_path,
+                                        vf=f"scale={target_width}:{new_height}",
+                                        loglevel="quiet",
+                                    )
+                                    .run,
+                                    overwrite_output=False,
                                 )
-                                .run,
-                                overwrite_output=False,
-                            )
 
-                            self.ffmpeg_processing = None
+                                self.ffmpeg_processing = None
+                            else:
+                                print(
+                                    f"Error: Height or width not found in video stream for {self.selected_file}"
+                                )
                         else:
                             print(
-                                f"Error: Height or width not found in video stream for {self.selected_file}"
+                                f"Error: No video stream found in {self.selected_file}"
                             )
                     else:
-                        print(f"Error: No video stream found in {self.selected_file}")
-                else:
-                    print(f"Error: No streams found in {self.selected_file}")
+                        print(f"Error: No streams found in {self.selected_file}")
             except ffmpeg.Error as e:
                 print(e.stderr)
             except Exception as e:

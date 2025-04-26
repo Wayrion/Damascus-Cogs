@@ -121,20 +121,25 @@ class MediaParser(commands.Cog):
         parsereddit: bool = await self.config.guild(guild).parsereddit()
         parsetiktok: bool = await self.config.guild(guild).parsetiktok()
         parseinstagram: bool = await self.config.guild(guild).parseinstagram()
+        ctx: commands.Context = await self.bot.get_context(message)
 
         for link in links:
             path = None
             if ("instagram.com" in link) and parseinstagram:
-                path = await instagram_downloader(link, mail, password)
+                async with ctx.typing():
+                    path = await instagram_downloader(link, mail, password)
 
             elif ("tiktok.com" in link) and parsetiktok:
-                path = await tiktok_downloader(link)
+                async with ctx.typing():
+                    path = await tiktok_downloader(link)
 
             elif ("reddit.com" in link) and parsereddit:
-                path = await reddit_downloader(link)
+                async with ctx.typing():
+                    path = await reddit_downloader(link)
 
             elif ("youtu.be" or "youtube.com" in link) and parseyoutube:
-                path = await youtube_downloader(link)
+                async with ctx.typing():
+                    path = await youtube_downloader(link)
 
             embed = discord.Embed(
                 title="Select Resolution",
@@ -155,7 +160,7 @@ class MediaParser(commands.Cog):
         folder_path: str,
         selected_file: str,
     ):
-
+        ctx: commands.Context = await self.bot.get_context(message)
         if decision:
             file_path = os.path.join(folder_path, selected_file)
             file_size = os.path.getsize(file_path)
@@ -168,13 +173,14 @@ class MediaParser(commands.Cog):
                 self.remove_output_dir(folder_path)
 
             else:
-                shortcode = await self.upload_media(
-                    file_path, str(selected_file), folder_path
-                )
-                await message.channel.send(
-                    f"Post downloaded by {message.author.mention}\n{shortcode}"
-                )
-                await asyncio.sleep(10)
+                async with ctx.typing():
+                    shortcode = await self.upload_media(
+                        file_path, str(selected_file), folder_path
+                    )
+                    await message.channel.send(
+                        f"Post downloaded by {message.author.mention}\n{shortcode}"
+                    )
+                    await asyncio.sleep(10)
                 self.remove_output_dir(folder_path)
 
             try:
