@@ -141,6 +141,9 @@ class MediaParser(commands.Cog):
                 async with ctx.typing():
                     path = await youtube_downloader(link)
 
+            else:
+                return
+
             embed = discord.Embed(
                 title="Select Resolution",
                 description="Choose the resolution for the download:",
