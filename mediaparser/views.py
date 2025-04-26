@@ -34,7 +34,7 @@ class ResolutionView(discord.ui.View):
         if self.selected_file:
             input_path = os.path.join(self.path, self.selected_file)
             output_path = os.path.join(
-                self.path, f"{os.path.splitext(self.selected_file)[0]}_{resolution}.mp4"
+                self.path, f"{os.path.splitext(self.selected_file)[0]}_{resolution}.{self.selected_file.split(".", 2)[1]}"
             )
             video_paths = ["mp4", "mkv"]
             if self.selected_file.split(".", 2)[1] not in video_paths:
