@@ -235,7 +235,8 @@ class FileSelect(discord.ui.Select):
             for file in os.listdir(path)
             if file.endswith((".mp4", ".mkv", ".avi", ".jpg", ".jpeg", ".png", ".gif"))
         ]
-        self.file_dict = {f"Post {i+1}": file for i, file in enumerate(files)}
+        self.file_dict = {f"Post {i+1}.{file.split(".")[0]}": file for i, file in enumerate(files)}
+
         options = [
             discord.SelectOption(label=key, value=self.file_dict[key])
             for key in self.file_dict.keys()
