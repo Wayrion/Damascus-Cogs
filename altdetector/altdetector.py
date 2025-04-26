@@ -133,7 +133,7 @@ class AltDetector(commands.Cog):
         if self.user_data is None:
             embed = discord.Embed(
                 title="Verification Process",
-                description=f"You didn't login in time, please try again.",
+                description="You didn't login in time, please try again.",
                 color=discord.Color.red(),
             )
             await member.kick(reason="Didn't login in time")
@@ -159,7 +159,7 @@ class AltDetector(commands.Cog):
 
             embed = discord.Embed(
                 title="Verification Process",
-                description=f"You are using a VPN, please disable it and try again.",
+                description="You are using a VPN, please disable it and try again.",
                 color=discord.Color.red(),
             )
             await member.send(embed=embed)
@@ -180,7 +180,7 @@ class AltDetector(commands.Cog):
 
                 embed = discord.Embed(
                     title="Verification Process",
-                    description=f"You are using a banned IP, please contact the server staff.",
+                    description="You are using a banned IP, please contact the server staff.",
                     color=discord.Color.red(),
                 )
 
