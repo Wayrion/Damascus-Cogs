@@ -28,7 +28,7 @@ class ResolutionView(discord.ui.View):
         resolution_map = {"1080p": "1920", "720p": "1280", "480p": "854", "360p": "640"}
         target_width = resolution_map.get(resolution)
 
-        ctx: commands.Context = await self.get_context(self.message)
+        ctx: commands.Context = await self.media_parser.bot.get_context(self.message)
 
         if self.selected_file:
             input_path = os.path.join(self.path, self.selected_file)
@@ -236,7 +236,7 @@ class FileSelect(discord.ui.Select):
             if file.endswith((".mp4", ".mkv", ".avi", ".jpg", ".jpeg", ".png", ".gif"))
         ]
         self.file_dict = {
-            f"Post {i+1}.{os.path.splitext(file)[1]}": file
+            f"Post {i+1}{os.path.splitext(file)[1]}": file
             for i, file in enumerate(files)
         }  # I regret making this one line
 
