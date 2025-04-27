@@ -2,6 +2,8 @@ import instaloader
 import json
 import os
 
+
+from typing import Union
 import re
 
 from redvid import Downloader
@@ -116,7 +118,6 @@ async def get_video_detail(url: str):
         f"https://tiktok.com/@i/video/{post_id}", follow_redirects=True
     )
     cookies = result.cookies
-    # print(cookie)
     open("tiktok_get_result.html", "w", encoding="utf-8").write(result.text)
     parser = bs4(result.text, "html.parser")
     infotag = parser.find("script", attrs={"id": "__UNIVERSAL_DATA_FOR_REHYDRATION__"})
@@ -164,7 +165,9 @@ async def get_real_instagram_url(share_url: str) -> str:
         return None
 
 
-async def instagram_downloader(url: str, mail: str, password: str):
+async def instagram_downloader(
+    url: str, mail: Union[str, None], password: Union[str, None]
+):
 
     InstaLoader = instaloader.Instaloader()
     if mail and password:

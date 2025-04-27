@@ -15,6 +15,8 @@ from .downloader import (
     tiktok_downloader,
 )
 
+from typing import Union
+
 
 class MediaParser(commands.Cog):
     """The Reddit parser cog"""
@@ -37,12 +39,12 @@ class MediaParser(commands.Cog):
         }
 
         default_global = {
-            "streamable_mail": "",
-            "streamable_password": "",
-            "instagram_mail": "",
-            "instagram_password": "",
-            "ytdlp_oauth": "",  # For future use
-            "ytdlp_cookies": "",  # For future use
+            "streamable_mail": None,
+            "streamable_password": None,
+            "instagram_mail": None,
+            "instagram_password": None,
+            "ytdlp_oauth": None,  # For future use
+            "ytdlp_cookies": None,  # For future use
         }
 
         self.config.register_guild(**default_guild)
@@ -70,10 +72,16 @@ class MediaParser(commands.Cog):
     async def upload_media(self, media: str, title: str, folder_path: str):
         # media is the str path to the video
 
-        mail: str = await self.config.streamable_mail()
-        password: str = await self.config.streamable_password()
+        mail: Union[str, None] = await self.config.streamable_mail()
+        password: Union[str, None] = await self.config.streamable_password()
 
         api = StreamableApi(mail, password)
+
+        if not (mail and password):
+            prefix: List[str] = await self.bot.get_valid_prefixes()
+            prefix = next((item for item in prefix if item is not None or ""), "[p]")
+            url = f"Streamable Mail or Password not set, please set the right credentials in your dms with the bot using\n`{prefix}setmediaparser streamable_mail <mail>` and\n{prefix}setmediaparser streamable_password <password>`"
+            return url
 
         try:
             vid = await asyncio.to_thread(api.upload_video, media, title)
@@ -115,8 +123,8 @@ class MediaParser(commands.Cog):
         guild = message.guild
 
         links = await self.link_parser(message.content)
-        mail: str = await self.config.instagram_mail()
-        password: str = await self.config.instagram_password()
+        mail: Union[str, None] = await self.config.instagram_mail()
+        password: Union[str, None] = await self.config.instagram_password()
         parseyoutube: bool = await self.config.guild(guild).parseyoutube()
         parsereddit: bool = await self.config.guild(guild).parsereddit()
         parsetiktok: bool = await self.config.guild(guild).parsetiktok()
