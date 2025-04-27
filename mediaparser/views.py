@@ -35,6 +35,7 @@ class ResolutionView(discord.ui.View):
             self.add_item(self.button_720p)
             self.add_item(self.button_480p)
             self.add_item(self.button_360p)
+            self.add_item(self.button_original)
             self.add_item(self.button_cancel)
 
         self.ffmpeg_processing = None
@@ -120,6 +121,7 @@ class ResolutionView(discord.ui.View):
         self.add_item(self.button_720p)
         self.add_item(self.button_480p)
         self.add_item(self.button_360p)
+        self.add_item(self.button_original)
         self.add_item(self.button_cancel)
         await self.embed_menu.edit(view=self)  # Edit the embed_menu message directly
 
@@ -230,6 +232,23 @@ class ResolutionView(discord.ui.View):
             await self.media_parser.send_video(
                 self.message, True, self.path, self.selected_file
             )
+
+    @discord.ui.button(label="Original", style=discord.ButtonStyle.green, emoji="📼")
+    async def button_original(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        if interaction.user.id != self.message.author.id:
+            return await interaction.response.send_message(
+                "You are not allowed to use this button.", ephemeral=True
+            )
+
+        await interaction.response.defer(ephemeral=True)
+        await self.disable_buttons(interaction)
+        await self.embed_menu.delete()
+
+        await self.media_parser.send_video(
+            self.message, True, self.path, self.selected_file
+        )
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.danger, emoji="✖️")
     async def button_cancel(

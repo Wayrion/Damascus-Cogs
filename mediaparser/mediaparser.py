@@ -78,8 +78,16 @@ class MediaParser(commands.Cog):
         api = StreamableApi(mail, password)
 
         if not (mail and password):
-            prefix: List[str] = await self.bot.get_valid_prefixes()
-            prefix = next((item for item in prefix if item is not None or ""), "[p]")
+            prefixes: List[str] = await self.bot.get_valid_prefixes()
+            for item in prefixes:
+                if item == ("" or None):
+                    prefixes.remove(item)
+
+            if len(prefixes) == 0:
+                prefixes.append("[p]")
+
+            prefix = prefixes[0]
+
             url = f"Streamable Mail or Password not set, please set the right credentials in your dms with the bot using\n`{prefix}setmediaparser streamable_mail <mail>` and\n{prefix}setmediaparser streamable_password <password>`"
             return url
 
