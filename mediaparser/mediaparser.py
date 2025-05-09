@@ -15,6 +15,7 @@ from .downloader import (
     tiktok_downloader,
 )
 
+from redbot.core.data_manager import data_path
 
 
 class MediaParser(commands.Cog):
@@ -68,7 +69,7 @@ class MediaParser(commands.Cog):
 
         return await super().cog_load()
 
-    async def upload_media(self, media: str, title: str, folder_path: str):
+    async def upload_media(self, media: str, title: str):
         # media is the str path to the video
 
         mail: Union[str, None] = await self.config.streamable_mail()
@@ -194,7 +195,7 @@ class MediaParser(commands.Cog):
             else:
                 async with ctx.typing():
                     shortcode = await self.upload_media(
-                        file_path, str(selected_file), folder_path
+                        file_path, str(selected_file)
                     )
                     await message.channel.send(
                         f"Post downloaded by {message.author.mention}\n{shortcode}"
