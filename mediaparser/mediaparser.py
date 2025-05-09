@@ -5,7 +5,7 @@ import discord
 from pystreamable import StreamableApi
 from redbot.core import commands
 from redbot.core.config import Config
-from typing import List
+from typing import List, Union
 import shutil
 from .views import ResolutionView
 from .downloader import (
@@ -15,7 +15,6 @@ from .downloader import (
     tiktok_downloader,
 )
 
-from typing import Union
 
 
 class MediaParser(commands.Cog):
@@ -141,24 +140,21 @@ class MediaParser(commands.Cog):
 
         for link in links:
             path = None
-            if ("instagram.com" in link) and parseinstagram:
-                async with ctx.typing():
+            async with ctx.typing():
+                if ("instagram.com" in link) and parseinstagram:
                     path = await instagram_downloader(link, mail, password)
 
-            elif ("tiktok.com" in link) and parsetiktok:
-                async with ctx.typing():
+                elif ("tiktok.com" in link) and parsetiktok:
                     path = await tiktok_downloader(link)
 
-            elif ("reddit.com" in link) and parsereddit:
-                async with ctx.typing():
+                elif ("reddit.com" in link) and parsereddit:
                     path = await reddit_downloader(link)
 
-            elif ("youtu.be" or "youtube.com" in link) and parseyoutube:
-                async with ctx.typing():
+                elif ("youtu.be" or "youtube.com" in link) and parseyoutube:
                     path = await youtube_downloader(link)
 
-            else:
-                return
+                else:
+                    return
 
             embed = discord.Embed(
                 title="Select Resolution",
@@ -180,6 +176,10 @@ class MediaParser(commands.Cog):
         selected_file: str,
     ):
         ctx: commands.Context = await self.bot.get_context(message)
+        if not decision:
+            self.remove_output_dir(folder_path)
+            return
+        
         if decision:
             file_path = os.path.join(folder_path, selected_file)
             file_size = os.path.getsize(file_path)
@@ -206,9 +206,6 @@ class MediaParser(commands.Cog):
                 await message.delete()
             except discord.Forbidden:
                 pass  # No perms to delete
-
-        else:
-            self.remove_output_dir(folder_path)
 
     # SETTINGS
     @commands.is_owner()
