@@ -188,7 +188,7 @@ class MediaParser(commands.Cog):
                     content=f"Post downloaded by {message.author.mention}",
                     file=discord.File(file_path),
                 )
-                asyncio.sleep(10)
+                await asyncio.sleep(10)
                 self.remove_output_dir(folder_path)
 
             else:
