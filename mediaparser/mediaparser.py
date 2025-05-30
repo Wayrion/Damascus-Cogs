@@ -15,9 +15,6 @@ from .downloader import (
     tiktok_downloader,
 )
 
-from redbot.core.data_manager import data_path
-
-
 class MediaParser(commands.Cog):
     """The Reddit parser cog"""
 
