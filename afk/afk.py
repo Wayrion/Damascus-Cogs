@@ -1,3 +1,7 @@
+from re import Pattern
+from redbot.core.config import Group
+
+
 import discord
 from redbot.core import Config, checks, commands
 
@@ -10,7 +14,7 @@ import datetime
 import re
 from typing import Literal, Optional
 
-IMAGE_LINKS = re.compile(r"(http[s]?:\/\/[^\"\']*\.(?:png|jpg|jpeg|gif|png))")
+IMAGE_LINKS: Pattern[str] = re.compile(r"(http[s]?:\/\/[^\"\']*\.(?:png|jpg|jpeg|gif|png))")
 
 
 class Afk(commands.Cog):
@@ -37,13 +41,13 @@ class Afk(commands.Cog):
         *,
         requester: Literal["discord", "owner", "user", "user_strict"],
         user_id: int,
-    ):
+    ) -> None:
         await self.config.user_from_id(user_id).clear()
 
-    def __init__(self, bot):
+    def __init__(self, bot) -> None:
         self.bot = bot
         self.config = Config.get_conf(
-            self, 718395193090375700, force_registration=True
+            cog_instance=self, identifier=718395193090375700, force_registration=True
         )  # Changed Identifier
         self.config.register_global(**self.default_global_settings)
         self.config.register_guild(**self.default_guild_settings)
@@ -75,7 +79,7 @@ class Afk(commands.Cog):
         """
         Adds a user to the list of pings
         """
-        user_config = self.config.user(author)
+        user_config: Group = self.config.user(user=author)
         async with user_config.PINGS() as pingslist:
             pingslist.append(
                 {
@@ -127,9 +131,7 @@ class Afk(commands.Cog):
         """
         Makes the embed reply
         """
-        avatar = (
-            author.avatar_url_as()
-        )  # This will return default avatar if no avatar is present
+        avatar = author.display_avatar  # This will return default avatar if no avatar is present
         color = author.color
 
         if message:
@@ -868,7 +870,7 @@ class Afk(commands.Cog):
                 "Please set a time longer than 5 seconds for the `delete_after` argument"
             )
 
-        author = ctx.message.author
+        author: discord.User = ctx.message.author
         mess = await self.config.user(author).LISTENING_MESSAGE()
         if mess:
             await self.config.user(author).LISTENING_MESSAGE.set(False)
@@ -1015,7 +1017,7 @@ class Afk(commands.Cog):
             em = discord.Embed(description=msg[:2048], color=author.color)
             em.set_author(
                 name=f"{author.display_name}'s away settings",
-                icon_url=author.avatar_url,
+                icon_url=author.avatar.url,
             )
             await ctx.send(embed=em)
         else:
