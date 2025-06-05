@@ -1,3 +1,10 @@
+from discord.colour import Colour
+from discord.embeds import Embed
+from discord.embeds import Embed
+from discord.embeds import Embed
+from discord.user import User
+from discord.member import Member
+from discord.embeds import Embed
 from re import Pattern
 from redbot.core.config import Group
 
@@ -12,7 +19,7 @@ except ModuleNotFoundError:
 
 import datetime
 import re
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 IMAGE_LINKS: Pattern[str] = re.compile(r"(http[s]?:\/\/[^\"\']*\.(?:png|jpg|jpeg|gif|png))")
 
@@ -22,9 +29,9 @@ class Afk(commands.Cog):
     Originally called Away but changed to avoid conflicts with the Away cog
     Check out the original [here](https://github.com/aikaterna/aikaterna-cogs)"""
 
-    default_global_settings = {"ign_servers": []}
-    default_guild_settings = {"TEXT_ONLY": False, "BLACKLISTED_MEMBERS": []}
-    default_user_settings = {
+    default_global_settings: dict[str, list[Any]] = {"ign_servers": []}
+    default_guild_settings: dict[str, bool | list[Any]] = {"TEXT_ONLY": False, "BLACKLISTED_MEMBERS": []}
+    default_user_settings: dict[str, bool | int | dict[Any, Any] | list[Any]] = {
         "MESSAGE": False,
         "IDLE_MESSAGE": False,
         "DND_MESSAGE": False,
@@ -44,7 +51,7 @@ class Afk(commands.Cog):
     ) -> None:
         await self.config.user_from_id(user_id).clear()
 
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.config = Config.get_conf(
             cog_instance=self, identifier=718395193090375700, force_registration=True
@@ -56,10 +63,10 @@ class Afk(commands.Cog):
     def _draw_play(self, song):
         song_start_time = song.start
         total_time = song.duration
-        current_time = datetime.datetime.utcnow()
+        current_time = datetime.datetime.now(tz=datetime.timezone.utc)
         elapsed_time = current_time - song_start_time
         sections = 12
-        loc_time = round((elapsed_time / total_time) * sections)  # 10 sections
+        loc_time = round(number=(elapsed_time / total_time) * sections)  # 10 sections
 
         bar_char = "\N{BOX DRAWINGS HEAVY HORIZONTAL}"
         seek_char = "\N{RADIO BUTTON}"
@@ -75,7 +82,7 @@ class Afk(commands.Cog):
         msg += " `{:.7}`/`{:.7}`".format(str(elapsed_time), str(total_time))
         return msg
 
-    async def add_ping(self, message: discord.Message, author):
+    async def add_ping(self, message: discord.Message, author: discord.User | discord.Member):
         """
         Adds a user to the list of pings
         """
@@ -86,28 +93,28 @@ class Afk(commands.Cog):
                     "whopinged": message.author.mention,
                     "msgurl": message.jump_url,
                     "channel": message.channel.mention,
-                    "timestamp": f"<t:{round(datetime.datetime.now().timestamp())}:R>",
+                    "timestamp": f"<t:{round(number=datetime.datetime.now().timestamp())}:R>",
                     "messagecontent": message.content[0:500],
                     "pageno": len(pingslist) + 1,
                 }
             )
 
-    async def remove_ping(self, author):
+    async def remove_ping(self, author: discord.User | discord.Member):
         """
         Adds a user to the list of pings
         """
-        user_config = self.config.user(author)
+        user_config: Group = self.config.user(user=author)
         await user_config.PINGS.clear()
 
-    async def pingmenu(self, ctx, author):
+    async def pingmenu(self, ctx: commands.Context, author: discord.User | discord.Member):
         """
         Returns a menu of the people who pinged you
         """
-        user_config = self.config.user(author)
-        menulist = []
+        user_config: Group = self.config.user(author)
+        menulist: list[Any] = []
         async with user_config.PINGS() as pingslist:
             for ping in pingslist:
-                embed = discord.Embed(
+                embed: Embed = discord.Embed(
                     title="Ping Menu",
                     description="Here's a menu with the list of people who pinged you while you were AFK",
                     color=discord.Color.random(),
@@ -125,14 +132,14 @@ class Afk(commands.Cog):
                 embed.set_footer(text=f"Page no: {(ping['pageno'])}/{len(pingslist)}")
                 menulist.append(embed)
 
-        await menu(ctx, menulist, DEFAULT_CONTROLS, timeout=15)
+        await menu(ctx, pages=menulist, controls=DEFAULT_CONTROLS, timeout=15)
 
-    async def make_embed_message(self, author, message, state=None):
+    async def make_embed_message(self, author: discord.User | discord.Member, message: discord.Message, state=None) -> Embed:
         """
         Makes the embed reply
         """
-        avatar = author.display_avatar  # This will return default avatar if no avatar is present
-        color = author.color
+        avatar: discord.Asset = author.display_avatar  # This will return default avatar if no avatar is present
+        color: Colour = author.color
 
         if message:
             link = IMAGE_LINKS.search(message)
@@ -141,7 +148,7 @@ class Afk(commands.Cog):
             message = message + f" (<t:{await self.config.user(author).TIME()}:R>)"
 
         if state == "away":
-            em = discord.Embed(description=message, color=color)
+            em: Embed = discord.Embed(description=message, color=color)
             em.set_author(
                 name=f"{author.display_name} is currently away", icon_url=avatar
             )
@@ -697,7 +704,7 @@ class Afk(commands.Cog):
 
     @commands.command(name="away", aliases=["afk"])
     async def away_(
-        self, ctx, delete_after: Optional[int] = None, *, message: str = None
+        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
     ):
         """
         Tell the bot you're away or back.
@@ -737,7 +744,7 @@ class Afk(commands.Cog):
 
     @commands.command(name="idle")
     async def idle_(
-        self, ctx, delete_after: Optional[int] = None, *, message: str = None
+        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
     ):
         """
         Set an automatic reply when you're idle.
@@ -747,25 +754,25 @@ class Afk(commands.Cog):
         """
         if delete_after is not None and delete_after < 5:
             return await ctx.send(
-                "Please set a time longer than 5 seconds for the `delete_after` argument"
+                content="Please set a time longer than 5 seconds for the `delete_after` argument"
             )
 
-        author = ctx.message.author
-        mess = await self.config.user(author).IDLE_MESSAGE()
+        author: User | Member = ctx.message.author
+        mess = await self.config.user(user=author).IDLE_MESSAGE()
         if mess:
-            await self.config.user(author).IDLE_MESSAGE.set(False)
+            await self.config.user(author).IDLE_MESSAGE.set(value=False)
             msg = "The bot will no longer reply for you when you're idle."
         else:
             if message is None:
-                await self.config.user(author).IDLE_MESSAGE.set((" ", delete_after))
+                await self.config.user(user=author).IDLE_MESSAGE.set(value=(" ", delete_after))
             else:
-                await self.config.user(author).IDLE_MESSAGE.set((message, delete_after))
+                await self.config.user(user=author).IDLE_MESSAGE.set(value=(message, delete_after))
             msg = "The bot will now reply for you when you're idle."
-        await ctx.send(msg)
+        await ctx.send(content=msg)
 
     @commands.command(name="offline")
     async def offline_(
-        self, ctx, delete_after: Optional[int] = None, *, message: str = None
+        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
     ):
         """
         Set an automatic reply when you're offline.
@@ -775,10 +782,10 @@ class Afk(commands.Cog):
         """
         if delete_after is not None and delete_after < 5:
             return await ctx.send(
-                "Please set a time longer than 5 seconds for the `delete_after` argument"
+                content="Please set a time longer than 5 seconds for the `delete_after` argument"
             )
 
-        author = ctx.message.author
+        author: User | Member = ctx.message.author
         mess = await self.config.user(author).OFFLINE_MESSAGE()
         if mess:
             await self.config.user(author).OFFLINE_MESSAGE.set(False)
@@ -795,7 +802,7 @@ class Afk(commands.Cog):
 
     @commands.command(name="dnd", aliases=["donotdisturb"])
     async def donotdisturb_(
-        self, ctx, delete_after: Optional[int] = None, *, message: str = None
+        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
     ):
         """
         Set an automatic reply when you're dnd.
@@ -823,7 +830,7 @@ class Afk(commands.Cog):
 
     @commands.command(name="streaming")
     async def streaming_(
-        self, ctx, delete_after: Optional[int] = None, *, message: str = None
+        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
     ):
         """
         Set an automatic reply when you're streaming.
@@ -857,7 +864,7 @@ class Afk(commands.Cog):
 
     @commands.command(name="listening")
     async def listening_(
-        self, ctx, delete_after: Optional[int] = None, *, message: str = " "
+        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = " "
     ):
         """
         Set an automatic reply when you're listening to Spotify.
@@ -884,7 +891,7 @@ class Afk(commands.Cog):
 
     @commands.command(name="gaming")
     async def gaming_(
-        self, ctx, game: str, delete_after: Optional[int] = None, *, message: str = None
+        self, ctx: commands.Context, game: str, delete_after: Optional[int] = None, *, message: str = None
     ):
         """
         Set an automatic reply when you're playing a specified game.
@@ -918,7 +925,7 @@ class Afk(commands.Cog):
     @commands.command(name="toggleaway")
     @commands.guild_only()
     @checks.admin_or_permissions(administrator=True)
-    async def _ignore(self, ctx, member: discord.Member = None):
+    async def _ignore(self, ctx: commands.Context, member: discord.Member = None):
         """
         Toggle away messages on the whole server or a specific guild member.
 
@@ -953,7 +960,7 @@ class Afk(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @checks.admin_or_permissions(administrator=True)
-    async def awaytextonly(self, ctx):
+    async def awaytextonly(self, ctx: commands.Context):
         """
         Toggle forcing the guild's away messages to be text only.
 
@@ -968,9 +975,9 @@ class Afk(commands.Cog):
         await ctx.send(message)
 
     @commands.command(name="awaysettings", aliases=["awayset"])
-    async def away_settings(self, ctx):
+    async def away_settings(self, ctx: commands.Context):
         """View your current away settings"""
-        author = ctx.author
+        author: discord.User = ctx.author
         msg = ""
         data = {
             "MESSAGE": "Away",
@@ -1014,7 +1021,7 @@ class Afk(commands.Cog):
                     msg += f"{game}: {status_msg}\n"
 
         if ctx.channel.permissions_for(ctx.me).embed_links:
-            em = discord.Embed(description=msg[:2048], color=author.color)
+            em: Embed = discord.Embed(description=msg[:2048], color=author.color)
             em.set_author(
                 name=f"{author.display_name}'s away settings",
                 icon_url=author.avatar.url,
