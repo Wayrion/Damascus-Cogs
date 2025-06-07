@@ -1,41 +1,13 @@
 from discord.emoji import Emoji
-from discord.emoji import Emoji
-from discord.emoji import Emoji
-from discord.emoji import Emoji
-from discord.emoji import Emoji
 from discord.embeds import Embed
-from discord.guild import Guild
 from discord.guild import Guild
 from discord.message import Message
 from discord.embeds import Embed
-from discord.embeds import Embed
-from discord.guild import Guild
-from discord.guild import GuildChannel
-from discord.guild import GuildChannel
-from discord.guild import GuildChannel
-from discord.guild import Guild
-from discord.guild import Guild
-from discord.guild import Guild
 from discord.channel import TextChannel
-from discord.guild import Guild
-from discord.embeds import Embed
-from discord.guild import GuildChannel
-from discord.guild import GuildChannel
-from discord.guild import GuildChannel
-from discord.guild import GuildChannel
-from discord.guild import GuildChannel
-from discord.guild import GuildChannel
-from discord.message import Message
-from discord.message import Message
-from discord.guild import GuildChannel
-from discord.guild import GuildChannel
-from discord.message import Message
 from discord.message import Message
 from typing import Any, Literal
 from discord.embeds import Embed
-from discord.guild import GuildChannel
-from discord.guild import GuildChannel
-from discord.guild import Guild
+
 import discord
 import typing
 
@@ -121,10 +93,10 @@ class Suggestion(commands.Cog):
             if ctx.guild.id in await self.config.ignore():
                 return await ctx.send(content="Uh oh, suggestions aren't enabled.")
             global_guild: Guild | None = self.bot.get_guild(await self.config.server_id())
-            channel: GuildChannel | None = global_guild.get_channel(await self.config.channel_id())
+            channel = global_guild.get_channel(await self.config.channel_id())
             is_anonymous = await self.config.anonymous()
         else:
-            channel: GuildChannel | None = ctx.guild.get_channel(suggest_id)
+            channel = ctx.guild.get_channel(suggest_id)
             is_anonymous = await self.config.guild(guild=ctx.guild).anonymous()
         if not channel:
             return await ctx.send(
@@ -229,11 +201,11 @@ class Suggestion(commands.Cog):
         else:
             server: int = ctx.guild.id
             if not await self.config.guild(guild=ctx.guild).same():
-                channel: GuildChannel | None = ctx.guild.get_channel(
+                channel = ctx.guild.get_channel(
                     await self.config.guild(guild=ctx.guild).reject_id()
                 )
             else:
-                channel: GuildChannel | None = ctx.guild.get_channel(
+                channel = ctx.guild.get_channel(
                     await self.config.guild(guild=ctx.guild).suggest_id()
                 )
         msg_id = await self.config.custom("SUGGESTION", server, suggestion_id).msg_id()
@@ -414,18 +386,18 @@ class Suggestion(commands.Cog):
     async def suggestset_settings(self, ctx: commands.Context) -> None:
         """See current settings."""
         data: Dict[str, Any] = await self.config.guild(guild=ctx.guild).all()
-        suggest_channel: GuildChannel | None = ctx.guild.get_channel(
+        suggest_channel = ctx.guild.get_channel(
             await self.config.guild(guild=ctx.guild).suggest_id()
         )
-        suggest_channel: GuildChannel | None = "None" if not suggest_channel else suggest_channel.mention
-        approve_channel: GuildChannel | None = ctx.guild.get_channel(
+        suggest_channel = "None" if not suggest_channel else suggest_channel.mention
+        approve_channel = ctx.guild.get_channel(
             await self.config.guild(guild=ctx.guild).approve_id()
         )
-        approve_channel: GuildChannel | None = "None" if not approve_channel else approve_channel.mention
-        reject_channel: GuildChannel | None = ctx.guild.get_channel(
+        approve_channel = "None" if not approve_channel else approve_channel.mention
+        reject_channel = ctx.guild.get_channel(
             await self.config.guild(guild=ctx.guild).reject_id()
         )
-        reject_channel: GuildChannel | None = "None" if not reject_channel else reject_channel.mention
+        reject_channel = "None" if not reject_channel else reject_channel.mention
         up_emoji, down_emoji = await self._get_emojis(ctx)
 
         embed: Embed = discord.Embed(
@@ -545,10 +517,10 @@ class Suggestion(commands.Cog):
         data = await self.config.all()
         global_guild: Guild | None = self.bot.get_guild(data["server_id"])
         if global_guild:
-            channel: GuildChannel | None = global_guild.get_channel(data["channel_id"])
-            channel: GuildChannel | None = "None" if not channel else f"{channel.name} ({global_guild.name})"
+            channel = global_guild.get_channel(data["channel_id"])
+            channel = "None" if not channel else f"{channel.name} ({global_guild.name})"
         else:
-            channel: GuildChannel | None = "None"
+            channel = "None"
         servers: list = []
         for sid in data["ignore"]:
             server: Guild | None = self.bot.get_guild(sid)
