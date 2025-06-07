@@ -14,8 +14,6 @@ import typing
 from redbot.core import Config, checks, commands
 from redbot.core.utils.chat_formatting import humanize_list
 
-from redbot.core.bot import Red
-
 
 class Suggestion(commands.Cog):
     """
@@ -24,7 +22,7 @@ class Suggestion(commands.Cog):
 
     __version__ = "1.7.2"
 
-    def __init__(self, bot: Red):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.config = Config.get_conf(
             cog_instance=self, identifier=1368567270300975227, force_registration=True
