@@ -24,7 +24,7 @@ class Suggestion(commands.Cog):
 
     __version__ = "1.7.2"
 
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(
             cog_instance=self, identifier=1368567270300975227, force_registration=True
@@ -58,7 +58,7 @@ class Suggestion(commands.Cog):
             rtext=None,
         )
 
-    async def red_delete_data_for_user(self, *, requester, user_id) -> None:
+    async def red_delete_data_for_user(self, *, requester, user_id):
         # global suggestions first
         for suggestion_id in range(1, await self.config.next_id()):
             author_info = await self.config.custom(
@@ -159,7 +159,7 @@ class Suggestion(commands.Cog):
         ctx: commands.Context,
         suggestion_id: int,
         is_global: typing.Optional[bool],
-    ) -> None:
+    ):
         """Approve a suggestion."""
         await self._finish_suggestion(ctx, suggestion_id, is_global, approve=True, reason=None)
 
@@ -174,7 +174,7 @@ class Suggestion(commands.Cog):
         is_global: typing.Optional[bool],
         *,
         reason: typing.Optional[str],
-    ) -> None:
+    ):
         """Reject a suggestion. Reason is optional."""
         await self._finish_suggestion(ctx, suggestion_id, is_global, approve=False, reason=reason)
 
@@ -235,7 +235,7 @@ class Suggestion(commands.Cog):
         ctx: commands.Context,
         suggestion_id: int,
         is_global: typing.Optional[bool],
-    ) -> None:
+    ):
         """Show a suggestion."""
         content, embed = await self._build_suggestion(
             ctx, ctx.author.id, ctx.guild.id, suggestion_id, is_global
@@ -248,13 +248,13 @@ class Suggestion(commands.Cog):
     )
     @commands.group(aliases=["suggestion"])
     @commands.guild_only()
-    async def suggestset(self, ctx: commands.Context) -> None:
+    async def suggestset(self, ctx: commands.Context):
         """Various Suggestion settings."""
 
     @suggestset.command(name="channel")
     async def suggestset_channel(
         self, ctx: commands.Context, channel: typing.Optional[discord.TextChannel]
-    ) -> None:
+    ):
         """Set the channel for suggestions.
 
         If the channel is not provided, suggestions will be disabled."""
@@ -280,7 +280,7 @@ class Suggestion(commands.Cog):
     @suggestset.command(name="rejected")
     async def suggestset_rejected(
         self, ctx: commands.Context, channel: typing.Optional[discord.TextChannel]
-    ) -> None:
+    ):
         """Set the channel for rejected suggestions.
 
         If the channel is not provided, rejected suggestions will not be reposted."""
@@ -291,7 +291,7 @@ class Suggestion(commands.Cog):
         await ctx.tick()
 
     @suggestset.command(name="same")
-    async def suggestset_same(self, ctx: commands.Context, same: bool) -> None:
+    async def suggestset_same(self, ctx: commands.Context, same: bool):
         """Set whether to use the same channel for new and finished suggestions."""
         await ctx.send(
             content="Suggestions won't be reposted anywhere, only their title will change accordingly."
@@ -333,7 +333,7 @@ class Suggestion(commands.Cog):
     @suggestset.command(name="autodelete")
     async def suggestset_autodelete(
         self, ctx: commands.Context, on_off: typing.Optional[bool]
-    ) -> None:
+    ):
         """Toggle whether after `[p]suggest`, the bot deletes the command message."""
         target_state: bool = on_off or not (
             await self.config.guild(guild=ctx.guild).delete_suggest()
@@ -349,7 +349,7 @@ class Suggestion(commands.Cog):
     @suggestset.command(name="delete")
     async def suggestset_delete(
         self, ctx: commands.Context, on_off: typing.Optional[bool]
-    ) -> None:
+    ):
         """Toggle whether suggestions in the original suggestion channel get deleted after being approved/rejected.
 
         If `on_off` is not provided, the state will be flipped."""
@@ -367,7 +367,7 @@ class Suggestion(commands.Cog):
     @suggestset.command(name="anonymous")
     async def suggestset_anonymous(
             self, ctx: commands.Context, on_off: typing.Optional[bool]
-    ) -> None:
+    ):
         """Toggle whether server suggestions are anonymous.
 
         If `on_off` is not provided, the state will be flipped."""
@@ -383,7 +383,7 @@ class Suggestion(commands.Cog):
         )
 
     @suggestset.command(name="settings")
-    async def suggestset_settings(self, ctx: commands.Context) -> None:
+    async def suggestset_settings(self, ctx: commands.Context):
         """See current settings."""
         data: Dict[str, Any] = await self.config.guild(guild=ctx.guild).all()
         suggest_channel = ctx.guild.get_channel(
@@ -430,7 +430,7 @@ class Suggestion(commands.Cog):
     @suggestset.group()
     @checks.is_owner()
     @commands.guild_only()
-    async def globalset(self, ctx: commands.Context) -> None:
+    async def globalset(self, ctx: commands.Context):
         (
             """Global suggestions settings.
 
@@ -441,7 +441,7 @@ class Suggestion(commands.Cog):
     @globalset.command(name="toggle")
     async def suggestset_globalset_toggle(
         self, ctx: commands.Context, on_off: typing.Optional[bool]
-    ) -> None:
+    ):
         """Toggle global suggestions.
 
         If `on_off` is not provided, the state will be flipped."""
@@ -458,7 +458,7 @@ class Suggestion(commands.Cog):
         ctx: commands.Context,
         server: typing.Optional[discord.Guild],
         channel: typing.Optional[discord.TextChannel],
-    ) -> None:
+    ):
         """Add channel where global suggestions should be sent."""
         if not server:
             server: Guild | None = ctx.guild
@@ -471,7 +471,7 @@ class Suggestion(commands.Cog):
     @globalset.command(name="ignore")
     async def suggestset_globalset_ignore(
         self, ctx: commands.Context, server: typing.Optional[discord.Guild]
-    ) -> None:
+    ):
         """Ignore suggestions from the server."""
         if not server:
             server: Guild | None = ctx.guild
@@ -485,7 +485,7 @@ class Suggestion(commands.Cog):
     @globalset.command(name="unignore")
     async def suggestset_globalset_unignore(
         self, ctx: commands.Context, server: typing.Optional[discord.Guild]
-    ) -> None:
+    ):
         """Remove server from the ignored list."""
         if not server:
             server: Guild | None = ctx.guild
@@ -499,7 +499,7 @@ class Suggestion(commands.Cog):
     @globalset.command(name="anonymous")
     async def suggestset_globalset_anonymous(
         self, ctx: commands.Context, on_off: typing.Optional[bool]
-    ) -> None:
+    ):
         """Toggle whether global suggestions are anonymous.
 
         If `on_off` is not provided, the state will be flipped."""
@@ -512,7 +512,7 @@ class Suggestion(commands.Cog):
         )
 
     @globalset.command(name="settings")
-    async def suggestset_globalset_settings(self, ctx: commands.Context) -> None:
+    async def suggestset_globalset_settings(self, ctx: commands.Context):
         """See current settings."""
         data = await self.config.all()
         global_guild: Guild | None = self.bot.get_guild(data["server_id"])
@@ -543,7 +543,7 @@ class Suggestion(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user) -> None:
+    async def on_reaction_add(self, reaction, user):
         message: Any = reaction.message
         if user.id == self.bot.user.id:
             return
