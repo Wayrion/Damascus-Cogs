@@ -71,9 +71,10 @@ class Suggestion(commands.Cog):
         context = super().format_help_for_context(ctx)
         return f"{context}\n\nVersion: {self.__version__}"
 
-    @commands.command()
+    
     @commands.guild_only()
     @checks.bot_has_permissions(add_reactions=True)
+    @commands.command()
     async def suggest(self, ctx: commands.Context, *, suggestion: str):
         """Suggest something."""
         suggest_id = await self.config.guild(ctx.guild).suggest_id()
