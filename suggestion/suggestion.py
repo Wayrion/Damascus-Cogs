@@ -77,9 +77,9 @@ class Suggestion(commands.Cog):
                         "SUGGESTION", guild.id, suggestion_id
                     ).author.clear()
 
-    def format_help_for_context(self, ctx: commands.Context) -> str:
-        context = super().format_help_for_context(ctx)
-        return f"{context}\n\nVersion: {self.__version__}"
+    # def format_help_for_context(self, ctx: commands.Context) -> str:
+    #     context = super().format_help_for_context(ctx)
+    #     return f"{context}\n\nVersion: {self.__version__}"
 
     @commands.command()
     @commands.guild_only()
