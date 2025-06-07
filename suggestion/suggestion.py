@@ -246,7 +246,7 @@ class Suggestion(commands.Cog):
     @checks.bot_has_permissions(
         manage_channels=True, add_reactions=True, manage_messages=True
     )
-    @commands.group(autohelp=True, aliases=["suggestion"])
+    @commands.group(aliases=["suggestion"])
     @commands.guild_only()
     async def suggestset(self, ctx: commands.Context) -> None:
         """Various Suggestion settings."""
@@ -427,7 +427,7 @@ class Suggestion(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @suggestset.group(autohelp=True)
+    @suggestset.group()
     @checks.is_owner()
     @commands.guild_only()
     async def globalset(self, ctx: commands.Context) -> None:
