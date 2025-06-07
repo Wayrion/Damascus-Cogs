@@ -1,11 +1,13 @@
-from discord.colour import Colour
-from discord.embeds import Embed
-from discord.embeds import Embed
-from discord.embeds import Embed
+import datetime
+from discord.message import Message
 from discord.user import User
-from discord.member import Member
+from discord.activity import ActivityTypes
 from discord.embeds import Embed
-from re import Pattern
+
+from discord.member import Member
+from discord.guild import Guild
+
+from re import Match, Pattern
 from redbot.core.config import Group
 
 
@@ -17,9 +19,8 @@ try:
 except ModuleNotFoundError:
     from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
-import datetime
 import re
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 IMAGE_LINKS: Pattern[str] = re.compile(r"(http[s]?:\/\/[^\"\']*\.(?:png|jpg|jpeg|gif|png))")
 
@@ -60,13 +61,13 @@ class Afk(commands.Cog):
         self.config.register_guild(**self.default_guild_settings)
         self.config.register_user(**self.default_user_settings)
 
-    def _draw_play(self, song):
+    def _draw_play(self, song) -> str:
         song_start_time = song.start
         total_time = song.duration
-        current_time = datetime.datetime.now(tz=datetime.timezone.utc)
+        current_time: datetime.datetime = datetime.datetime.now(tz=datetime.timezone.utc)
         elapsed_time = current_time - song_start_time
         sections = 12
-        loc_time = round(number=(elapsed_time / total_time) * sections)  # 10 sections
+        loc_time: int = round(number=(elapsed_time / total_time) * sections, ndigits=None)  # 10 sections
 
         bar_char = "\N{BOX DRAWINGS HEAVY HORIZONTAL}"
         seek_char = "\N{RADIO BUTTON}"
@@ -82,7 +83,7 @@ class Afk(commands.Cog):
         msg += " `{:.7}`/`{:.7}`".format(str(elapsed_time), str(total_time))
         return msg
 
-    async def add_ping(self, message: discord.Message, author: discord.User | discord.Member):
+    async def add_ping(self, message: discord.Message, author: discord.User | discord.Member) -> None:
         """
         Adds a user to the list of pings
         """
@@ -99,108 +100,106 @@ class Afk(commands.Cog):
                 }
             )
 
-    async def remove_ping(self, author: discord.User | discord.Member):
+    async def remove_ping(self, author: discord.User | discord.Member) -> None:
         """
         Adds a user to the list of pings
         """
         user_config: Group = self.config.user(user=author)
         await user_config.PINGS.clear()
 
-    async def pingmenu(self, ctx: commands.Context, author: discord.User | discord.Member):
+    async def pingmenu(self, ctx: commands.Context, author: discord.User | discord.Member) -> None:
         """
         Returns a menu of the people who pinged you
         """
-        user_config: Group = self.config.user(author)
+        user_config: Group = self.config.user(user=author)
         menulist: list[Any] = []
         async with user_config.PINGS() as pingslist:
             for ping in pingslist:
-                embed: Embed = discord.Embed(
+                embed: discord.Embed = discord.Embed(
                     title="Ping Menu",
                     description="Here's a menu with the list of people who pinged you while you were AFK",
                     color=discord.Color.random(),
                 )
-                embed.add_field(
+                _ = embed.add_field(
                     name="Who pinged?:", value=ping["whopinged"], inline=False
                 )
-                embed.add_field(
+                _ = embed.add_field(
                     name="Message URL:",
                     value=f"[Click Here]({ping['msgurl']})",
                     inline=False,
                 )
-                embed.add_field(name="Channel:", value=ping["channel"], inline=False)
-                embed.add_field(name="When?:", value=ping["timestamp"], inline=False)
-                embed.set_footer(text=f"Page no: {(ping['pageno'])}/{len(pingslist)}")
+                _ = embed.add_field(name="Channel:", value=ping["channel"], inline=False)
+                _ = embed.add_field(name="When?:", value=ping["timestamp"], inline=False)
+                _ = embed.set_footer(text=f"Page no: {(ping['pageno'])}/{len(pingslist)}")
                 menulist.append(embed)
 
         await menu(ctx, pages=menulist, controls=DEFAULT_CONTROLS, timeout=15)
 
-    async def make_embed_message(self, author: discord.User | discord.Member, message: discord.Message, state=None) -> Embed:
+    async def make_embed_message(self, author: discord.User | discord.Member, message: discord.Message, state=None) -> discord.Embed:
         """
         Makes the embed reply
         """
         avatar: discord.Asset = author.display_avatar  # This will return default avatar if no avatar is present
-        color: Colour = author.color
+        color: int = author.color
 
         if message:
-            link = IMAGE_LINKS.search(message)
+            link: Any = IMAGE_LINKS.search(message)
             if link:
-                message = message.replace(link.group(0), " ")
-            message = message + f" (<t:{await self.config.user(author).TIME()}:R>)"
+                message: Any | discord.Message = message.replace(link.group(0), " ")
+            message: Any | discord.Message = message + f" (<t:{await self.config.user(user=author).TIME()}:R>)"
 
         if state == "away":
-            em: Embed = discord.Embed(description=message, color=color)
-            em.set_author(
+            em: discord.Embed = discord.Embed(description=message, color=color)
+            _ = em.set_author(
                 name=f"{author.display_name} is currently away", icon_url=avatar
             )
         elif state == "idle":
-            em = discord.Embed(description=message, color=color)
-            em.set_author(
+            em: discord.Embed = discord.Embed(description=message, color=color)
+            _ = em.set_author(
                 name=f"{author.display_name} is currently idle", icon_url=avatar
             )
         elif state == "dnd":
-            em = discord.Embed(description=message, color=color)
-            em.set_author(
+            em: discord.Embed = discord.Embed(description=message, color=color)
+            _ = em.set_author(
                 name=f"{author.display_name} is currently do not disturb",
                 icon_url=avatar,
             )
         elif state == "offline":
-            em = discord.Embed(description=message, color=color)
-            em.set_author(
+            em: discord.Embed = discord.Embed(description=message, color=color)
+            _ = em.set_author(
                 name=f"{author.display_name} is currently offline", icon_url=avatar
             )
         elif state == "gaming":
-            em = discord.Embed(description=message, color=color)
-            em.set_author(
+            em: discord.Embed = discord.Embed(description=message, color=color)
+            _ = em.set_author(
                 name=f"{author.display_name} is currently playing {author.activity.name}",
                 icon_url=avatar,
             )
             em.title = getattr(author.activity, "details", None)
-            thumbnail = getattr(author.activity, "large_image_url", None)
+            thumbnail: Any | None = getattr(author.activity, "large_image_url", None)
             if thumbnail:
-                em.set_thumbnail(url=thumbnail)
+                _ = em.set_thumbnail(url=thumbnail)
         elif state == "gamingcustom":
-            status = [
+            status: list[ActivityTypes | Any] = [
                 c for c in author.activities if c.type == discord.ActivityType.playing
             ]
-            em = discord.Embed(description=message, color=color)
-            em.set_author(
+            em: discord.Embed = discord.Embed(description=message, color=color)
+            _ = em.set_author(
                 name=f"{author.display_name} is currently playing {status[0].name}",
                 icon_url=avatar,
             )
             em.title = getattr(status[0], "details", None)
-            thumbnail = getattr(status[0], "large_image_url", None)
+            thumbnail: Any | None = getattr(status[0], "large_image_url", None)
             if thumbnail:
-                em.set_thumbnail(url=thumbnail)
+                _ = em.set_thumbnail(url=thumbnail)
         elif state == "listening":
-            em = discord.Embed(color=author.activity.color)
-            url = f"https://open.spotify.com/track/{author.activity.track_id}"
-            artist_title = f"{author.activity.title} by " + ", ".join(
+            em: discord.Embed = discord.Embed(color=author.activity.color)
+            url: str = f"https://open.spotify.com/track/{author.activity.track_id}"
+            artist_title: str = f"{author.activity.title} by " + ", ".join(
                 a for a in author.activity.artists
             )
-            limit = 256 - (
-                len(author.display_name) + 27
-            )  # incase we go over the max allowable size
-            em.set_author(
+            
+            _ = em.set_author(
                 name=f"{author.display_name} is currently listening to",
                 icon_url=avatar,
                 url=url,
@@ -208,21 +207,20 @@ class Afk(commands.Cog):
             em.description = (
                 f"{message}\n "
                 f"[{artist_title}]({url})\n"
-                f"{self._draw_play(author.activity)}"
+                f"{self._draw_play(song=author.activity)}"
             )
 
-            em.set_thumbnail(url=author.activity.album_cover_url)
+            _ = em.set_thumbnail(url=author.activity.album_cover_url)
         elif state == "listeningcustom":
-            activity = [
+            activity: list[ActivityTypes | Any] = [
                 c for c in author.activities if c.type == discord.ActivityType.listening
             ]
-            em = discord.Embed(color=activity[0].color)
-            url = f"https://open.spotify.com/track/{activity[0].track_id}"
-            artist_title = f"{activity[0].title} by " + ", ".join(
+            em: discord.Embed = discord.Embed(color=activity[0].color)
+            url: str = f"https://open.spotify.com/track/{activity[0].track_id}"
+            artist_title: str = f"{activity[0].title} by " + ", ".join(
                 a for a in activity[0].artists
             )
-            limit = 256 - (len(author.display_name) + 27)
-            em.set_author(
+            _ = em.set_author(
                 name=f"{author.display_name} is currently listening to",
                 icon_url=avatar,
                 url=url,
@@ -230,20 +228,20 @@ class Afk(commands.Cog):
             em.description = (
                 f"{message}\n "
                 f"[{artist_title}]({url})\n"
-                f"{self._draw_play(activity[0])}"
+                f"{self._draw_play(song=activity[0])}"
             )
-            em.set_thumbnail(url=activity[0].album_cover_url)
+            _ = em.set_thumbnail(url=activity[0].album_cover_url)
         elif state == "streaming":
-            color = int("6441A4", 16)
-            em = discord.Embed(color=color)
+            color: int = int("6441A4", 16)
+            em: discord.Embed = discord.Embed(color=color)
             em.description = message + "\n" + author.activity.url
             em.title = getattr(author.activity, "details", None)
-            em.set_author(
+            _ = em.set_author(
                 name=f"{author.display_name} is currently streaming {author.activity.name}",
                 icon_url=avatar,
             )
         elif state == "streamingcustom":
-            activity = [
+            activity: list[ActivityTypes | Any] = [
                 c for c in author.activities if c.type == discord.ActivityType.streaming
             ]
             color = int("6441A4", 16)
@@ -263,35 +261,35 @@ class Afk(commands.Cog):
             em.set_image(url=link.group(0))
         return em
 
-    async def find_user_mention(self, message):
+    async def find_user_mention(self, message: discord.Message):
         """
         Replaces user mentions with their username
         """
         for word in message.split():
-            match = re.search(r"<@!?([0-9]+)>", word)
+            match: Match[str] | None = re.search(r"<@!?([0-9]+)>", word)
             if match:
-                user = await self.bot.fetch_user(int(match.group(1)))
-                message = re.sub(match.re, "@" + user.name, message)
+                user: User = await self.bot.fetch_user(int(match.group(1)))
+                message: Any | Message = re.sub(match.re, "@" + user.name, message)
         return message
 
-    async def make_text_message(self, author, message, state=None):
+    async def make_text_message(self, author: discord.User | discord.Member, message: discord.Message, state=None):
         """
         Makes the message to display if embeds aren't available
         """
-        message = await self.find_user_mention(message)
+        message: Message | Any = await self.find_user_mention(message)
 
         if state == "away":
-            msg = f"{author.display_name} is currently away"
+            msg: str = f"{author.display_name} is currently away"
         elif state == "idle":
-            msg = f"{author.display_name} is currently idle"
+            msg: str = f"{author.display_name} is currently idle"
         elif state == "dnd":
-            msg = f"{author.display_name} is currently do not disturb"
+            msg: str = f"{author.display_name} is currently do not disturb"
         elif state == "offline":
-            msg = f"{author.display_name} is currently offline"
+            msg: str = f"{author.display_name} is currently offline"
         elif state == "gaming":
-            msg = f"{author.display_name} is currently playing {author.activity.name} "
+            msg: str = f"{author.display_name} is currently playing {author.activity.name} "
         elif state == "gamingcustom":
-            status = [
+            status: list[ActivityTypes | Any] = [
                 c for c in author.activities if c.type == discord.ActivityType.playing
             ]
             msg = f"{author.display_name} is currently playing {status[0].name}"
@@ -299,28 +297,28 @@ class Afk(commands.Cog):
             artist_title = f"{author.activity.title} by " + ", ".join(
                 a for a in author.activity.artists
             )
-            currently_playing = self._draw_play(author.activity)
-            msg = f"{author.display_name} is currently listening to {artist_title}\n{currently_playing}"
+            currently_playing: str = self._draw_play(song=author.activity)
+            msg: str = f"{author.display_name} is currently listening to {artist_title}\n{currently_playing}"
         elif state == "listeningcustom":
-            status = [
+            status: list[ActivityTypes | Any] = [
                 c for c in author.activities if c.type == discord.ActivityType.listening
             ]
             artist_title = f"{status[0].title} by " + ", ".join(
                 a for a in status[0].artists
             )
-            currently_playing = self._draw_play(status[0])
-            msg = f"{author.display_name} is currently listening to {artist_title}\n{currently_playing}"
+            currently_playing: str = self._draw_play(song=status[0])
+            msg: str = f"{author.display_name} is currently listening to {artist_title}\n{currently_playing}"
         elif state == "streaming":
-            msg = (
+            msg: str = (
                 f"{author.display_name} is currently streaming at {author.activity.url}"
             )
         elif state == "streamingcustom":
-            status = [
+            status: list[ActivityTypes | Any] = [
                 c for c in author.activities if c.type == discord.ActivityType.streaming
             ]
-            msg = f"{author.display_name} is currently streaming at {status[0].url}"
+            msg: str = f"{author.display_name} is currently streaming at {status[0].url}"
         else:
-            msg = f"{author.display_name} is currently away "
+            msg: str = f"{author.display_name} is currently away "
 
         if message != " " and state != "listeningcustom":
             msg += f" and has set the following message: `{message}`"
@@ -676,11 +674,11 @@ class Afk(commands.Cog):
                     if game in game_status[0].name.lower():
                         game_msg, delete_after = gaming_msgs[game]
                         if embed_links and not guild_config["TEXT_ONLY"]:
-                            em = await self.make_embed_message(
-                                author, game_msg, "gamingcustom"
+                            em: Embed = await self.make_embed_message(
+                                author, message=game_msg, state="gamingcustom"
                             )
                             await self.add_ping(message, author)
-                            await message.channel.send(
+                            _ = await message.channel.send(
                                 embed=em,
                                 delete_after=delete_after,
                                 reference=message,
@@ -690,11 +688,11 @@ class Afk(commands.Cog):
                         elif (
                             embed_links and guild_config["TEXT_ONLY"]
                         ) or not embed_links:
-                            msg = await self.make_text_message(
-                                author, game_msg, "gamingcustom"
+                            msg: str = await self.make_text_message(
+                                author, message=game_msg, state="gamingcustom"
                             )
                             await self.add_ping(message, author)
-                            await message.channel.send(
+                            _ = await message.channel.send(
                                 msg,
                                 delete_after=delete_after,
                                 reference=message,
@@ -704,8 +702,8 @@ class Afk(commands.Cog):
 
     @commands.command(name="away", aliases=["afk"])
     async def away_(
-        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
-    ):
+        self, ctx: commands.Context, delete_after: int | None = None, *, message: str = None
+    ) -> discord.Message | None:
         """
         Tell the bot you're away or back.
 
@@ -714,18 +712,18 @@ class Afk(commands.Cog):
         """
         if delete_after is not None and delete_after < 5:
             return await ctx.send(
-                "Please set a time longer than 5 seconds for the `delete_after` argument"
+                content="Please set a time longer than 5 seconds for the `delete_after` argument"
             )
 
-        author = ctx.message.author
-        user_config = await self.config.user(author).all()
-        mess = await self.config.user(author).MESSAGE()
+        author: User | Member = ctx.message.author
+        user_config: dict[str, Any] = await self.config.user(user=author).all()
+        mess = await self.config.user(user=author).MESSAGE()
 
         if mess:
-            await self.config.user(author).MESSAGE.set(False)
-            await self.config.user(author).TIME.set(0)
+            await self.config.user(user=author).MESSAGE.set(value=False)
+            await self.config.user(user=author).TIME.set(value=0)
             msg = "You're now back."
-            await ctx.send(msg)
+            await ctx.send(content=msg)
             if len(user_config["PINGS"]) != 0:
                 await self.pingmenu(ctx, author)
                 await self.remove_ping(author)
@@ -733,19 +731,19 @@ class Afk(commands.Cog):
                 pass
         else:
             if message is None:
-                await self.config.user(author).MESSAGE.set((" ", delete_after))
+                await self.config.user(user=author).MESSAGE.set(value=(" ", delete_after))
             else:
-                await self.config.user(author).MESSAGE.set((message, delete_after))
-            await self.config.user(author).TIME.set(
-                round(datetime.datetime.now().timestamp())
+                await self.config.user(user=author).MESSAGE.set(value=(message, delete_after))
+            await self.config.user(user=author).TIME.set(
+                value=round(number=datetime.datetime.now().timestamp())
             )
             msg = "You're now set as away."
-            await ctx.send(msg)
+            await ctx.send(content=msg)
 
     @commands.command(name="idle")
     async def idle_(
-        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
-    ):
+        self, ctx: commands.Context, delete_after: int | None = None, *, message: str = None
+    ) -> discord.Message | None:
         """
         Set an automatic reply when you're idle.
 
@@ -760,7 +758,7 @@ class Afk(commands.Cog):
         author: User | Member = ctx.message.author
         mess = await self.config.user(user=author).IDLE_MESSAGE()
         if mess:
-            await self.config.user(author).IDLE_MESSAGE.set(value=False)
+            await self.config.user(user=author).IDLE_MESSAGE.set(value=False)
             msg = "The bot will no longer reply for you when you're idle."
         else:
             if message is None:
@@ -772,8 +770,8 @@ class Afk(commands.Cog):
 
     @commands.command(name="offline")
     async def offline_(
-        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
-    ):
+        self, ctx: commands.Context, delete_after: int | None = None, *, message: str = None
+    ) -> discord.Message | None:
         """
         Set an automatic reply when you're offline.
 
@@ -802,8 +800,8 @@ class Afk(commands.Cog):
 
     @commands.command(name="dnd", aliases=["donotdisturb"])
     async def donotdisturb_(
-        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
-    ):
+        self, ctx: commands.Context, delete_after: int | None = None, *, message: str = None
+    ) -> discord.Message | None:
         """
         Set an automatic reply when you're dnd.
 
@@ -812,26 +810,26 @@ class Afk(commands.Cog):
         """
         if delete_after is not None and delete_after < 5:
             return await ctx.send(
-                "Please set a time longer than 5 seconds for the `delete_after` argument"
+                content="Please set a time longer than 5 seconds for the `delete_after` argument"
             )
 
-        author = ctx.message.author
-        mess = await self.config.user(author).DND_MESSAGE()
+        author: User | Member = ctx.message.author
+        mess = await self.config.user(user=author).DND_MESSAGE()
         if mess:
-            await self.config.user(author).DND_MESSAGE.set(False)
+            await self.config.user(user=author).DND_MESSAGE.set(value=False)
             msg = "The bot will no longer reply for you when you're set to do not disturb."
         else:
             if message is None:
-                await self.config.user(author).DND_MESSAGE.set((" ", delete_after))
+                await self.config.user(user=author).DND_MESSAGE.set(value=(" ", delete_after))
             else:
-                await self.config.user(author).DND_MESSAGE.set((message, delete_after))
+                await self.config.user(user=author).DND_MESSAGE.set(value=(message, delete_after))
             msg = "The bot will now reply for you when you're set to do not disturb."
-        await ctx.send(msg)
+        await ctx.send(content=msg)
 
     @commands.command(name="streaming")
     async def streaming_(
-        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = None
-    ):
+        self, ctx: commands.Context, delete_after: int | None = None, *, message: str = None
+    ) -> discord.Message | None:
         """
         Set an automatic reply when you're streaming.
 
@@ -840,32 +838,32 @@ class Afk(commands.Cog):
         """
         if delete_after is not None and delete_after < 5:
             return await ctx.send(
-                "Please set a time longer than 5 seconds for the `delete_after` argument"
+                content="Please set a time longer than 5 seconds for the `delete_after` argument"
             )
 
-        author = ctx.message.author
-        mess = await self.config.user(author).STREAMING_MESSAGE()
+        author: User | Member = ctx.message.author
+        mess = await self.config.user(user=author).STREAMING_MESSAGE()
         if mess:
-            await self.config.user(author).STREAMING_MESSAGE.set(False)
+            await self.config.user(user=author).STREAMING_MESSAGE.set(False)
             msg = "The bot will no longer reply for you when you're mentioned while streaming."
         else:
             if message is None:
-                await self.config.user(author).STREAMING_MESSAGE.set(
-                    (" ", delete_after)
+                await self.config.user(user=author).STREAMING_MESSAGE.set(
+                    value=(" ", delete_after)
                 )
             else:
                 await self.config.user(author).STREAMING_MESSAGE.set(
-                    (message, delete_after)
+                    value=(message, delete_after)
                 )
             msg = (
                 "The bot will now reply for you when you're mentioned while streaming."
             )
-        await ctx.send(msg)
+        await ctx.send(content=msg)
 
     @commands.command(name="listening")
     async def listening_(
-        self, ctx: commands.Context, delete_after: Optional[int] = None, *, message: str = " "
-    ):
+        self, ctx: commands.Context, delete_after: int | None = None, *, message: str = " "
+    ) -> discord.Message | None:
         """
         Set an automatic reply when you're listening to Spotify.
 
@@ -874,25 +872,25 @@ class Afk(commands.Cog):
         """
         if delete_after is not None and delete_after < 5:
             return await ctx.send(
-                "Please set a time longer than 5 seconds for the `delete_after` argument"
+                content="Please set a time longer than 5 seconds for the `delete_after` argument"
             )
 
         author: discord.User = ctx.message.author
-        mess = await self.config.user(author).LISTENING_MESSAGE()
+        mess = await self.config.user(user=author).LISTENING_MESSAGE()
         if mess:
-            await self.config.user(author).LISTENING_MESSAGE.set(False)
+            await self.config.user(user=author).LISTENING_MESSAGE.set(value=False)
             msg = "The bot will no longer reply for you when you're mentioned while listening to Spotify."
         else:
-            await self.config.user(author).LISTENING_MESSAGE.set(
-                (message, delete_after)
+            await self.config.user(user=author).LISTENING_MESSAGE.set(
+                value=(message, delete_after)
             )
             msg = "The bot will now reply for you when you're mentioned while listening to Spotify."
-        await ctx.send(msg)
+        await ctx.send(content=msg)
 
     @commands.command(name="gaming")
     async def gaming_(
-        self, ctx: commands.Context, game: str, delete_after: Optional[int] = None, *, message: str = None
-    ):
+        self, ctx: commands.Context, game: str, delete_after: int | None = None, *, message: str = None
+    ) -> discord.Message | None:
         """
         Set an automatic reply when you're playing a specified game.
 
@@ -904,82 +902,82 @@ class Afk(commands.Cog):
         """
         if delete_after is not None and delete_after < 5:
             return await ctx.send(
-                "Please set a time longer than 5 seconds for the `delete_after` argument"
+                content="Please set a time longer than 5 seconds for the `delete_after` argument"
             )
 
-        author = ctx.message.author
-        mess = await self.config.user(author).GAME_MESSAGE()
+        author: User | Member = ctx.message.author
+        mess = await self.config.user(user=author).GAME_MESSAGE()
         if game.lower() in mess:
             del mess[game.lower()]
-            await self.config.user(author).GAME_MESSAGE.set(mess)
-            msg = f"The bot will no longer reply for you when you're playing {game}."
+            await self.config.user(user=author).GAME_MESSAGE.set(value=mess)
+            msg: str = f"The bot will no longer reply for you when you're playing {game}."
         else:
             if message is None:
                 mess[game.lower()] = (" ", delete_after)
             else:
                 mess[game.lower()] = (message, delete_after)
-            await self.config.user(author).GAME_MESSAGE.set(mess)
-            msg = f"The bot will now reply for you when you're playing {game}."
-        await ctx.send(msg)
+            await self.config.user(user=author).GAME_MESSAGE.set(value=mess)
+            msg: str = f"The bot will now reply for you when you're playing {game}."
+        await ctx.send(content=msg)
 
     @commands.command(name="toggleaway")
     @commands.guild_only()
     @checks.admin_or_permissions(administrator=True)
-    async def _ignore(self, ctx: commands.Context, member: discord.Member = None):
+    async def _ignore(self, ctx: commands.Context, member: discord.Member = None) -> None:
         """
         Toggle away messages on the whole server or a specific guild member.
 
         Mods, Admins and Bot Owner are immune to this.
         """
-        guild = ctx.message.guild
+        guild: Guild | None = ctx.message.guild
         if member:
-            bl_mems = await self.config.guild(guild).BLACKLISTED_MEMBERS()
+            bl_mems: list[int] = await self.config.guild(guild).BLACKLISTED_MEMBERS()
             if member.id not in bl_mems:
                 bl_mems.append(member.id)
-                await self.config.guild(guild).BLACKLISTED_MEMBERS.set(bl_mems)
-                msg = f"Away messages will not appear when {member.display_name} is mentioned in this guild."
-                await ctx.send(msg)
+                await self.config.guild(guild).BLACKLISTED_MEMBERS.set(value=bl_mems)
+                msg: str = f"Away messages will not appear when {member.display_name} is mentioned in this guild."
+                await ctx.send(content=msg)
             elif member.id in bl_mems:
                 bl_mems.remove(member.id)
-                await self.config.guild(guild).BLACKLISTED_MEMBERS.set(bl_mems)
-                msg = f"Away messages will appear when {member.display_name} is mentioned in this guild."
-                await ctx.send(msg)
+                await self.config.guild(guild).BLACKLISTED_MEMBERS.set(value=bl_mems)
+                msg: str = f"Away messages will appear when {member.display_name} is mentioned in this guild."
+                await ctx.send(content=msg)
             return
         if guild.id in (await self.config.ign_servers()):
             guilds = await self.config.ign_servers()
             guilds.remove(guild.id)
-            await self.config.ign_servers.set(guilds)
+            await self.config.ign_servers.set(value=guilds)
             message = "Not ignoring this guild anymore."
         else:
             guilds = await self.config.ign_servers()
             guilds.append(guild.id)
-            await self.config.ign_servers.set(guilds)
+            await self.config.ign_servers.set(value=guilds)
             message = "Ignoring this guild."
-        await ctx.send(message)
+        await ctx.send(content=message)
 
     @commands.command()
     @commands.guild_only()
     @checks.admin_or_permissions(administrator=True)
-    async def awaytextonly(self, ctx: commands.Context):
+    async def awaytextonly(self, ctx: commands.Context) -> None:
         """
         Toggle forcing the guild's away messages to be text only.
 
         This overrides the embed_links check this cog uses for message sending.
         """
-        text_only = await self.config.guild(ctx.guild).TEXT_ONLY()
+        text_only = await self.config.guild(guild=ctx.guild).TEXT_ONLY()
         if text_only:
             message = "Away messages will now be embedded or text only based on the bot's permissions for embed links."
         else:
             message = "Away messages are now forced to be text only, regardless of the bot's permissions for embed links."
-        await self.config.guild(ctx.guild).TEXT_ONLY.set(not text_only)
-        await ctx.send(message)
+        await self.config.guild(guild=ctx.guild).TEXT_ONLY.set(value=not text_only)
+        await ctx.send(content=message)
 
     @commands.command(name="awaysettings", aliases=["awayset"])
-    async def away_settings(self, ctx: commands.Context):
+    async def away_settings(self, ctx: commands.Context) -> None:
         """View your current away settings"""
         author: discord.User = ctx.author
         msg = ""
-        data = {
+        data: dict[str, str] = {
             "MESSAGE": "Away",
             "IDLE_MESSAGE": "Idle",
             "DND_MESSAGE": "Do not disturb",
@@ -987,16 +985,16 @@ class Afk(commands.Cog):
             "LISTENING_MESSAGE": "Listening",
             "STREAMING_MESSAGE": "Streaming",
         }
-        settings = await self.config.user(author).get_raw()
+        settings: dict[str, Any] | Any = await self.config.user(user=author).get_raw()
         for attr, name in data.items():
             if type(settings[attr]) in [tuple, list]:
                 # This is just to keep backwards compatibility
                 status_msg, delete_after = settings[attr]
             else:
-                status_msg = settings[attr]
-                delete_after = None
+                status_msg: Any = settings[attr]
+                delete_after: None = None
             if settings[attr] and len(status_msg) > 20:
-                status_msg = status_msg[:20] + "..."
+                status_msg: Any = status_msg[:20] + "..."
             if settings[attr] and len(status_msg) <= 1:
                 status_msg = "True"
             if delete_after:
@@ -1012,7 +1010,7 @@ class Afk(commands.Cog):
             for game in settings["GAME_MESSAGE"]:
                 status_msg, delete_after = settings["GAME_MESSAGE"][game]
                 if len(status_msg) > 20:
-                    status_msg = status_msg[:-20] + "..."
+                    status_msg: Any = status_msg[:-20] + "..."
                 if len(status_msg) <= 1:
                     status_msg = "True"
                 if delete_after:
@@ -1021,11 +1019,11 @@ class Afk(commands.Cog):
                     msg += f"{game}: {status_msg}\n"
 
         if ctx.channel.permissions_for(ctx.me).embed_links:
-            em: Embed = discord.Embed(description=msg[:2048], color=author.color)
+            em: discord.Embed = discord.Embed(description=msg[:2048], color=author.color)
             em.set_author(
                 name=f"{author.display_name}'s away settings",
                 icon_url=author.avatar.url,
             )
             await ctx.send(embed=em)
         else:
-            await ctx.send(f"{author.display_name} away settings\n" + msg)
+            await ctx.send(content=f"{author.display_name} away settings\n" + msg)

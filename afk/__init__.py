@@ -1,3 +1,4 @@
+from discord.ext import commands
 from .afk import Afk
 
 __red_end_user_data_statement__ = (
@@ -12,5 +13,5 @@ __red_end_user_data_statement__ = (
 )
 
 
-async def setup(bot):
+async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Afk(bot))
