@@ -16,13 +16,13 @@ You can contact me on discord (@Wayrion) or join my discord server at https://di
 To add this repo:
 
 ```yaml
-[p]repo add Damascuscogs https://github.com/Wayrion/Damascus-Cogs
+[p]repo add Damascus-cogs https://github.com/Wayrion/Damascus-Cogs
 ```
 
 Then to install a cog (replace `<cog name you want>` with the name of the cog you want to install):
 
 ```yaml
-[p]cog install Damascuscogs <cog name you want>
+[p]cog install Damascus-cogs <cog name you want>
 ```
 
 ## Contribution
