@@ -12,12 +12,12 @@ class Suggestion(commands.Cog):
     Per guild, as well as global, suggestion box voting system.
     """
 
-    __version__ = "1.7.1"
+    __version__ = "1.7.2"
 
     def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(
-            self, identifier=2115656421364, force_registration=True
+            self, identifier=1368567270300975227, force_registration=True
         )
         self.config.register_guild(
             same=False,
