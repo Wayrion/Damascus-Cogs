@@ -1,0 +1,9 @@
+{
+    "author" : ["saurichable, wayrion"],
+    "install_msg" : "Thank you for installing Suggestion!, This cog has been developed by saurichable and modified by wayrion. If you have any questions, feel free to contact @wayrion on Discord",
+    "name" : "Suggestion",
+    "short" : "Simple suggestion box.",
+    "description" : "Per guild, as well as global, suggestion box voting system.",
+    "tags" : ["suggestion"],
+    "end_user_data_statement": "This cog stores user names, discriminators, and IDs upon sending a suggestion. This data is used solely to display and contact the user about any change to their suggestion."
+}
