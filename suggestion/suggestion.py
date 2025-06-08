@@ -308,17 +308,17 @@ class Suggestion(commands.Cog):
 
     @suggestset.command(name="downemoji")
     async def suggestset_downemoji(
-        self, ctx: commands.Context, down_emoji: typing.Optional[discord.Emoji]
+        self, ctx: commands.Context, down_emoji: discord.Emoji | None
     ):
         """Set custom reactions emoji instead of ❎."""
         if not down_emoji:
-            await self.config.guild(ctx.guild).down_emoji.clear()
+            await self.config.guild(guild=ctx.guild).down_emoji.clear()
         else:
             try:
                 await ctx.message.add_reaction(down_emoji)
             except discord.HTTPException:
-                return await ctx.send("Uh oh, I cannot use that emoji.")
-            await self.config.guild(ctx.guild).down_emoji.set(down_emoji.id)
+                return await ctx.send(content="Uh oh, I cannot use that emoji.")
+            await self.config.guild(guild=ctx.guild).down_emoji.set(value=down_emoji.id)
         await ctx.tick()
 
     @suggestset.command(name="autodelete")
