@@ -815,16 +815,29 @@ class Afk(commands.Cog):
 
         author: User | Member = ctx.message.author
         mess = await self.config.user(user=author).DND_MESSAGE()
+        user_config: dict[str, Any] = await self.config.user(user=author).all()
+
         if mess:
             await self.config.user(user=author).DND_MESSAGE.set(value=False)
-            msg = "The bot will no longer reply for you when you're set to do not disturb."
+            await self.config.user(user=author).TIME.set(value=0)
+            msg = "You're now back."
+            await ctx.send(content=msg)
+            if len(user_config["PINGS"]) != 0:
+                await self.pingmenu(ctx, author)
+                await self.remove_ping(author)
+            else:
+                pass
+        
         else:
             if message is None:
                 await self.config.user(user=author).DND_MESSAGE.set(value=(" ", delete_after))
             else:
                 await self.config.user(user=author).DND_MESSAGE.set(value=(message, delete_after))
+            await self.config.user(user=author).TIME.set(
+                value=round(number=datetime.datetime.now().timestamp())
+            )
             msg = "The bot will now reply for you when you're set to do not disturb."
-        await ctx.send(content=msg)
+            await ctx.send(content=msg)
 
     @commands.command(name="streaming")
     async def streaming_(
@@ -843,9 +856,18 @@ class Afk(commands.Cog):
 
         author: User | Member = ctx.message.author
         mess = await self.config.user(user=author).STREAMING_MESSAGE()
+        user_config: dict[str, Any] = await self.config.user(user=author).all()
+
         if mess:
             await self.config.user(user=author).STREAMING_MESSAGE.set(False)
-            msg = "The bot will no longer reply for you when you're mentioned while streaming."
+            await self.config.user(user=author).TIME.set(value=0)
+            msg = "You're now back."
+            await ctx.send(content=msg)
+            if len(user_config["PINGS"]) != 0:
+                await self.pingmenu(ctx, author)
+                await self.remove_ping(author)
+            else:
+                pass
         else:
             if message is None:
                 await self.config.user(user=author).STREAMING_MESSAGE.set(
@@ -855,6 +877,9 @@ class Afk(commands.Cog):
                 await self.config.user(author).STREAMING_MESSAGE.set(
                     value=(message, delete_after)
                 )
+            await self.config.user(user=author).TIME.set(
+                value=round(number=datetime.datetime.now().timestamp())
+            )
             msg = (
                 "The bot will now reply for you when you're mentioned while streaming."
             )
@@ -877,12 +902,24 @@ class Afk(commands.Cog):
 
         author: discord.User = ctx.message.author
         mess = await self.config.user(user=author).LISTENING_MESSAGE()
+        user_config: dict[str, Any] = await self.config.user(user=author).all()
+        
         if mess:
             await self.config.user(user=author).LISTENING_MESSAGE.set(value=False)
+            await self.config.user(user=author).TIME.set(value=0)
             msg = "The bot will no longer reply for you when you're mentioned while listening to Spotify."
+            await ctx.send(content=msg)
+            if len(user_config["PINGS"]) != 0:
+                await self.pingmenu(ctx, author)
+                await self.remove_ping(author)
+            else:
+                pass
         else:
             await self.config.user(user=author).LISTENING_MESSAGE.set(
                 value=(message, delete_after)
+            )
+            await self.config.user(user=author).TIME.set(
+                value=round(number=datetime.datetime.now().timestamp())
             )
             msg = "The bot will now reply for you when you're mentioned while listening to Spotify."
         await ctx.send(content=msg)
@@ -907,16 +944,28 @@ class Afk(commands.Cog):
 
         author: User | Member = ctx.message.author
         mess = await self.config.user(user=author).GAME_MESSAGE()
+        user_config: dict[str, Any] = await self.config.user(user=author).all()
+
         if game.lower() in mess:
             del mess[game.lower()]
             await self.config.user(user=author).GAME_MESSAGE.set(value=mess)
+            await self.config.user(user=author).TIME.set(value=0)
             msg: str = f"The bot will no longer reply for you when you're playing {game}."
+            await ctx.send(content=msg)
+            if len(user_config["PINGS"]) != 0:
+                await self.pingmenu(ctx, author)
+                await self.remove_ping(author)
+            else:
+                pass
         else:
             if message is None:
                 mess[game.lower()] = (" ", delete_after)
             else:
                 mess[game.lower()] = (message, delete_after)
             await self.config.user(user=author).GAME_MESSAGE.set(value=mess)
+            await self.config.user(user=author).TIME.set(
+                value=round(number=datetime.datetime.now().timestamp())
+            )
             msg: str = f"The bot will now reply for you when you're playing {game}."
         await ctx.send(content=msg)
 
