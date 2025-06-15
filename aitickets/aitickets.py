@@ -1,6 +1,5 @@
 from logging import Logger
 
-
 import asyncio
 import datetime
 import logging
@@ -76,53 +75,53 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
 
     async def initialize(self, target_guild: discord.Guild | None = None) -> None:
         if target_guild:
-            data = await self.config.guild(target_guild).all()
-            return await self._init_guild(target_guild, data)
+            data = await self.config.guild(guild=target_guild).all()
+            return await self._init_guild(guild=target_guild, data=data)
 
-        t1 = perf_counter()
-        conf = await self.config.all_guilds()
+        t1: float = perf_counter()
+        conf: dict = await self.config.all_guilds()
         for gid, data in conf.items():
             if not data:
                 continue
-            guild = self.bot.get_guild(gid)
+            guild: Guild | None = self.bot.get_guild(gid)
             if not guild:
                 continue
             try:
                 await self._init_guild(guild, data)
             except Exception as e:
-                log.error(f"Failed to initialize tickets for {guild.name}", exc_info=e)
+                log.error(msg=f"Failed to initialize tickets for {guild.name}", exc_info=e)
 
-        td = (perf_counter() - t1) * 1000
-        log.info(f"Tickets initialized in {round(td, 1)}ms")
+        td: float = (perf_counter() - t1) * 1000
+        log.info(msg=f"Tickets initialized in {round(number=td, ndigits=1)}ms")
 
     async def _init_guild(self, guild: discord.Guild, data: dict) -> None:
         # Stop and clear guild views from cache
-        views = self.view_cache.setdefault(guild.id, [])
+        views: list[View] = self.view_cache.setdefault(guild.id, [])
         for view in views:
             view.stop()
         self.view_cache[guild.id].clear()
 
-        pruned = await prune_invalid_tickets(guild, data, self.config)
+        pruned: bool = await prune_invalid_tickets(guild, conf=data, config=self.config)
         if pruned:
-            data = await self.config.guild(guild).all()
+            data: dict = await self.config.guild(guild).all()
 
         # Refresh overview panel
-        new_id = await update_active_overview(guild, data)
+        new_id: int | None = await update_active_overview(guild, conf=data)
         if new_id:
-            await self.config.guild(guild).overview_msg.set(new_id)
+            await self.config.guild(guild).overview_msg.set(value=new_id)
 
         # v1.14.0 Migration, new support role schema
-        cleaned = []
+        cleaned: list = []
         for i in data["support_roles"]:
             if isinstance(i, int):
                 cleaned.append([i, False])
         if cleaned:
-            await self.config.guild(guild).support_roles.set(cleaned)
+            await self.config.guild(guild).support_roles.set(value=cleaned)
 
         # Refresh buttons for all panels
         migrations = False
         all_panels = data["panels"]
-        prefetched = []
+        prefetched: list = []
         to_deploy = {}  # Message ID keys for multi-button support
         for panel_name, panel in all_panels.items():
             category_id = panel["category_id"]
@@ -139,9 +138,9 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                 continue
             if any([not category, not channel_obj]):
                 if not category:
-                    log.error(f"Invalid category for panel {panel_name} in {guild.name}")
+                    log.error(msg=f"Invalid category for panel {panel_name} in {guild.name}")
                 if not channel_obj:
-                    log.error(f"Invalid channel for panel {panel_name} in {guild.name}")
+                    log.error(msg=f"Invalid channel for panel {panel_name} in {guild.name}")
                 continue
 
             if message_id not in prefetched:
@@ -151,7 +150,7 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                 except discord.NotFound:
                     continue
                 except discord.Forbidden:
-                    log.error(f"I can no longer see the {panel_name} panel's channel in {guild.name}")
+                    log.error(msg=f"I can no longer see the {panel_name} panel's channel in {guild.name}")
                     continue
 
             # v1.3.10 schema update (Modals)
@@ -243,47 +242,47 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                 self.view_cache[guild.id].append(logview)
 
     @tasks.loop(minutes=20)
-    async def auto_close(self):
-        actasks = []
-        conf = await self.config.all_guilds()
+    async def auto_close(self) -> None:
+        actasks: list = []
+        conf: dict = await self.config.all_guilds()
         for gid, conf in conf.items():
             if not conf:
                 continue
-            guild = self.bot.get_guild(gid)
+            guild: Guild | None = self.bot.get_guild(gid)
             if not guild:
                 continue
-            inactive = conf["inactive"]
+            inactive: Any = conf["inactive"]
             if not inactive:
                 continue
-            opened = conf["opened"]
+            opened: Any = conf["opened"]
             if not opened:
                 continue
             for uid, tickets in opened.items():
-                member = guild.get_member(int(uid))
+                member: Member | None = guild.get_member(int(uid))
                 if not member:
                     continue
                 for channel_id, ticket in tickets.items():
-                    has_response = ticket.get("has_response")
+                    has_response: Any = ticket.get("has_response")
                     if has_response and channel_id not in self.valid:
                         self.valid.append(channel_id)
                         continue
                     if channel_id in self.valid:
                         continue
-                    channel = guild.get_channel_or_thread(int(channel_id))
+                    channel: GuildChannel | Thread | None = guild.get_channel_or_thread(int(channel_id))
                     if not channel:
                         continue
-                    now = datetime.datetime.now().astimezone()
-                    opened_on = datetime.datetime.fromisoformat(ticket["opened"])
-                    hastyped = await ticket_owner_hastyped(channel, member)
+                    now: datetime = datetime.datetime.now().astimezone()
+                    opened_on: datetime = datetime.datetime.fromisoformat(ticket["opened"])
+                    hastyped: bool = await ticket_owner_hastyped(channel, member)
                     if hastyped and channel_id not in self.valid:
                         self.valid.append(channel_id)
                         continue
-                    td = (now - opened_on).total_seconds() / 3600
+                    td: float = (now - opened_on).total_seconds() / 3600
                     next_td = td + 0.33
                     if td < inactive <= next_td:
                         # Ticket hasn't expired yet but will in the next loop
-                        warning = _(
-                            "If you do not respond to this ticket "
+                        warning: str = _(
+                            untranslated="If you do not respond to this ticket "
                             "within the next 20 minutes it will be closed automatically."
                         )
                         await channel.send(f"{member.mention}\n{warning}")
@@ -291,40 +290,40 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                     elif td < inactive:
                         continue
 
-                    time = "hours" if inactive != 1 else "hour"
+                    time: Literal['hours', 'hour'] = "hours" if inactive != 1 else "hour"
                     try:
                         await close_ticket(
-                            self.bot,
-                            member,
-                            guild,
-                            channel,
-                            conf,
-                            _("(Auto-Close) Opened ticket with no response for ") + f"{inactive} {time}",
-                            self.bot.user.name,
-                            self.config,
+                            bot=self.bot,
+                            member=member,
+                            guild=guild,
+                            channel=channel,
+                            conf=conf,
+                            reason=_(untranslated="(Auto-Close) Opened ticket with no response for ") + f"{inactive} {time}",
+                            closedby=self.bot.user.name,
+                            config=self.config,
                         )
                         log.info(
-                            f"Ticket opened by {member.name} has been auto-closed.\n"
+                            msg=f"Ticket opened by {member.name} has been auto-closed.\n"
                             f"Has typed: {hastyped}\n"
                             f"Hours elapsed: {td}"
                         )
                     except Exception as e:
-                        log.error(f"Failed to auto-close ticket for {member} in {guild.name}\nException: {e}")
+                        log.error(msg=f"Failed to auto-close ticket for {member} in {guild.name}\nException: {e}")
 
         if tasks:
             await asyncio.gather(*actasks)
 
     @auto_close.before_loop
-    async def before_auto_close(self):
+    async def before_auto_close(self) -> None:
         await self.bot.wait_until_red_ready()
         await asyncio.sleep(300)
 
     # Will automatically close/cleanup any tickets if a member leaves that has an open ticket
     @commands.Cog.listener()
-    async def on_member_remove(self, member: discord.Member):
+    async def on_member_remove(self, member: discord.Member) -> None:
         if not member:
             return
-        guild = member.guild
+        guild: Guild = member.guild
         if not guild:
             return
         conf = await self.config.guild(guild).all()
@@ -336,7 +335,7 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
             return
 
         for cid in tickets:
-            chan = guild.get_channel_or_thread(int(cid))
+            chan: GuildChannel | Thread | None = guild.get_channel_or_thread(int(cid))
             if not chan:
                 continue
             try:
@@ -346,29 +345,29 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                     guild=guild,
                     channel=chan,
                     conf=conf,
-                    reason=_("User left guild(Auto-Close)"),
+                    reason=_(untranslated="User left guild(Auto-Close)"),
                     closedby=self.bot.user.name,
                     config=self.config,
                 )
             except Exception as e:
-                log.error(f"Failed to auto-close ticket for {member} leaving {member.guild}\nException: {e}")
+                log.error(msg=f"Failed to auto-close ticket for {member} leaving {member.guild}\nException: {e}")
 
     @commands.Cog.listener()
     async def on_thread_delete(self, thread: discord.Thread):
         if not thread:
             return
-        guild = thread.guild
+        guild: Guild = thread.guild
         conf = await self.config.guild(guild).all()
-        pruned = await prune_invalid_tickets(guild, conf, self.config)
+        pruned: bool = await prune_invalid_tickets(guild, conf, config=self.config)
         if pruned:
-            log.info("Pruned old ticket threads")
+            log.info(msg="Pruned old ticket threads")
 
     @commands.Cog.listener()
-    async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel):
+    async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel) -> None:
         if not channel:
             return
-        guild = channel.guild
+        guild: Guild = channel.guild
         conf = await self.config.guild(guild).all()
-        pruned = await prune_invalid_tickets(guild, conf, self.config)
+        pruned: bool = await prune_invalid_tickets(guild, conf, config=self.config)
         if pruned:
-            log.info("Pruned old ticket channels")
+            log.info(msg="Pruned old ticket channels")

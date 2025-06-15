@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from contextlib import suppress
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import discord
 from discord import Embed
@@ -15,143 +15,143 @@ from ..common.menu import SMALL_CONTROLS, MenuButton, menu
 from ..common.utils import prune_invalid_tickets, update_active_overview
 from ..common.views import PanelView, TestButton, confirm, wait_reply
 
-log = logging.getLogger("red.vrt.admincommands")
-_ = Translator("TicketsCommands", __file__)
+log: Logger = logging.getLogger(name="red.vrt.admincommands")
+_ = Translator(name="TicketsCommands", file_location=__file__)
 
 
 class AdminCommands(MixinMeta):
     @commands.group(aliases=["tset"])
     @commands.guild_only()
     @commands.admin_or_permissions(administrator=True)
-    async def tickets(self, ctx: commands.Context):
+    async def tickets(self, ctx: commands.Context) -> None:
         """Base support ticket settings"""
         pass
 
     @tickets.command()
-    async def setuphelp(self, ctx: commands.Context):
+    async def setuphelp(self, ctx: commands.Context) -> None:
         """Ticket Setup Guide"""
-        desc = (
-            _("To create a support ticket panel, type ")
+        desc: str = (
+            _(untranslated="To create a support ticket panel, type ")
             + f"`{ctx.clean_prefix}tickets addpanel"
-            + _(" <panel_name>`")
+            + _(untranslated=" <panel_name>`")
         )
-        em = Embed(
-            title=_("Ticket Setup Guide"),
+        em: Embed = Embed(
+            title=_(untranslated="Ticket Setup Guide"),
             description=desc,
             color=ctx.author.color,
         )
         step1 = _(
-            "Set the category ID that new tickets will be created under if using channel tickets.\n"
+            untranslated="Set the category ID that new tickets will be created under if using channel tickets.\n"
         )
         step1 += f"`{ctx.clean_prefix}tickets category " + _(
-            "<panel_name> <category_id>`"
+            untranslated="<panel_name> <category_id>`"
         )
-        em.add_field(name=_("Step 1"), value=step1, inline=False)
-        step2 = _("Set the channel that the bots ticket panel will be located in.\n")
+        em.add_field(name=_(untranslated="Step 1"), value=step1, inline=False)
+        step2: str = _(untranslated="Set the channel that the bots ticket panel will be located in.\n")
         step2 += f"`{ctx.clean_prefix}tickets channel " + _(
-            "<panel_name> <channel_id>`"
+            untranslated="<panel_name> <channel_id>`"
         )
-        em.add_field(name=_("Step 2"), value=step2, inline=False)
-        step3 = _("Set the ID of the bots ticket panel message.\n")
+        em.add_field(name=_(untranslated="Step 2"), value=step2, inline=False)
+        step3: str = _(untranslated="Set the ID of the bots ticket panel message.\n")
         step3 += f"`{ctx.clean_prefix}tickets panelmessage " + _(
-            "<panel_name> <message_id>`\n"
+            untranslated="<panel_name> <message_id>`\n"
         )
         step3 += _(
-            "At this point the ticket panel will be activated, "
+            untranslated="At this point the ticket panel will be activated, "
             "all following steps are for extra customization.\n"
             "If you need a message to add the buttons to, you can use the `{}tickets embed` command.\n"
         ).format(ctx.clean_prefix)
         step3 += _(
-            "If the bot is having trouble finding the message, run the command in the same channel as it."
+            untranslated="If the bot is having trouble finding the message, run the command in the same channel as it."
         )
-        em.add_field(name=_("Step 3"), value=step3, inline=False)
-        step4 = _("Set the text of the ticket panel button.\n")
+        em.add_field(name=_(untranslated="Step 3"), value=step3, inline=False)
+        step4: str = _(untranslated="Set the text of the ticket panel button.\n")
         step4 += f"`{ctx.clean_prefix}tickets buttontext " + _(
-            "<panel_name> <button_text>`"
+            untranslated="<panel_name> <button_text>`"
         )
-        em.add_field(name=_("Button Text"), value=step4, inline=False)
-        step5 = _("Set the ticket panel button color.\n")
-        step5 += _("Valid colors are ") + "`red`, `blue`, `green`, and `grey`.\n"
+        em.add_field(name=_(untranslated="Button Text"), value=step4, inline=False)
+        step5: str = _(untranslated="Set the ticket panel button color.\n")
+        step5 += _(untranslated="Valid colors are ") + "`red`, `blue`, `green`, and `grey`.\n"
         step5 += f"`{ctx.clean_prefix}tickets buttoncolor " + _(
-            "<panel_name> <button_color>`"
+            untranslated="<panel_name> <button_color>`"
         )
-        em.add_field(name=_("Button Color"), value=step5, inline=False)
-        step6 = _("Set the button emoji for the ticket panel.\n")
-        step6 += f"`{ctx.clean_prefix}tickets buttonemoji " + _("<panel_name> <emoji>`")
-        em.add_field(name=_("Button Emoji"), value=step6, inline=False)
+        em.add_field(name=_(untranslated="Button Color"), value=step5, inline=False)
+        step6: str = _(untranslated="Set the button emoji for the ticket panel.\n")
+        step6 += f"`{ctx.clean_prefix}tickets buttonemoji " + _(untranslated="<panel_name> <emoji>`")
+        em.add_field(name=_(untranslated="Button Emoji"), value=step6, inline=False)
 
-        step7 = _("Use threads instead of channels for tickets\n")
-        step7 += f"`{ctx.clean_prefix}tickets usethreads " + _("<panel_name>`")
-        em.add_field(name=_("Thread Tickets"), value=step7, inline=False)
+        step7: str = _(untranslated="Use threads instead of channels for tickets\n")
+        step7 += f"`{ctx.clean_prefix}tickets usethreads " + _(untranslated="<panel_name>`")
+        em.add_field(name=_(untranslated="Thread Tickets"), value=step7, inline=False)
 
-        step8 = _("Add a message the bot sends to the user in their ticket.\n")
-        step8 += f"`{ctx.clean_prefix}tickets addmessage " + _("<panel_name>`")
-        em.add_field(name=_("Ticket Messages"), value=step8, inline=False)
+        step8: str = _(untranslated="Add a message the bot sends to the user in their ticket.\n")
+        step8 += f"`{ctx.clean_prefix}tickets addmessage " + _(untranslated="<panel_name>`")
+        em.add_field(name=_(untranslated="Ticket Messages"), value=step8, inline=False)
 
         step9 = _(
-            "View and remove a messages the bot sends to the user in their ticket.\n"
+            untranslated="View and remove a messages the bot sends to the user in their ticket.\n"
         )
-        step9 += f"`{ctx.clean_prefix}tickets viewmessages " + _("<panel_name>`")
-        em.add_field(name=_("Remove/View Ticket Messages"), value=step9, inline=False)
+        step9 += f"`{ctx.clean_prefix}tickets viewmessages " + _(untranslated="<panel_name>`")
+        em.add_field(name=_(untranslated="Remove/View Ticket Messages"), value=step9, inline=False)
 
-        step10 = _("Set the naming format for ticket channels that are opened.\n")
+        step10 = _(untranslated="Set the naming format for ticket channels that are opened.\n")
         step10 += f"`{ctx.clean_prefix}tickets ticketname " + _(
-            "<panel_name> <name_format>`"
+            untranslated="<panel_name> <name_format>`"
         )
-        em.add_field(name=_("Ticket Channel Name"), value=step10, inline=False)
-        step11 = _("Set log channel for a ticket panel.\n")
+        em.add_field(name=_(untranslated="Ticket Channel Name"), value=step10, inline=False)
+        step11: str = _(untranslated="Set log channel for a ticket panel.\n")
         step11 += f"`{ctx.clean_prefix}tickets logchannel " + _(
-            "<panel_name> <channel>`"
+            untranslated="<panel_name> <channel>`"
         )
-        em.add_field(name=_("Log Channel"), value=step11, inline=False)
+        em.add_field(name=_(untranslated="Log Channel"), value=step11, inline=False)
 
-        tip = _(
-            "Tip: you can create multiple support panels using the same message for a multi-button panel"
+        tip: str = _(
+            untranslated="Tip: you can create multiple support panels using the same message for a multi-button panel"
         )
         em.set_footer(text=tip)
         await ctx.send(embed=em)
 
     @tickets.command()
-    async def suspend(self, ctx: commands.Context, *, message: Optional[str] = None):
+    async def suspend(self, ctx: commands.Context, *, message: Optional[str] = None) -> Message | None:
         """
         Suspend the ticket system
         If a suspension message is set, any user that tries to open a ticket will receive this message
         """
-        suspended = await self.config.guild(ctx.guild).suspended_msg()
+        suspended = await self.config.guild(guild=ctx.guild).suspended_msg()
         if message is None and suspended is None:
             return await ctx.send_help()
         if not message:
-            await self.config.guild(ctx.guild).suspended_msg.set(None)
-            return await ctx.send(_("Ticket system is no longer suspended!"))
+            await self.config.guild(guild=ctx.guild).suspended_msg.set(value=None)
+            return await ctx.send(content=_(untranslated="Ticket system is no longer suspended!"))
         if len(message) > 900:
             return await ctx.send(
-                _("Message is too long! Must be less than 900 characters")
+                content=_(untranslated="Message is too long! Must be less than 900 characters")
             )
-        await self.config.guild(ctx.guild).suspended_msg.set(message)
-        embed = discord.Embed(
-            title=_("Ticket System Suspended"),
+        await self.config.guild(guild=ctx.guild).suspended_msg.set(value=message)
+        embed: Embed = discord.Embed(
+            title=_(untranslated="Ticket System Suspended"),
             description=message,
             color=discord.Color.yellow(),
         )
         await ctx.send(
-            _(
-                "Ticket system is now suspended! Users trying to open a ticket will be met with this message"
+            content=_(
+                untranslated="Ticket system is now suspended! Users trying to open a ticket will be met with this message"
             ),
             embed=embed,
         )
 
     @tickets.command()
-    async def addpanel(self, ctx: commands.Context, panel_name: str):
+    async def addpanel(self, ctx: commands.Context, panel_name: str) -> Message | None:
         """Add a support ticket panel"""
-        panel_name = panel_name.lower()
-        em = Embed(
-            title=panel_name + _(" Panel Saved"),
-            description=_("Your panel has been added and will need to be configured."),
+        panel_name: str = panel_name.lower()
+        em: Embed = Embed(
+            title=panel_name + _(untranslated=" Panel Saved"),
+            description=_(untranslated="Your panel has been added and will need to be configured."),
             color=ctx.author.color,
         )
-        async with self.config.guild(ctx.guild).panels() as panels:
+        async with self.config.guild(guild=ctx.guild).panels() as panels:
             if panel_name in panels:
-                return await ctx.send(_("Panel already exists!"))
+                return await ctx.send(content=_(untranslated="Panel already exists!"))
             panels[panel_name] = TICKET_PANEL_SCHEMA
         await ctx.send(embed=em)
 
@@ -161,29 +161,29 @@ class AdminCommands(MixinMeta):
         ctx: commands.Context,
         panel_name: str,
         category: discord.CategoryChannel,
-    ):
+    ) -> Message | None:
         """Set the category ID for a ticket panel"""
-        panel_name = panel_name.lower()
+        panel_name: str = panel_name.lower()
         if not category.permissions_for(ctx.me).manage_channels:
             return await ctx.send(
-                _("I need the `manage channels` permission to set this category")
+                content=_(untranslated="I need the `manage channels` permission to set this category")
             )
         if not category.permissions_for(ctx.me).manage_permissions:
-            return await ctx.send(_("I need `manage roles` enabled in this category"))
+            return await ctx.send(content=_(untranslated="I need `manage roles` enabled in this category"))
         if not category.permissions_for(ctx.me).attach_files:
             return await ctx.send(
-                _("I need the `attach files` permission to set this category")
+                content=_(untranslated="I need the `attach files` permission to set this category")
             )
         if not category.permissions_for(ctx.me).view_channel:
-            return await ctx.send(_("I cannot see that category!"))
+            return await ctx.send(content=_(untranslated="I cannot see that category!"))
         if not category.permissions_for(ctx.me).read_message_history:
-            return await ctx.send(_("I cannot see message history in that category!"))
-        async with self.config.guild(ctx.guild).panels() as panels:
+            return await ctx.send(content=_(untranslated="I cannot see message history in that category!"))
+        async with self.config.guild(guild=ctx.guild).panels() as panels:
             if panel_name not in panels:
-                return await ctx.send(_("Panel does not exist!"))
+                return await ctx.send(content=_(untranslated="Panel does not exist!"))
             panels[panel_name]["category_id"] = category.id
             await ctx.tick()
-            await ctx.send(_("New tickets will now be opened under that category!"))
+            await ctx.send(content=_(untranslated="New tickets will now be opened under that category!"))
 
     @tickets.command()
     async def channel(
@@ -191,65 +191,65 @@ class AdminCommands(MixinMeta):
         ctx: commands.Context,
         panel_name: str,
         channel: discord.TextChannel,
-    ):
+    ) -> Message | None:
         """Set the channel ID where a ticket panel is located"""
         panel_name = panel_name.lower()
         if not channel.permissions_for(ctx.guild.me).view_channel:
-            return await ctx.send(_("I cannot see that channel!"))
+            return await ctx.send(content=_(untranslated="I cannot see that channel!"))
         if not channel.permissions_for(ctx.guild.me).read_message_history:
-            return await ctx.send(_("I cannot see message history in that channel!"))
-        async with self.config.guild(ctx.guild).panels() as panels:
+            return await ctx.send(content=_(untranslated="I cannot see message history in that channel!"))
+        async with self.config.guild(guild=ctx.guild).panels() as panels:
             if panel_name not in panels:
-                return await ctx.send(_("Panel does not exist!"))
+                return await ctx.send(content=_(untranslated="Panel does not exist!"))
             panels[panel_name]["channel_id"] = channel.id
             await ctx.tick()
 
     @tickets.command()
     async def panelmessage(
         self, ctx: commands.Context, panel_name: str, message: discord.Message
-    ):
+    ) -> Message | None:
         """
         Set the message ID of a ticket panel
         Run this command in the same channel as the ticket panel message
         """
         if message.author.id != self.bot.user.id:
             return await ctx.send(
-                _("I cannot add buttons to messages sent by other users!")
+                content=_(untranslated="I cannot add buttons to messages sent by other users!")
             )
         if isinstance(
             message.channel,
             (discord.Thread, discord.VoiceChannel, discord.ForumChannel),
         ):
-            return await ctx.send(_("Channel of message must be a TEXT CHANNEL!"))
+            return await ctx.send(content=_(untranslated="Channel of message must be a TEXT CHANNEL!"))
         panel_name = panel_name.lower()
-        async with self.config.guild(ctx.guild).panels() as panels:
+        async with self.config.guild(guild=ctx.guild).panels() as panels:
             if panel_name not in panels:
-                return await ctx.send(_("Panel does not exist!"))
+                return await ctx.send(content=_(untranslated="Panel does not exist!"))
             if not panels[panel_name]["category_id"]:
                 return await ctx.send(
-                    _("Category ID must be set for this panel first!")
+                    content=_(untranslated="Category ID must be set for this panel first!")
                 )
             current_channel = panels[panel_name]["channel_id"]
             if current_channel and current_channel != message.channel.id:
                 return await ctx.send(
-                    _(
-                        "This message is part of a different channel from the one you set!"
+                    content=_(
+                        untranslated="This message is part of a different channel from the one you set!"
                     )
                 )
             panels[panel_name]["message_id"] = message.id
             panels[panel_name]["channel_id"] = message.channel.id
             await ctx.tick()
-        await self.initialize(ctx.guild)
+        await self.initialize(target_guild=ctx.guild)
 
     @tickets.command()
     async def buttontext(
         self, ctx: commands.Context, panel_name: str, *, button_text: str
-    ):
+    ) -> Message | None:
         """Set the button text for a support ticket panel"""
-        panel_name = panel_name.lower()
+        panel_name: str = panel_name.lower()
         if len(button_text) > 80:
             return await ctx.send(
-                _("The text content of a button must be less than 80 characters!")
+                content=_(untranslated="The text content of a button must be less than 80 characters!")
             )
         butt = TestButton(label=button_text)  # hehe, butt
         await ctx.send(
@@ -1687,32 +1687,32 @@ class AdminCommands(MixinMeta):
             else:
                 em = Embed(
                     description=_(
-                        "Would you like to add another field to this embed?\n*There are currently {} fields*"
+                        untranslated="Would you like to add another field to this embed?\n*There are currently {} fields*"
                     ).format(fields),
                     color=color,
                 )
             await msg.edit(embed=em)
-            yes = await confirm(ctx, msg)
+            yes: bool | None = await confirm(ctx, msg)
             if yes:
-                em = Embed(description=_("Enter the name of the field"), color=color)
+                em: Embed = Embed(description=_(untranslated="Enter the name of the field"), color=color)
                 em.set_footer(text=foot)
                 await msg.edit(embed=em)
-                name = await wait_reply(ctx, 300)
+                name: str | None = await wait_reply(ctx, timeout=300)
                 if name and name.lower().strip() == "cancel":
                     break
-                em = Embed(description=_("Enter the value of the field"), color=color)
+                em: Embed = Embed(description=_(untranslated="Enter the value of the field"), color=color)
                 em.set_footer(text=foot)
                 await msg.edit(embed=em)
-                value = await wait_reply(ctx, 300)
+                value: str | None = await wait_reply(ctx, timeout=300)
                 if value and value.lower().strip() == "cancel":
                     break
-                em = Embed(
-                    description=_("Do you want this field to be inline?"),
+                em: Embed = Embed(
+                    description=_(untranslated="Do you want this field to be inline?"),
                     color=color,
                 )
                 await msg.edit(embed=em)
-                yes = await confirm(ctx, msg)
-                inline = True if yes else False
+                yes: bool | None = await confirm(ctx, msg)
+                inline: bool = True if yes else False
                 embed.add_field(name=name, value=value, inline=inline)
                 fields += 1
             else:
@@ -1720,30 +1720,30 @@ class AdminCommands(MixinMeta):
 
         try:
             await channel.send(embed=embed)
-            await msg.edit(content=_("Your embed has been sent!"), embed=None)
+            await msg.edit(content=_(untranslated="Your embed has been sent!"), embed=None)
         except Exception as e:
             await ctx.send(
-                _("Failed to send embed!\nException: {}").format(box(str(e), "py"))
+                content=_(untranslated="Failed to send embed!\nException: {}").format(box(text=str(e), lang="py"))
             )
 
     @commands.hybrid_command(name="openfor")
     @commands.mod_or_permissions(manage_messages=True)
     async def openfor(
         self, ctx: commands.Context, user: discord.Member, *, panel_name: str
-    ):
+    ) -> Message | None:
         """Open a ticket for another user"""
-        conf = await self.config.guild(ctx.guild).all()
-        panel_name = panel_name.lower()
+        conf: Dict[str, Any] = await self.config.guild(guild=ctx.guild).all()
+        panel_name: str = panel_name.lower()
         if panel_name not in conf["panels"]:
-            return await ctx.send(_("Panel does not exist!"))
+            return await ctx.send(content=_(untranslated="Panel does not exist!"))
         panel = conf["panels"][panel_name]
         # Create a custom temp view by manipulting the panel
-        view = PanelView(self.bot, ctx.guild, self.config, [panel], mock_user=user)
-        desc = _(
-            "Click the button below to open a {} ticket for {}\nThis message will self-cleanup in 2 minutes."
+        view: PanelView = PanelView(bot=self.bot, guild=ctx.guild, config=self.config, panels=[panel], mock_user=user)
+        desc: str = _(
+            untranslated="Click the button below to open a {} ticket for {}\nThis message will self-cleanup in 2 minutes."
         ).format(panel_name, user.name)
-        embed = discord.Embed(
-            description=desc, color=await self.bot.get_embed_color(ctx)
+        embed: Embed = discord.Embed(
+            description=desc, color=await self.bot.get_embed_color(location=ctx)
         )
         await ctx.send(embed=embed, view=view, delete_after=120)
         await asyncio.sleep(120)
