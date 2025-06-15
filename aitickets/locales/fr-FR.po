@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: vrt-cogs\n"
+"POT-Creation-Date: 2024-02-08 18:31-0500\n"
+"PO-Revision-Date: 2024-12-03 14:55\n"
+"Last-Translator: \n"
+"Language-Team: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 3.4.2\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Crowdin-Project: vrt-cogs\n"
+"X-Crowdin-Project-ID: 550681\n"
+"X-Crowdin-Language: fr\n"
+"X-Crowdin-File: /[vertyco.vrt-cogs] main/tickets/locales/messages.pot\n"
+"X-Crowdin-File-ID: 13\n"
+"Language: fr_FR\n"
+
+#: aitickets.py:32
+#, docstring
+msgid "\n"
+"    Support ticket system with multi-panel functionality\n"
+"    "
+msgstr "\n"
+"Système de support de tickets avec fonctionnalité multi-panels "
+
+#: aitickets.py:45
+#, docstring
+msgid "No data to delete"
+msgstr "Aucune donnée à supprimer"
+
+#: aitickets.py:274
+msgid "If you do not respond to this ticket within the next 20 minutes it will be closed automatically."
+msgstr "Si vous ne répondez pas à ce billet dans les 20 prochaines minutes, il sera fermé automatiquement."
+
+#: aitickets.py:291
+msgid "(Auto-Close) Opened ticket with no response for "
+msgstr "(Clôture automatique) Billet ouvert sans réponse pendant "
+
+#: aitickets.py:338
+msgid "User left guild(Auto-Close)"
+msgstr "L'utilisateur a quitté la guilde (Fermeture automatique)"
+

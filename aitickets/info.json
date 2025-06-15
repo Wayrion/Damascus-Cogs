@@ -1,0 +1,36 @@
+{
+  "author": [
+    "Vertyco", "Wayrion"
+  ],
+  "description": "Multi-Panel Discord support ticket system with buttons!",
+  "disabled": false,
+  "end_user_data_statement": "This cog does not persistently store data about users.",
+  "hidden": false,
+  "install_msg": "Thank you for installing Tickets! type `[p]tickets setuphelp` to get started! This is a modified version of tickets, please contact Wayrion for support",
+  "min_bot_version": "3.5.0",
+  "min_python_version": [3, 10, 0],
+  "permissions": [
+    "read_messages",
+    "send_messages",
+    "manage_messages",
+    "manage_permissions",
+    "manage_roles",
+    "attach_files",
+    "embed_links",
+    "manage_channels"
+  ],
+  "required_cogs": {},
+  "requirements": [
+    "numpy",
+    "chat-exporter"
+  ],
+  "short": "Advanced support ticket system",
+  "tags": [
+    "utility",
+    "tickets",
+    "ticket",
+    "support",
+    "support system"
+  ],
+  "type": "COG"
+}

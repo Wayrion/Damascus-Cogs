@@ -1,0 +1,261 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: vrt-cogs\n"
+"POT-Creation-Date: 2024-02-08 18:31-0500\n"
+"PO-Revision-Date: 2024-12-03 14:57\n"
+"Last-Translator: \n"
+"Language-Team: Spanish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 3.4.2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: vrt-cogs\n"
+"X-Crowdin-Project-ID: 550681\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: /[vertyco.vrt-cogs] main/tickets/common/locales/messages.pot\n"
+"X-Crowdin-File-ID: 130\n"
+"Language: es_ES\n"
+
+#: common\menu.py:65 common\views.py:75
+msgid "You are not allowed to interact with this button."
+msgstr "No está permitido interactuar con este botón."
+
+#: common\utils.py:102
+msgid "I am missing the `Manage Channels` permission to close this ticket!"
+msgstr "¡Me falta el permiso `Manage Channels` para cerrar este ticket!"
+
+#: common\utils.py:104
+msgid "I am missing the `Manage Threads` permission to close this ticket!"
+msgstr "¡Me falta el permiso `Manage Threads` para cerrar este ticket!"
+
+#: common\utils.py:110
+msgid "Ticket created by **{}-{}** has been closed.\n"
+"`PanelType: `{}\n"
+"`Opened on: `<t:{}:F>\n"
+"`Closed on: `<t:{}:F>\n"
+"`Closed by: `{}\n"
+"`Reason:    `{}\n"
+msgstr "El ticket creado por **{}-{}** ha sido cerrado.\n"
+"`Tipo de panel: `{}\n"
+"`Abierto el: `<t:{}:F>\n"
+"`Cerrado el: `<t:{}:F>\n"
+"`Cerrado por: `{}\n"
+"`Motivo:    `{}\n"
+
+#: common\utils.py:127
+msgid "`Thread:    `{}\n"
+msgstr "`Hilo:    `{}\n"
+
+#: common\utils.py:129
+msgid "Ticket Closed\n"
+"{}\n"
+"Currently missing permissions to send embeds to this channel!"
+msgstr "¡Ticket Cerrado!\n"
+"{}\n"
+"¡Actualmente faltan permisos para enviar incrustaciones a este canal!"
+
+#: common\utils.py:130
+msgid "Ticket Closed"
+msgstr "Billete cerrado"
+
+#: common\utils.py:148
+msgid "Archiving Ticket..."
+msgstr "Archivando Ticket..."
+
+#: common\utils.py:176
+msgid "Question: {}\n"
+"Response: {}\n"
+msgstr "Pregunta: {}\n"
+"Respuesta: {}\n"
+
+#: common\utils.py:195
+msgid "Files uploaded: "
+msgstr "Archivos cargados: "
+
+#: common\utils.py:233
+msgid "View Transcript"
+msgstr "Ver Transcripción"
+
+#: common\utils.py:358
+msgid "There are no tickets stored in the database."
+msgstr "No hay entradas almacenadas en la base de datos."
+
+#: common\utils.py:410
+msgid "ticket"
+msgstr "billete"
+
+#: common\utils.py:410
+msgid "tickets"
+msgstr "entradas"
+
+#: common\utils.py:412
+msgid "Pruned `{}` invalid {}"
+msgstr "Podado `{}` inválido {}"
+
+#: common\utils.py:415
+msgid "There are no tickets to prune"
+msgstr "No hay entradas para podar"
+
+#: common\utils.py:445
+msgid "There are no active tickets."
+msgstr "No hay entradas activas."
+
+#: common\utils.py:457
+#, docstring
+msgid "Update active ticket overview\n\n"
+"    Args:\n"
+"        guild (discord.Guild): discord server\n"
+"        conf (dict): settings for the guild\n\n"
+"    Returns:\n"
+"        int: Message ID of the overview panel\n"
+"    "
+msgstr "Actualizar resumen de tickets activos\n\n"
+"    Argumentos:\n"
+"        guild (discord.Guild): servidor de Discord\n"
+"        conf (dict): configuración para el servidor\n\n"
+"    Devuelve:\n"
+"        int: ID del mensaje del panel de resumen    "
+
+#: common\utils.py:473
+msgid "Ticket Overview"
+msgstr "Resumen de tickets"
+
+#: common\utils.py:496
+msgid "Too many active tickets to include in message!"
+msgstr "¡Demasiados tickets activos para incluir en el mensaje!"
+
+#: common\utils.py:501
+msgid "Active Tickets"
+msgstr "Tickets Activos"
+
+#: common\views.py:37
+msgid "cancel"
+msgstr "cancelar"
+
+#: common\views.py:129
+msgid "Closing your ticket"
+msgstr "Cerrar su ticket"
+
+#: common\views.py:131
+msgid "Reason for closing"
+msgstr "Motivo del cierre"
+
+#: common\views.py:171
+msgid "You do not have permissions to close this ticket"
+msgstr "No tienes permisos para cerrar este ticket"
+
+#: common\views.py:183 common\views.py:185
+msgid "Closing..."
+msgstr "Cerrando..."
+
+#: common\views.py:256
+msgid "You been blacklisted from creating tickets!"
+msgstr "¡Se te ha prohibido crear entradas!"
+
+#: common\views.py:262
+msgid "You have a role that has been blacklisted from creating tickets!"
+msgstr "¡Tienes un rol que ha sido incluido en la lista negra para crear tickets!"
+
+#: common\views.py:272
+msgid "You must have one of the following roles to open this ticket: "
+msgstr "Usted debe tener uno de los siguientes roles para abrir este ticket: "
+
+#: common\views.py:284
+msgid "You have the maximum amount of tickets opened already!{}"
+msgstr "¡Ya tienes la cantidad máxima de tickets abiertos!{}"
+
+#: common\views.py:292
+msgid "The category for this support panel cannot be found!\n"
+"please contact an admin!"
+msgstr "¡No se puede encontrar la categoría para este panel de soporte!\n"
+"¡Por favor, contacta a un administrador!"
+
+#: common\views.py:307
+msgid "Submission Info"
+msgstr "Información de envío"
+
+#: common\views.py:325
+msgid "Unanswered"
+msgstr "Sin respuesta"
+
+#: common\views.py:330
+msgid "Your response cannot contain the word 'Discord' in discoverable servers."
+msgstr "Tu respuesta no puede contener la palabra 'Discord' en los servidores descubiertos."
+
+#: common\views.py:347
+msgid "Your ticket is being created, one moment..."
+msgstr "Su billete se está creando, un momento..."
+
+#: common\views.py:425
+msgid "{} ticket for {}"
+msgstr "{} billete para {}"
+
+#: common\views.py:449
+msgid "I am missing the required permissions to create a ticket for you. Please contact an admin so they may fix my permissions."
+msgstr "Me faltan los permisos necesarios para crear un ticket para ti. Por favor, contacta a un administrador para que pueda solucionar mis permisos."
+
+#: common\views.py:458
+msgid "There was an error while preparing your ticket, please contact an admin!\n"
+"{}"
+msgstr "Se ha producido un error al preparar su ticket, por favor póngase en contacto con un administrador. {}"
+
+#: common\views.py:467
+msgid "Welcome to your ticket channel "
+msgstr "Bienvenido a su canal de entradas "
+
+#: common\views.py:469
+msgid "\n"
+"You or an admin can close this with the `{}close` command"
+msgstr "Usted o un administrador pueden cerrar esto con el comando `{}close`"
+
+#: common\views.py:529
+msgid "Ticket form questions"
+msgstr "Preguntas del formulario de tickets"
+
+#: common\views.py:531
+msgid "I tried to pin the response message but don't have the manage messages permissions!"
+msgstr "¡He intentado fijar el mensaje de respuesta, pero no tengo los permisos para gestionar mensajes!"
+
+#: common\views.py:534
+msgid "Your ticket has been created! {}"
+msgstr "Su billete se está creando, un momento! {}"
+
+#: common\views.py:552
+msgid "`Created By: `{user}\n"
+"`User ID:    `{userid}\n"
+"`Opened:     `{timestamp}\n"
+"`Ticket:     `{channelname}\n"
+"`Panel Name: `{panelname}\n"
+"**[Click to Jump!]({jumpurl})**"
+msgstr "`Creado por: `{user}\n"
+"`ID de usuario:    `{userid}\n"
+"`Abierto:     `{timestamp}\n"
+"`Ticket:     `{channelname}\n"
+"`Nombre del panel: `{panelname}\n"
+"**[Haz clic para saltar!]({jumpurl})**"
+
+#: common\views.py:561
+msgid "Ticket Opened"
+msgstr "Ticket abierto"
+
+#: common\views.py:638
+msgid "You have already been added to the ticket **{}**!"
+msgstr "¡Ya has sido añadido al ticket **{}**!"
+
+#: common\views.py:644
+msgid "The maximum amount of staff have claimed this ticket!"
+msgstr "El máximo número de empleados ha reclamado esta entrada"
+
+#: common\views.py:655
+msgid "You already have access to the ticket **{}**!"
+msgstr "¡Ya tienes acceso a la entrada **{}**!"
+
+#: common\views.py:660
+msgid "{} was added to the ticket"
+msgstr "{} se ha añadido al ticket"
+
+#: common\views.py:665
+msgid "You have been added to the ticket **{}**"
+msgstr "Ha sido añadido al ticket **{}**"
+
