@@ -22,7 +22,12 @@ from .common.utils import (
     ticket_owner_hastyped,
     update_active_overview,
 )
+from discord import Guild, Member, Thread
+from discord.abc import GuildChannel
+from discord.ui import View
 from .common.views import CloseView, LogView, PanelView
+
+from typing import Literal
 
 log: Logger = logging.getLogger(name="red.wayrion.aitickets")
 _ = Translator(name="Tickets", file_location=__file__)
@@ -40,7 +45,9 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
 
     def format_help_for_context(self, ctx) -> str:
         helpcmd: str = super().format_help_for_context(ctx)
-        info: str = f"{helpcmd}\nCog Version: {self.__version__}\nAuthor: {self.__author__}\n"
+        info: str = (
+            f"{helpcmd}\nCog Version: {self.__version__}\nAuthor: {self.__author__}\n"
+        )
         return info
 
     async def red_delete_data_for_user(self, *, requester, user_id: int) -> None:
@@ -49,13 +56,17 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
 
     def __init__(self, bot: Red) -> None:
         self.bot: Red = bot
-        self.config = Config.get_conf(cog_instance=self, identifier=1368567270300975227, force_registration=True)
+        self.config = Config.get_conf(
+            cog_instance=self, identifier=1368567270300975227, force_registration=True
+        )
         self.config.register_guild(**DEFAULT_GUILD)
 
         # Cache
         self.valid: list[discord.abc.Messageable] = []  # Valid ticket channels
         self.views: list[discord.ui.View] = []  # Saved views to end on reload
-        self.view_cache: t.Dict[int, t.List[discord.ui.View]] = {}  # Saved views to end on reload
+        self.view_cache: t.Dict[
+            int, t.List[discord.ui.View]
+        ] = {}  # Saved views to end on reload
         self.initializing = False
 
         self.auto_close.start()
@@ -89,7 +100,9 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
             try:
                 await self._init_guild(guild, data)
             except Exception as e:
-                log.error(msg=f"Failed to initialize tickets for {guild.name}", exc_info=e)
+                log.error(
+                    msg=f"Failed to initialize tickets for {guild.name}", exc_info=e
+                )
 
         td: float = (perf_counter() - t1) * 1000
         log.info(msg=f"Tickets initialized in {round(number=td, ndigits=1)}ms")
@@ -133,14 +146,22 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
 
             category = guild.get_channel(category_id)
             channel_obj = guild.get_channel(channel_id)
-            if isinstance(channel_obj, discord.ForumChannel) or isinstance(channel_obj, discord.CategoryChannel):
-                log.error(f"Invalid channel type for panel {panel_name} in {guild.name}")
+            if isinstance(channel_obj, discord.ForumChannel) or isinstance(
+                channel_obj, discord.CategoryChannel
+            ):
+                log.error(
+                    f"Invalid channel type for panel {panel_name} in {guild.name}"
+                )
                 continue
             if any([not category, not channel_obj]):
                 if not category:
-                    log.error(msg=f"Invalid category for panel {panel_name} in {guild.name}")
+                    log.error(
+                        msg=f"Invalid category for panel {panel_name} in {guild.name}"
+                    )
                 if not channel_obj:
-                    log.error(msg=f"Invalid channel for panel {panel_name} in {guild.name}")
+                    log.error(
+                        msg=f"Invalid channel for panel {panel_name} in {guild.name}"
+                    )
                 continue
 
             if message_id not in prefetched:
@@ -150,7 +171,9 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                 except discord.NotFound:
                     continue
                 except discord.Forbidden:
-                    log.error(msg=f"I can no longer see the {panel_name} panel's channel in {guild.name}")
+                    log.error(
+                        msg=f"I can no longer see the {panel_name} panel's channel in {guild.name}"
+                    )
                     continue
 
             # v1.3.10 schema update (Modals)
@@ -233,7 +256,9 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                     continue
                 log_channel = guild.get_channel(int(panel["log_channel"]))
                 if not log_channel:
-                    log.warning(f"Log channel no longer exits for {member.name}'s ticket in {guild.name}")
+                    log.warning(
+                        f"Log channel no longer exits for {member.name}'s ticket in {guild.name}"
+                    )
                     continue
 
                 max_claims = ticket_info.get("max_claims", 0)
@@ -251,10 +276,10 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
             guild: Guild | None = self.bot.get_guild(gid)
             if not guild:
                 continue
-            inactive: Any = conf["inactive"]
+            inactive = conf["inactive"]
             if not inactive:
                 continue
-            opened: Any = conf["opened"]
+            opened = conf["opened"]
             if not opened:
                 continue
             for uid, tickets in opened.items():
@@ -262,17 +287,21 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                 if not member:
                     continue
                 for channel_id, ticket in tickets.items():
-                    has_response: Any = ticket.get("has_response")
+                    has_response = ticket.get("has_response")
                     if has_response and channel_id not in self.valid:
                         self.valid.append(channel_id)
                         continue
                     if channel_id in self.valid:
                         continue
-                    channel: GuildChannel | Thread | None = guild.get_channel_or_thread(int(channel_id))
+                    channel: GuildChannel | Thread | None = guild.get_channel_or_thread(
+                        int(channel_id)
+                    )
                     if not channel:
                         continue
                     now: datetime = datetime.datetime.now().astimezone()
-                    opened_on: datetime = datetime.datetime.fromisoformat(ticket["opened"])
+                    opened_on: datetime = datetime.datetime.fromisoformat(
+                        ticket["opened"]
+                    )
                     hastyped: bool = await ticket_owner_hastyped(channel, member)
                     if hastyped and channel_id not in self.valid:
                         self.valid.append(channel_id)
@@ -290,7 +319,9 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                     elif td < inactive:
                         continue
 
-                    time: Literal['hours', 'hour'] = "hours" if inactive != 1 else "hour"
+                    time: Literal["hours", "hour"] = (
+                        "hours" if inactive != 1 else "hour"
+                    )
                     try:
                         await close_ticket(
                             bot=self.bot,
@@ -298,7 +329,10 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                             guild=guild,
                             channel=channel,
                             conf=conf,
-                            reason=_(untranslated="(Auto-Close) Opened ticket with no response for ") + f"{inactive} {time}",
+                            reason=_(
+                                untranslated="(Auto-Close) Opened ticket with no response for "
+                            )
+                            + f"{inactive} {time}",
                             closedby=self.bot.user.name,
                             config=self.config,
                         )
@@ -308,7 +342,9 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                             f"Hours elapsed: {td}"
                         )
                     except Exception as e:
-                        log.error(msg=f"Failed to auto-close ticket for {member} in {guild.name}\nException: {e}")
+                        log.error(
+                            msg=f"Failed to auto-close ticket for {member} in {guild.name}\nException: {e}"
+                        )
 
         if tasks:
             await asyncio.gather(*actasks)
@@ -350,7 +386,9 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                     config=self.config,
                 )
             except Exception as e:
-                log.error(msg=f"Failed to auto-close ticket for {member} leaving {member.guild}\nException: {e}")
+                log.error(
+                    msg=f"Failed to auto-close ticket for {member} leaving {member.guild}\nException: {e}"
+                )
 
     @commands.Cog.listener()
     async def on_thread_delete(self, thread: discord.Thread):
