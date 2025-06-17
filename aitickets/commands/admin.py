@@ -4,7 +4,7 @@ from contextlib import suppress
 from typing import Any, Optional, Union
 
 import discord
-from discord import Embed
+from discord import Embed, Message
 from redbot.core import commands
 from redbot.core.i18n import Translator
 from redbot.core.utils.chat_formatting import box
