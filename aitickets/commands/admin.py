@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from contextlib import suppress
+from logging import Logger
 from typing import Any, Optional, Union
 
 import discord
@@ -15,7 +16,7 @@ from ..common.menu import SMALL_CONTROLS, MenuButton, menu
 from ..common.utils import prune_invalid_tickets, update_active_overview
 from ..common.views import PanelView, TestButton, confirm, wait_reply
 
-log = logging.getLogger(name="red.wayrion.admincommands")
+log: Logger = logging.getLogger(name="red.wayrion.admincommands")
 _ = Translator(name="TicketsCommands", file_location=__file__)
 
 

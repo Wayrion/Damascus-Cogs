@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import logging
+from logging import Logger
 from typing import Optional
 
 import discord
@@ -14,8 +15,8 @@ from ..abc import MixinMeta
 from ..common.utils import can_close, close_ticket, get_ticket_owner
 
 LOADING = "https://i.imgur.com/l3p6EMX.gif"
-log = logging.getLogger("red.vrt.tickets.base")
-_ = Translator("Tickets", __file__)
+log: Logger = logging.getLogger(name="red.wayrion.tickets.base")
+_ = Translator(name="Tickets", file_location=__file__)
 
 
 class BaseCommands(MixinMeta):
@@ -28,7 +29,9 @@ class BaseCommands(MixinMeta):
         opened = conf["opened"]
         owner_id = get_ticket_owner(opened, str(ctx.channel.id))
         if not owner_id:
-            return await ctx.send(_("This is not a ticket channel, or it has been removed from config"))
+            return await ctx.send(
+                _("This is not a ticket channel, or it has been removed from config")
+            )
 
         panel_name = opened[owner_id][str(ctx.channel.id)]["panel"]
         panel_roles = conf["panels"][panel_name]["roles"]
@@ -49,12 +52,16 @@ class BaseCommands(MixinMeta):
             can_add = True
 
         if not can_add:
-            return await ctx.send(_("You do not have permissions to add users to this ticket"))
+            return await ctx.send(
+                _("You do not have permissions to add users to this ticket")
+            )
 
         channel = ctx.channel
         try:
             if isinstance(channel, discord.TextChannel):
-                await ctx.channel.set_permissions(user, read_messages=True, send_messages=True)
+                await ctx.channel.set_permissions(
+                    user, read_messages=True, send_messages=True
+                )
             else:
                 await channel.add_user(user)
         except Exception as e:
@@ -72,7 +79,9 @@ class BaseCommands(MixinMeta):
         opened = conf["opened"]
         owner_id = get_ticket_owner(opened, str(ctx.channel.id))
         if not owner_id:
-            return await ctx.send(_("This is not a ticket channel, or it has been removed from config"))
+            return await ctx.send(
+                _("This is not a ticket channel, or it has been removed from config")
+            )
 
         panel_name = opened[owner_id][str(ctx.channel.id)]["panel"]
         panel_roles = conf["panels"][panel_name]["roles"]
@@ -92,7 +101,9 @@ class BaseCommands(MixinMeta):
             can_rename = True
 
         if not can_rename:
-            return await ctx.send(_("You do not have permissions to rename this ticket"))
+            return await ctx.send(
+                _("You do not have permissions to rename this ticket")
+            )
         if not ctx.channel.permissions_for(ctx.me).manage_channels:
             return await ctx.send(_("I no longer have permission to edit this channel"))
 
@@ -111,7 +122,9 @@ class BaseCommands(MixinMeta):
     @commands.hybrid_command(name="close", description="Close your ticket")
     @app_commands.describe(reason="Reason for closing the ticket")
     @commands.guild_only()
-    async def close_a_ticket(self, ctx: commands.Context, *, reason: Optional[str] = None):
+    async def close_a_ticket(
+        self, ctx: commands.Context, *, reason: Optional[str] = None
+    ):
         """
         Close your ticket
 
@@ -130,7 +143,9 @@ class BaseCommands(MixinMeta):
                 )
             )
 
-        user_can_close = await can_close(self.bot, ctx.guild, ctx.channel, ctx.author, owner_id, conf)
+        user_can_close = await can_close(
+            self.bot, ctx.guild, ctx.channel, ctx.author, owner_id, conf
+        )
         if not user_can_close:
             return await ctx.send(_("You do not have permissions to close this ticket"))
         else:
@@ -154,7 +169,9 @@ class BaseCommands(MixinMeta):
                 msg = await ctx.send(f"{owner.mention}, {closemsg}")
                 await asyncio.sleep(1.5)
                 try:
-                    await ctx.bot.wait_for("message", check=check, timeout=td.total_seconds())
+                    await ctx.bot.wait_for(
+                        "message", check=check, timeout=td.total_seconds()
+                    )
                 except asyncio.TimeoutError:
                     pass
                 else:
@@ -169,7 +186,9 @@ class BaseCommands(MixinMeta):
                     return
 
         if ctx.interaction:
-            await ctx.interaction.response.send_message(_("Closing..."), ephemeral=True, delete_after=4)
+            await ctx.interaction.response.send_message(
+                content=_(untranslated="Closing..."), ephemeral=True, delete_after=4
+            )
         await close_ticket(
             bot=self.bot,
             member=owner,

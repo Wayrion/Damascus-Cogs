@@ -1,13 +1,16 @@
-from logging import Logger
-
 import asyncio
 import datetime
 import logging
 import typing as t
+from logging import Logger
 from time import perf_counter
+from typing import Literal
 
 import discord
+from discord import Guild, Member, Thread
+from discord.abc import GuildChannel
 from discord.ext import tasks
+from discord.ui import View
 from redbot.core import Config, commands
 from redbot.core.bot import Red
 from redbot.core.i18n import Translator, cog_i18n
@@ -22,12 +25,7 @@ from .common.utils import (
     ticket_owner_hastyped,
     update_active_overview,
 )
-from discord import Guild, Member, Thread
-from discord.abc import GuildChannel
-from discord.ui import View
 from .common.views import CloseView, LogView, PanelView
-
-from typing import Literal
 
 log: Logger = logging.getLogger(name="red.wayrion.aitickets")
 _ = Translator(name="Tickets", file_location=__file__)
@@ -40,7 +38,7 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
     Support ticket system with multi-panel functionality
     """
 
-    __author__ = "[vertyco](https://github.com/vertyco/vrt-cogs)"
+    __author__ = "[wayrion](https://github.com/wayrion/Damascus-cogs)"
     __version__ = "2.9.15"
 
     def format_help_for_context(self, ctx) -> str:
@@ -135,7 +133,7 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
         migrations = False
         all_panels = data["panels"]
         prefetched: list = []
-        to_deploy = {}  # Message ID keys for multi-button support
+        to_deploy: dict = {}  # Message ID keys for multi-button support
         for panel_name, panel in all_panels.items():
             category_id = panel["category_id"]
             channel_id = panel["channel_id"]
@@ -150,7 +148,7 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                 channel_obj, discord.CategoryChannel
             ):
                 log.error(
-                    f"Invalid channel type for panel {panel_name} in {guild.name}"
+                    msg=f"Invalid channel type for panel {panel_name} in {guild.name}"
                 )
                 continue
             if any([not category, not channel_obj]):
@@ -206,7 +204,7 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                 migrations = True
 
             panel["name"] = panel_name
-            key = f"{channel_id}-{message_id}"
+            key: str = f"{channel_id}-{message_id}"
             if key in to_deploy:
                 to_deploy[key].append(panel)
             else:
@@ -217,17 +215,19 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
 
         # Update config for any migrations
         if migrations:
-            await self.config.guild(guild).panels.set(all_panels)
+            await self.config.guild(guild).panels.set(value=all_panels)
 
         try:
             for panels in to_deploy.values():
-                sorted_panels = sorted(panels, key=lambda x: x["priority"])
-                panelview = PanelView(self.bot, guild, self.config, sorted_panels)
+                sorted_panels: list = sorted(panels, key=lambda x: x["priority"])
+                panelview: PanelView = PanelView(
+                    bot=self.bot, guild=guild, config=self.config, panels=sorted_panels
+                )
                 # Panels can change so we want to edit every time
                 await panelview.start()
                 self.view_cache[guild.id].append(panelview)
         except discord.NotFound:
-            log.warning(f"Failed to refresh panels in {guild.name}")
+            log.warning(msg=f"Failed to refresh panels in {guild.name}")
 
         # Refresh view for logs of opened tickets (v1.8.18 update)
         for uid, opened_tickets in data["opened"].items():
@@ -257,7 +257,7 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
                 log_channel = guild.get_channel(int(panel["log_channel"]))
                 if not log_channel:
                     log.warning(
-                        f"Log channel no longer exits for {member.name}'s ticket in {guild.name}"
+                        msg=f"Log channel no longer exits for {member.name}'s ticket in {guild.name}"
                     )
                     continue
 
