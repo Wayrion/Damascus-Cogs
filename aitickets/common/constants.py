@@ -1,3 +1,9 @@
+DEFAULT_GLOBAL: dict = {
+    "open_router_api_key": None,  # API key for OpenRouter
+    "open_router_model": None,  # Default model for OpenRouter
+    "tool_calling": True,  # Whether tool calling is enabled
+}
+
 DEFAULT_GUILD = {
     # Settings
     "support_roles": [],  # Role ids that have access to all tickets
@@ -20,6 +26,10 @@ DEFAULT_GUILD = {
     "auto_add": False,  # Auto-add support/subroles to thread tickets
     "thread_close": True,  # Whether to close/lock the thread instead of deleting it
     "suspended_msg": None,  # If not None, user will be presented with this message when trying to open a ticket
+    "tools": [],  # List of tools to use in the ticket panel
+    "tools_enabled": True,  # Whether tools are enabled in the ticket panel
+    "system_message": "You are a assistant doing tickets in a minecraft server. Your job is to be as precise and polite as possible and in a procedural manner, get the context for what the problem is and offer helpful advice.",  # Default system message for new tickets
+    "helper_role": [],  # Role IDs that help tickets and whose's messages are not forwarded to the AI
 }
 
 TICKET_PANEL_SCHEMA = {  # "panel_name" will be the key for the schema

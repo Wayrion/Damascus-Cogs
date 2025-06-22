@@ -17,7 +17,7 @@ from redbot.core.i18n import Translator, cog_i18n
 
 from .abc import CompositeMetaClass
 from .commands import TicketCommands
-from .common.constants import DEFAULT_GUILD
+from .common.constants import DEFAULT_GLOBAL, DEFAULT_GUILD
 from .common.functions import Functions
 from .common.utils import (
     close_ticket,
@@ -58,6 +58,7 @@ class Tickets(TicketCommands, Functions, commands.Cog, metaclass=CompositeMetaCl
             cog_instance=self, identifier=1368567270300975227, force_registration=True
         )
         self.config.register_guild(**DEFAULT_GUILD)
+        self.config.register_global(**DEFAULT_GLOBAL)
 
         # Cache
         self.valid: list[discord.abc.Messageable] = []  # Valid ticket channels

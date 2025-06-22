@@ -18,7 +18,7 @@ from redbot.core.utils.chat_formatting import pagify, text_to_file
 from redbot.core.utils.mod import is_admin_or_superior
 
 LOADING = "https://i.imgur.com/l3p6EMX.gif"
-log = logging.getLogger("red.vrt.tickets.base")
+log = logging.getLogger("red.wayrion.tickets.base")
 _ = Translator("Tickets", __file__)
 
 
@@ -54,14 +54,18 @@ async def can_close(
     return can_close
 
 
-async def fetch_channel_history(channel: discord.TextChannel, limit: int | None = None) -> List[discord.Message]:
+async def fetch_channel_history(
+    channel: discord.TextChannel, limit: int | None = None
+) -> List[discord.Message]:
     history = []
     async for msg in channel.history(oldest_first=True, limit=limit):
         history.append(msg)
     return history
 
 
-async def ticket_owner_hastyped(channel: discord.TextChannel, user: discord.Member) -> bool:
+async def ticket_owner_hastyped(
+    channel: discord.TextChannel, user: discord.Member
+) -> bool:
     async for msg in channel.history(limit=50, oldest_first=True):
         if msg.author.id == user.id:
             return True
@@ -100,11 +104,19 @@ async def close_ticket(
     panel = conf["panels"][panel_name]
     panel.get("threads")
 
-    if not channel.permissions_for(guild.me).manage_channels and isinstance(channel, discord.TextChannel):
-        await channel.send(_("I am missing the `Manage Channels` permission to close this ticket!"))
+    if not channel.permissions_for(guild.me).manage_channels and isinstance(
+        channel, discord.TextChannel
+    ):
+        await channel.send(
+            _("I am missing the `Manage Channels` permission to close this ticket!")
+        )
         return
-    if not channel.permissions_for(guild.me).manage_threads and isinstance(channel, discord.Thread):
-        await channel.send(_("I am missing the `Manage Threads` permission to close this ticket!"))
+    if not channel.permissions_for(guild.me).manage_threads and isinstance(
+        channel, discord.Thread
+    ):
+        await channel.send(
+            _("I am missing the `Manage Threads` permission to close this ticket!")
+        )
         return
 
     opened = int(datetime.fromisoformat(ticket["opened"]).timestamp())
@@ -130,7 +142,9 @@ async def close_ticket(
     if isinstance(channel, discord.Thread) and conf["thread_close"]:
         desc += _("`Thread:    `{}\n").format(channel.mention)
 
-    backup_text = _("Ticket Closed\n{}\nCurrently missing permissions to send embeds to this channel!").format(desc)
+    backup_text = _(
+        "Ticket Closed\n{}\nCurrently missing permissions to send embeds to this channel!"
+    ).format(desc)
     embed_title = _("Ticket Closed")
     embed = discord.Embed(
         title=embed_title,
@@ -138,12 +152,16 @@ async def close_ticket(
         color=discord.Color.green(),
     )
     embed.set_thumbnail(url=pfp)
-    log_chan: discord.TextChannel = guild.get_channel(panel["log_channel"]) if panel["log_channel"] else None
+    log_chan: discord.TextChannel = (
+        guild.get_channel(panel["log_channel"]) if panel["log_channel"] else None
+    )
 
     buffer = StringIO()
     files: List[dict] = []
     filename = (
-        f"{member.name}-{member.id}.html" if conf.get("detailed_transcript") else f"{member.name}-{member.id}.txt"
+        f"{member.name}-{member.id}.html"
+        if conf.get("detailed_transcript")
+        else f"{member.name}-{member.id}.txt"
     )
     filename = filename.replace("/", "")
 
@@ -191,7 +209,9 @@ async def close_ticket(
             att: list[discord.Attachment] = []
             for i in msg.attachments:
                 att.append(i)
-                if i.size < guild.filesize_limit and (not is_thread or conf["thread_close"]):
+                if i.size < guild.filesize_limit and (
+                    not is_thread or conf["thread_close"]
+                ):
                     filenames[i.filename] += 1
                     if filenames[i.filename] > 1:
                         # Increment filename count to avoid overwriting
@@ -220,7 +240,9 @@ async def close_ticket(
         if files:
             # Create a zip archive in memory
             zip_buffer = BytesIO()
-            with zipfile.ZipFile(zip_buffer, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zip_file:
+            with zipfile.ZipFile(
+                zip_buffer, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9
+            ) as zip_file:
                 for file_dict in files:
                     zip_file.writestr(
                         file_dict["filename"],
@@ -252,7 +274,11 @@ async def close_ticket(
 
     if log_chan and ticket["logmsg"]:
         text_file = text_to_file(text, filename) if text else None
-        zip_file = discord.File(BytesIO(zip_bytes), filename="attachments.zip") if zip_bytes else None
+        zip_file = (
+            discord.File(BytesIO(zip_bytes), filename="attachments.zip")
+            if zip_bytes
+            else None
+        )
 
         perms = [
             log_chan.permissions_for(guild.me).embed_links,
@@ -264,28 +290,40 @@ async def close_ticket(
         if text_file:
             text_file_size = text_file.__sizeof__()
             attachments.append(text_file)
-        if zip_file and ((zip_file.__sizeof__() + text_file_size) < guild.filesize_limit):
+        if zip_file and (
+            (zip_file.__sizeof__() + text_file_size) < guild.filesize_limit
+        ):
             attachments.append(zip_file)
 
         log_msg: discord.Message = None
         # attachment://image.webp
         try:
             if all(perms):
-                log_msg = await log_chan.send(embed=embed, files=attachments or None, view=view)
+                log_msg = await log_chan.send(
+                    embed=embed, files=attachments or None, view=view
+                )
             elif perms[0]:
                 log_msg = await log_chan.send(embed=embed, view=view)
             elif perms[1]:
-                log_msg = await log_chan.send(backup_text, files=attachments or None, view=view)
+                log_msg = await log_chan.send(
+                    backup_text, files=attachments or None, view=view
+                )
         except discord.HTTPException as e:
             if "Payload Too Large" in str(e) or "Request entity too large" in str(e):
                 text_file = text_to_file(text, filename) if text else None
-                zip_file = discord.File(BytesIO(zip_bytes), filename="attachments.zip") if zip_bytes else None
+                zip_file = (
+                    discord.File(BytesIO(zip_bytes), filename="attachments.zip")
+                    if zip_bytes
+                    else None
+                )
                 attachments = []
                 text_file_size = 0
                 if text_file:
                     text_file_size = text_file.__sizeof__()
                     attachments.append(text_file)
-                if zip_file and ((zip_file.__sizeof__() + text_file_size) < guild.filesize_limit):
+                if zip_file and (
+                    (zip_file.__sizeof__() + text_file_size) < guild.filesize_limit
+                ):
                     attachments.append(zip_file)
 
                 # Pop last element and try again
@@ -294,11 +332,15 @@ async def close_ticket(
                 else:
                     attachments = None
                 if all(perms):
-                    log_msg = await log_chan.send(embed=embed, files=attachments or None, view=view)
+                    log_msg = await log_chan.send(
+                        embed=embed, files=attachments or None, view=view
+                    )
                 elif perms[0]:
                     log_msg = await log_chan.send(embed=embed, view=view)
                 elif perms[1]:
-                    log_msg = await log_chan.send(backup_text, files=attachments or None, view=view)
+                    log_msg = await log_chan.send(
+                        backup_text, files=attachments or None, view=view
+                    )
             else:
                 raise
 
@@ -328,7 +370,11 @@ async def close_ticket(
                 dm_msg = await member.send(embed=embed, file=text_file)
                 url = f"https://mahto.id/chat-exporter?url={dm_msg.attachments[0].url}"
                 view = discord.ui.View()
-                view.add_item(discord.ui.Button(label=view_label, style=discord.ButtonStyle.link, url=url))
+                view.add_item(
+                    discord.ui.Button(
+                        label=view_label, style=discord.ButtonStyle.link, url=url
+                    )
+                )
                 await dm_msg.edit(view=view)
             else:
                 await member.send(embed=embed)
@@ -444,7 +490,9 @@ async def prune_invalid_tickets(
     return True if count else False
 
 
-def prep_overview_text(guild: discord.Guild, opened: dict, mention: bool = False) -> str:
+def prep_overview_text(
+    guild: discord.Guild, opened: dict, mention: bool = False
+) -> str:
     active = []
     for uid, opened_tickets in opened.items():
         member = guild.get_member(int(uid))
@@ -547,4 +595,6 @@ async def update_active_overview(guild: discord.Guild, conf: dict) -> Optional[i
             message = await channel.send(embeds=embeds, files=attachments)
             return message.id
         except discord.Forbidden:
-            message = await channel.send(_("Failed to send overview message due to missing permissions"))
+            message = await channel.send(
+                _("Failed to send overview message due to missing permissions")
+            )

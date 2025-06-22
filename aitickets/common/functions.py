@@ -14,7 +14,7 @@ from ..common.utils import update_active_overview
 from ..common.views import CloseView, LogView
 
 _ = Translator("SupportViews", __file__)
-log = logging.getLogger("red.vrt.tickets.functions")
+log = logging.getLogger("red.wayrion.tickets.functions")
 
 
 class Functions(MixinMeta):
@@ -112,7 +112,9 @@ class Functions(MixinMeta):
 
             # Check if the member has the required roles to open a ticket from this panel
             required_roles = panel_data.get("required_roles", [])
-            if required_roles and not any(role.id in required_roles for role in user.roles):
+            if required_roles and not any(
+                role.id in required_roles for role in user.roles
+            ):
                 continue
 
             buffer.write(f"# Support ticket panel name: {panel_name}\n")
@@ -216,7 +218,9 @@ class Functions(MixinMeta):
         if modal := panel.get("modal"):
             for idx, i in enumerate(list(modal.values())):
                 if i.get("required") and not responses[idx]:
-                    return f"THE FOLLOWING TICKET QUESTION WAS NOT ANSWERED!\n{i['label']}"
+                    return (
+                        f"THE FOLLOWING TICKET QUESTION WAS NOT ANSWERED!\n{i['label']}"
+                    )
                 response = str(responses[idx])
                 if "DISCOVERABLE" in guild.features:
                     response = response.replace("Discord", "").replace("discord", "")
@@ -354,8 +358,10 @@ class Functions(MixinMeta):
                         if alt_channel.category:
                             category = alt_channel.category
                 try:
-                    channel_or_thread: discord.TextChannel = await category.create_text_channel(
-                        channel_name, overwrites=overwrite
+                    channel_or_thread: discord.TextChannel = (
+                        await category.create_text_channel(
+                            channel_name, overwrites=overwrite
+                        )
                     )
                 except Exception as e:
                     if "Contains words not allowed" in str(e):
@@ -380,7 +386,9 @@ class Functions(MixinMeta):
         default_message = _("Welcome to your ticket channel ") + f"{user.display_name}!"
         user_can_close = conf["user_can_close"]
         if user_can_close:
-            default_message += _("\nYou or an admin can close this with the `{}close` command").format(prefix)
+            default_message += _(
+                "\nYou or an admin can close this with the `{}close` command"
+            ).format(prefix)
 
         messages = panel["ticket_messages"]
         params = {
@@ -427,14 +435,20 @@ class Functions(MixinMeta):
                 embeds.append(em)
 
             msg = await channel_or_thread.send(
-                content=content, embeds=embeds, allowed_mentions=allowed_mentions, view=close_view
+                content=content,
+                embeds=embeds,
+                allowed_mentions=allowed_mentions,
+                view=close_view,
             )
         else:
             # Default message
             em = discord.Embed(description=default_message, color=user.color)
             em.set_thumbnail(url=user.display_avatar.url)
             msg = await channel_or_thread.send(
-                content=content, embed=em, allowed_mentions=allowed_mentions, view=close_view
+                content=content,
+                embed=em,
+                allowed_mentions=allowed_mentions,
+                view=close_view,
             )
 
         if len(form_embed.fields) > 0:
@@ -442,7 +456,9 @@ class Functions(MixinMeta):
             try:
                 asyncio.create_task(form_msg.pin(reason=_("Ticket form questions")))
             except discord.Forbidden:
-                txt = _("I tried to pin the response message but don't have the manage messages permissions!")
+                txt = _(
+                    "I tried to pin the response message but don't have the manage messages permissions!"
+                )
                 asyncio.create_task(channel_or_thread.send(txt))
 
         if logchannel:

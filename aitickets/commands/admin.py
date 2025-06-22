@@ -114,7 +114,7 @@ class AdminCommands(MixinMeta):
             inline=False,
         )
 
-        step10 = _(
+        step10: str = _(
             untranslated="Set the naming format for ticket channels that are opened.\n"
         )
         step10 += f"`{ctx.clean_prefix}tickets ticketname " + _(
